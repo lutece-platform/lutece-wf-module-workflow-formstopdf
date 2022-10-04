@@ -1,0 +1,25 @@
+<div class="container">
+	<@row>
+		<@columns xs=12 sm=12 md=12 lg=12 xl=12 >
+			<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.forms}' mandatory=true >
+				<@inputGroup>
+					<@select params='required' name='idForms' id="idForms" items=forms_list default_value='${(config.idForms)!0}' />
+					<@inputGroupItem>
+						<@button id="select_form" name="" value="" showTitle=false buttonIcon='check'/>
+					</@inputGroupItem>
+				 </@inputGroup>
+			</@formGroup>
+			
+			<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.jasper_formats}' mandatory=true >
+				<@select params='required' name='format' items=jasper_formats_list default_value='${(config.format)!0}' />
+			</@formGroup>
+			
+			<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.template}' >
+				<@select name='template' id='template' items=template_pdf_list default_value='${(config.template)!0}' />
+			</@formGroup>
+			
+		</@columns>
+	</@row>
+
+</div>
+

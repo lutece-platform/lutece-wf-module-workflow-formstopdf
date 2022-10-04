@@ -1,0 +1,78 @@
+<#if isFormTaskRequired>
+	<div class="container">
+		<@row>
+			<@columns xs=5 sm=5 md=5 lg=5 xl=5 params='style="margin-right: 10px;"' >
+
+				<@formGroup formStyle='inline' labelKey='#i18n{module.workflow.formsjasper.task_formsjasper_info.label.forms}' >
+					<@select name='idForms' id="idForms" params='disabled' items=forms_list default_value='${(config.idForms)!0}' />
+				</@formGroup>
+
+				<@formGroup formStyle='inline' labelKey='#i18n{module.workflow.formsjasper.task_formsjasper_info.label.forms_fields}' >
+					<@select name='idFormsFieldGeneratedReport' params='disabled' id="idFormsFieldGeneratedReport" items=forms_fields_list default_value='${(config.idFormsFieldGeneratedReport)!0}' />
+				</@formGroup>
+				<@formGroup formStyle='inline' labelKey='#i18n{module.workflow.formsjasper.task_formsjasper_info.label.jasper_params_optionnel}' >
+					<div class="table-responsive" style="height: 300px;">
+						<table class="table table-hover table-condensed">
+							<#if optional_params_list?has_content>
+								<tr><th>#i18n{module.workflow.formsjasper.task_formsjasper_info.label.parametre}</th><th>#i18n{module.workflow.formsjasper.task_formsjasper_info.label.valeur}</th></tr>
+								<#list optional_params_list as param_jasper >
+									<#if "${param_jasper!''}" != "" >
+										<tr><@td>$P{value${(param_jasper?index+1)}}</@td><@td> <@input  rows=3 type='textarea' name='paramsReport' id='paramsReport' disabled=true >${param_jasper!}</@input></@td></tr>
+									</#if>
+								</#list>
+							</#if>
+						</table>
+					</div>
+				</@formGroup>
+
+				<@formGroup formStyle='inline' labelKey='#i18n{module.workflow.formsjasper.task_formsjasper_info.label.jasper_json_output}' >
+					<@input  rows=8 type='textarea' name='outputJson' id='outputJson' >${jasper_json_output!}</@input>
+				</@formGroup>
+
+			</@columns>
+			<@columns xs=6 sm=6 md=6 lg=6 xl=6>
+
+				<@formGroup formStyle='inline' labelKey='#i18n{module.workflow.formsjasper.task_formsjasper_info.label.jasper_configs}' >
+					<@select name='report' params='disabled' items=jasper_config_list default_value='${(config.report)!0}' />
+				</@formGroup>
+
+				<@formGroup formStyle='inline' labelKey='#i18n{module.workflow.formsjasper.task_formsjasper_info.label.jasper_formats}' >
+					<@select name='format' items=jasper_formats_list params='disabled' default_value='${(config.format)!0}' />
+				</@formGroup>
+
+				<@formGroup formStyle='inline' labelKey='#i18n{module.workflow.formsjasper.task_formsjasper_info.label.jasper_params_optionnel}' >
+					<div class="table-responsive" style="height: 300px;">
+						<table class="table table-hover table-condensed">
+							<#if forms_fields_list?has_content>
+								<thead>
+									<tr><th>#i18n{module.workflow.formsjasper.task_formsjasper_info.label.parametre}</th><th>#i18n{module.workflow.formsjasper.task_formsjasper_info.label.champ}</th></tr>
+								</thead>
+								<#list forms_fields_list as forms_field >
+									<#if "${forms_field!''}" != "" >
+										<tr><@td>$F{question_${(forms_field.code)!}}</@td><@td>${(forms_field.name)!}</@td></tr>
+									</#if>
+								</#list>
+							</#if>
+						</table>
+					</div>
+				</@formGroup>
+
+				<@formGroup formStyle='inline' labelKey='#i18n{module.workflow.formsjasper.task_formsjasper_info.label.link_template}' >
+					<@input  rows=8 type='textarea' name='linkTemplate' id='linkTemplate' disabled=true >${(link_template_html)!}</@input>
+				</@formGroup>
+			</@columns>
+		</@row>
+	</div>
+	<script type="text/javascript">
+	$(
+		function () {
+			var ugly = document.getElementById('outputJson').value;
+			var obj = JSON.parse(ugly);
+			var pretty = JSON.stringify(obj, undefined, 4);
+			document.getElementById('outputJson').value = pretty;
+		}
+	);
+	</script>
+<#else>
+<!-- bloc tagge non obligatoire via isFormTaskRequired -->
+</#if>
