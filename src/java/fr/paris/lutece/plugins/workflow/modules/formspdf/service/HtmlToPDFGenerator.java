@@ -92,36 +92,44 @@ import fr.paris.lutece.util.html.HtmlTemplate;
 /**
  * The Class HtmlToPDFGenerator.
  */
-public class HtmlToPDFGenerator extends AbstractFileGenerator {
-	
-	/**
-	 * Instantiates a new html to PDF generator.
-	 *
-	 * @param fileName the file name
-	 * @param fileDescription the file description
-	 * @param formResponse the form response
-	 * @param template the template
-	 */
-	public HtmlToPDFGenerator(String fileName, String fileDescription, FormResponse formResponse, String template) {
-		super(fileName, fileDescription, formResponse, template);
-	}
+public class HtmlToPDFGenerator extends AbstractFileGenerator
+{
 
-	private static final boolean ZIP_EXPORT = Boolean.parseBoolean( AppPropertiesService.getProperty( "workflow-formspdf.export.pdf.zip", "false" ) );
+    /**
+     * Instantiates a new html to PDF generator.
+     *
+     * @param fileName
+     *            the file name
+     * @param fileDescription
+     *            the file description
+     * @param formResponse
+     *            the form response
+     * @param template
+     *            the template
+     */
+    public HtmlToPDFGenerator( String fileName, String fileDescription, FormResponse formResponse, String template )
+    {
+        super( fileName, fileDescription, formResponse, template );
+    }
+
+    private static final boolean ZIP_EXPORT = Boolean.parseBoolean( AppPropertiesService.getProperty( "workflow-formspdf.export.pdf.zip", "false" ) );
     private static final String CONSTANT_MIME_TYPE_PDF = "application/pdf";
     private static final String EXTENSION_PDF = ".pdf";
     private static final String MARK_STEP_FORMS = "list_summary_step_display";
     private static final String KEY_LABEL_YES = "portal.util.labelYes";
     private static final String KEY_LABEL_NO = "portal.util.labelNo";
 
-	/**
-	 * Generate file.
-	 *
-	 * @return the path
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 */
-	@Override
-	public Path generateFile() throws IOException {
-		Path directoryFile = Paths.get( TMP_DIR, _fileName );
+    /**
+     * Generate file.
+     *
+     * @return the path
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     */
+    @Override
+    public Path generateFile( ) throws IOException
+    {
+        Path directoryFile = Paths.get( TMP_DIR, _fileName );
         if ( !directoryFile.toFile( ).exists( ) )
         {
             directoryFile.toFile( ).mkdir( );
@@ -133,58 +141,63 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator {
         }
         File [ ] files = directoryFile.toFile( ).listFiles( ( File f ) -> f.getName( ).endsWith( EXTENSION_PDF ) );
         return files [0].toPath( );
-	}
+    }
 
-	/**
-	 * Gets the file name.
-	 *
-	 * @return the file name
-	 */
-	@Override
-	public String getFileName() {
-		return _fileName + EXTENSION_PDF;
-	}
-
-	/**
-	 * Gets the mime type.
-	 *
-	 * @return the mime type
-	 */
-	@Override
-	public String getMimeType() {
-		return CONSTANT_MIME_TYPE_PDF;
-	}
-
-	/**
-	 * Gets the description.
-	 *
-	 * @return the description
-	 */
-	@Override
-	public String getDescription() {
-		return _fileDescription;
-	}
-
-	/**
-	 * Checks if is zippable.
-	 *
-	 * @return true, if is zippable
-	 */
-	@Override
-	public boolean isZippable() {
-		return ZIP_EXPORT;
-	}
-	
-	/**
-	 * Gets the value forms reponse.
-	 *
-	 * @param formresponse the formresponse
-	 * @return the value forms reponse
-	 */
-	private List<String> getValueFormsReponse(FormResponse formresponse )
+    /**
+     * Gets the file name.
+     *
+     * @return the file name
+     */
+    @Override
+    public String getFileName( )
     {
-    	List<String> lstValue =  new ArrayList<String>( );
-    	Form form = FormHome.findByPrimaryKey( formresponse.getFormId( ) );
+        return _fileName + EXTENSION_PDF;
+    }
+
+    /**
+     * Gets the mime type.
+     *
+     * @return the mime type
+     */
+    @Override
+    public String getMimeType( )
+    {
+        return CONSTANT_MIME_TYPE_PDF;
+    }
+
+    /**
+     * Gets the description.
+     *
+     * @return the description
+     */
+    @Override
+    public String getDescription( )
+    {
+        return _fileDescription;
+    }
+
+    /**
+     * Checks if is zippable.
+     *
+     * @return true, if is zippable
+     */
+    @Override
+    public boolean isZippable( )
+    {
+        return ZIP_EXPORT;
+    }
+
+    /**
+     * Gets the value forms reponse.
+     *
+     * @param formresponse
+     *            the formresponse
+     * @return the value forms reponse
+     */
+    private List<String> getValueFormsReponse( FormResponse formresponse )
+    {
+        List<String> lstValue = new ArrayList<String>( );
+        Form form = FormHome.findByPrimaryKey( formresponse.getFormId( ) );
 
         // Filters the FormResponseStep with at least one question exportable in pdf
         List<FormResponseStep> filteredList = formresponse.getSteps( ).stream( ).filter(
@@ -192,25 +205,26 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator {
                 .collect( Collectors.toList( ) );
         for ( FormResponseStep formResponseStep : filteredList )
         {
-        	List<PdfCell> listContent = createCellsForStep( formResponseStep );
-        	for (PdfCell pdfCellValue : listContent)
+            List<PdfCell> listContent = createCellsForStep( formResponseStep );
+            for ( PdfCell pdfCellValue : listContent )
             {
-            	lstValue.add( pdfCellValue.getTitle() + " Reponse : " + pdfCellValue.getValue( ) );
+                lstValue.add( pdfCellValue.getTitle( ) + " Reponse : " + pdfCellValue.getValue( ) );
             }
         }
-        
+
         return lstValue;
     }
-	
-	/**
-	 * Gets the pdf cell value forms reponse.
-	 *
-	 * @param formresponse the formresponse
-	 * @return the pdf cell value forms reponse
-	 */
-	private List<PdfCell> getPdfCellValueFormsReponse(FormResponse formresponse )
+
+    /**
+     * Gets the pdf cell value forms reponse.
+     *
+     * @param formresponse
+     *            the formresponse
+     * @return the pdf cell value forms reponse
+     */
+    private List<PdfCell> getPdfCellValueFormsReponse( FormResponse formresponse )
     {
-    	List<PdfCell> listContent = new ArrayList<>( );
+        List<PdfCell> listContent = new ArrayList<>( );
 
         // Filters the FormResponseStep with at least one question exportable in pdf
         List<FormResponseStep> filteredList = formresponse.getSteps( ).stream( ).filter(
@@ -218,19 +232,20 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator {
                 .collect( Collectors.toList( ) );
         for ( FormResponseStep formResponseStep : filteredList )
         {
-        	listContent.addAll( createCellsForStep( formResponseStep ) );
+            listContent.addAll( createCellsForStep( formResponseStep ) );
         }
-        
+
         return listContent;
     }
-	
-	/**
-	 * Creates the cells for step.
-	 *
-	 * @param formResponseStep the form response step
-	 * @return the list
-	 */
-	private List<PdfCell> createCellsForStep( FormResponseStep formResponseStep )
+
+    /**
+     * Creates the cells for step.
+     *
+     * @param formResponseStep
+     *            the form response step
+     * @return the list
+     */
+    private List<PdfCell> createCellsForStep( FormResponseStep formResponseStep )
     {
         Step step = formResponseStep.getStep( );
 
@@ -255,15 +270,17 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator {
         }
         return listContent;
     }
-	
-	/**
-	 * Creates the cells for group.
-	 *
-	 * @param formResponseStep the form response step
-	 * @param formDisplay the form display
-	 * @return the list
-	 */
-	private List<PdfCell> createCellsForGroup( FormResponseStep formResponseStep, FormDisplay formDisplay )
+
+    /**
+     * Creates the cells for group.
+     *
+     * @param formResponseStep
+     *            the form response step
+     * @param formDisplay
+     *            the form display
+     * @return the list
+     */
+    private List<PdfCell> createCellsForGroup( FormResponseStep formResponseStep, FormDisplay formDisplay )
     {
         List<PdfCell> listContent = new ArrayList<>( );
         Group group = GroupHome.findByPrimaryKey( formDisplay.getCompositeId( ) );
@@ -286,22 +303,28 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator {
     /**
      * Creates the pdf cell no group.
      *
-     * @param formResponseStep the form response step
-     * @param formDisplay the form display
+     * @param formResponseStep
+     *            the form response step
+     * @param formDisplay
+     *            the form display
      * @return the pdf cell
      */
     private PdfCell createPdfCellNoGroup( FormResponseStep formResponseStep, FormDisplay formDisplay )
     {
         return createPdfCell( formResponseStep, formDisplay, null, 0 );
     }
-    
+
     /**
      * Creates the pdf cell.
      *
-     * @param formResponseStep the form response step
-     * @param formDisplay the form display
-     * @param group the group
-     * @param iterationNumber the iteration number
+     * @param formResponseStep
+     *            the form response step
+     * @param formDisplay
+     *            the form display
+     * @param group
+     *            the group
+     * @param iterationNumber
+     *            the iteration number
      * @return the pdf cell
      */
     private PdfCell createPdfCell( FormResponseStep formResponseStep, FormDisplay formDisplay, Group group, int iterationNumber )
@@ -335,12 +358,14 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator {
         }
         return null;
     }
-    
+
     /**
      * Gets the response value.
      *
-     * @param formQuestionResponse the form question response
-     * @param iteration the iteration
+     * @param formQuestionResponse
+     *            the form question response
+     * @param iteration
+     *            the iteration
      * @return the response value
      */
     private List<String> getResponseValue( FormQuestionResponse formQuestionResponse, int iteration )
@@ -353,8 +378,7 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator {
         {
             return listResponseValue;
         }
-        
-        
+
         if ( entryTypeService instanceof EntryTypeTermsOfService )
         {
             boolean aggrement = formQuestionResponse.getEntryResponse( ).stream( )
@@ -383,39 +407,39 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator {
 
             if ( entryTypeService instanceof EntryTypeCheckBox && strResponseValue != null )
             {
-            	listResponseValue.add("<input type=\"checkbox\" name=\"" + strResponseValue + " \" checked=\"checked\" />");
+                listResponseValue.add( "<input type=\"checkbox\" name=\"" + strResponseValue + " \" checked=\"checked\" />" );
             }
-            
+
             if ( ( entryTypeService instanceof EntryTypeImage || entryTypeService instanceof EntryTypeCamera ) && strResponseValue != null )
             {
-            	
-            	if ( response.getFile( ) != null )
-            	{
-            		IFileStoreServiceProvider fileStoreService = FileService.getInstance( ).getFileStoreServiceProvider( );
-                	fr.paris.lutece.portal.business.file.File fileImage = fileStoreService.getFile( String.valueOf( response.getFile( ).getIdFile( ) ) );
-                	
-                	String encoded = Base64.getEncoder().encodeToString( fileImage.getPhysicalFile( ).getValue( ) );
-                	
-                	listResponseValue.add("<img src=\"data:image/jpeg;base64, " + encoded + " \" width=\"100px\" height=\"100px\" /> ");
-            	}
-            	
+
+                if ( response.getFile( ) != null )
+                {
+                    IFileStoreServiceProvider fileStoreService = FileService.getInstance( ).getFileStoreServiceProvider( );
+                    fr.paris.lutece.portal.business.file.File fileImage = fileStoreService.getFile( String.valueOf( response.getFile( ).getIdFile( ) ) );
+
+                    String encoded = Base64.getEncoder( ).encodeToString( fileImage.getPhysicalFile( ).getValue( ) );
+
+                    listResponseValue.add( "<img src=\"data:image/jpeg;base64, " + encoded + " \" width=\"100px\" height=\"100px\" /> " );
+                }
+
             }
             if ( entryTypeService instanceof EntryTypeFile && response.getFile( ) != null )
             {
-            	IFileStoreServiceProvider fileStoreService = FileService.getInstance( ).getFileStoreServiceProvider( );
-            	listResponseValue.add( fileStoreService.getFile( String.valueOf( response.getFile( ).getIdFile( ) ) ).getTitle() );	
+                IFileStoreServiceProvider fileStoreService = FileService.getInstance( ).getFileStoreServiceProvider( );
+                listResponseValue.add( fileStoreService.getFile( String.valueOf( response.getFile( ).getIdFile( ) ) ).getTitle( ) );
             }
-            
+
             if ( entryTypeService instanceof EntryTypeRadioButton && strResponseValue != null )
             {
-            	listResponseValue.add("<input type=\"radio\" value=\"" + strResponseValue + " \" name=\"" + strResponseValue + " \" checked=\"checked\" />");
+                listResponseValue.add( "<input type=\"radio\" value=\"" + strResponseValue + " \" name=\"" + strResponseValue + " \" checked=\"checked\" />" );
             }
-            
+
             if ( entryTypeService instanceof EntryTypeSelect && strResponseValue != null )
             {
-            	listResponseValue.add("<select name=\"" + strResponseValue + " \" > <option>" + strResponseValue + "</option> </select>");
+                listResponseValue.add( "<select name=\"" + strResponseValue + " \" > <option>" + strResponseValue + "</option> </select>" );
             }
-            
+
             if ( strResponseValue != null )
             {
                 listResponseValue.add( strResponseValue );
@@ -424,43 +448,45 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator {
 
         return listResponseValue;
     }
-    
+
     /**
      * Write export file.
      *
-     * @param directoryFile the directory file
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @param directoryFile
+     *            the directory file
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
     private void writeExportFile( Path directoryFile ) throws IOException
     {
-    	Map<String, Object> model = new HashMap<>( );
-    	String strError = "";
-    	
-    	model.put( MARK_STEP_FORMS, getPdfCellValueFormsReponse( _formResponse ) );
-    	HtmlTemplate htmltemplate = AppTemplateService.getTemplate( _template, Locale.getDefault(), model );
-    	
-    	try ( OutputStream outputStream =  Files.newOutputStream( directoryFile.resolve( generateFileName( _formResponse ) + ".pdf" ) ) )
-        {	
-    		Document doc = Jsoup.parse(htmltemplate.getHtml(), "UTF-8");
-        	doc.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        	doc.outputSettings().escapeMode(EscapeMode.base.xhtml);
-            doc.outputSettings().charset("UTF-8");
-    		
-            PdfConverterService.getInstance().getPdfBuilder().reset().withHtmlContent( doc.html() ).notEditable().render(outputStream);
-        } 
-        catch ( PdfConverterServiceException e )
+        Map<String, Object> model = new HashMap<>( );
+        String strError = "";
+
+        model.put( MARK_STEP_FORMS, getPdfCellValueFormsReponse( _formResponse ) );
+        HtmlTemplate htmltemplate = AppTemplateService.getTemplate( _template, Locale.getDefault( ), model );
+
+        try ( OutputStream outputStream = Files.newOutputStream( directoryFile.resolve( generateFileName( _formResponse ) + ".pdf" ) ) )
         {
-        	strError = "Une erreur s'est produite lors de la generation de l'edition";
+            Document doc = Jsoup.parse( htmltemplate.getHtml( ), "UTF-8" );
+            doc.outputSettings( ).syntax( Document.OutputSettings.Syntax.xml );
+            doc.outputSettings( ).escapeMode( EscapeMode.base.xhtml );
+            doc.outputSettings( ).charset( "UTF-8" );
+
+            PdfConverterService.getInstance( ).getPdfBuilder( ).reset( ).withHtmlContent( doc.html( ) ).notEditable( ).render( outputStream );
+        }
+        catch( PdfConverterServiceException e )
+        {
+            strError = "Une erreur s'est produite lors de la generation de l'edition";
             AppLogService.error( strError, e );
             throw new RuntimeException( strError, e );
-        } 
-        catch (IOException e) 
+        }
+        catch( IOException e )
         {
-        	strError = "Une erreur s'est produite lors de la generation de l'edition";
+            strError = "Une erreur s'est produite lors de la generation de l'edition";
             AppLogService.error( strError, e );
             throw new RuntimeException( strError, e );
-		}
-    	
+        }
+
     }
 
 }

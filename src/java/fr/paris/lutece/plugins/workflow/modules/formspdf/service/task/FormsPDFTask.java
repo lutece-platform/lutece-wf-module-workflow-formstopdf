@@ -72,14 +72,12 @@ public class FormsPDFTask extends Task
      * the FormJasperConfigService to manage the task configuration
      */
     private static final ITaskConfigService _formsPDFTaskConfigService = SpringContextService.getBean( "workflow-formspdf.formsPDFTaskConfigService" );
-    
+
     /**
      * the ResourceHistoryService to get the forms to process
      */
     private static final IResourceHistoryService _resourceHistoryService = SpringContextService.getBean( ResourceHistoryService.BEAN_SERVICE );
 
-    
-    
     @Override
     public void processTask( int nIdResourceHistory, HttpServletRequest request, Locale locale )
     {
@@ -97,18 +95,19 @@ public class FormsPDFTask extends Task
         {
             nIdFormResponse = resourceHistory.getIdResource( );
 
-    		FormResponse frep = FormResponseHome.findByPrimaryKey(nIdFormResponse);
-    		Form form = FormHome.findByPrimaryKey(frep.getFormId());
+            FormResponse frep = FormResponseHome.findByPrimaryKey( nIdFormResponse );
+            Form form = FormHome.findByPrimaryKey( frep.getFormId( ) );
 
-    		//TODO Gerer le cas null quand il s'agit d'une action automatique
-    		AdminUser user = null;
-    		if ( request != null )
-    		{
-    			user = AdminUserService.getAdminUser( request );
-    		}
-        	HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator(form.getTitle(), I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep, formsPDFTaskConfig.getTemplate( ) );
-        	
-        	TemporaryFileGeneratorService.getInstance( ).generateFile(htmltopdf, user);
+            // TODO Gerer le cas null quand il s'agit d'une action automatique
+            AdminUser user = null;
+            if ( request != null )
+            {
+                user = AdminUserService.getAdminUser( request );
+            }
+            HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ), I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep,
+                    formsPDFTaskConfig.getTemplate( ) );
+
+            TemporaryFileGeneratorService.getInstance( ).generateFile( htmltopdf, user );
 
         }
         catch( Exception e )
@@ -119,7 +118,7 @@ public class FormsPDFTask extends Task
         }
 
     }
-    
+
     @Override
     public String getTitle( Locale locale )
     {
@@ -149,10 +148,8 @@ public class FormsPDFTask extends Task
     @Override
     public void doRemoveConfig( )
     {
-        //_formsJasperTaskConfigService.remove( getId( ) );
-    	_formsPDFTaskConfigService.remove( getId( ) );
+        // _formsJasperTaskConfigService.remove( getId( ) );
+        _formsPDFTaskConfigService.remove( getId( ) );
     }
-
-
 
 }

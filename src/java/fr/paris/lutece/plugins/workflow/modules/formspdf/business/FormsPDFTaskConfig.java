@@ -51,7 +51,7 @@ public class FormsPDFTaskConfig extends TaskConfig
      * The format of the report to export (csv,pdf,rtf ...)
      */
     private String _strFormat;
-    
+
     private String _strTemplate;
 
     /**
@@ -88,21 +88,24 @@ public class FormsPDFTaskConfig extends TaskConfig
         this._strFormat = strFormat;
     }
 
-	/**
-	 * Gets the template.
-	 *
-	 * @return the template
-	 */
-	public String getTemplate() {
-		return _strTemplate;
-	}
+    /**
+     * Gets the template.
+     *
+     * @return the template
+     */
+    public String getTemplate( )
+    {
+        return _strTemplate;
+    }
 
-	/**
-	 * Sets the template.
-	 *
-	 * @param _strTemplate the new template
-	 */
-	public void setTemplate(String strTemplate) {
-		this._strTemplate = strTemplate;
-	}
+    /**
+     * Sets the template.
+     *
+     * @param _strTemplate
+     *            the new template
+     */
+    public void setTemplate( String strTemplate )
+    {
+        this._strTemplate = strTemplate;
+    }
 }

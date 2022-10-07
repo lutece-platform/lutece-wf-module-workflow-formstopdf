@@ -93,7 +93,7 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
         model.put( MARK_CONFIG, config );
 
         model.put( MARK_FORMS_LIST, FormHome.getFormsReferenceList( ) );
-        
+
         String [ ] arrayListFormats = AppPropertiesService.getProperty( PROPERTY_LIST_FORMATS, "pdf" ).split( "," );
         ReferenceList listFormats = new ReferenceList( );
         for ( String strFormat : arrayListFormats )
@@ -105,25 +105,24 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
         }
 
         model.put( MARK_FORMATS_LIST, listFormats );
-        
+
         ReferenceList listTemplatePDF = new ReferenceList( );
-        
-        
+
         Properties allProps = AppPropertiesService.getProperties( );
         Enumeration<?> enumKeys = allProps.propertyNames( );
-		
-		while (enumKeys.hasMoreElements())
-		{
-			String name = (String) enumKeys.nextElement();
-			if ( name.contains("template_pdf") && name.contains("name"))
-        	{
-				String[] strClassName = name.split(".name");
-				StringBuilder strClassLocation = new StringBuilder(strClassName[0]);
-				strClassLocation.append( ".path" );
-				listTemplatePDF.addItem( AppPropertiesService.getProperty(strClassLocation.toString()), AppPropertiesService.getProperty(name) );
-        	}
-		}
-        
+
+        while ( enumKeys.hasMoreElements( ) )
+        {
+            String name = (String) enumKeys.nextElement( );
+            if ( name.contains( "template_pdf" ) && name.contains( "name" ) )
+            {
+                String [ ] strClassName = name.split( ".name" );
+                StringBuilder strClassLocation = new StringBuilder( strClassName [0] );
+                strClassLocation.append( ".path" );
+                listTemplatePDF.addItem( AppPropertiesService.getProperty( strClassLocation.toString( ) ), AppPropertiesService.getProperty( name ) );
+            }
+        }
+
         model.put( MARK_TEMPLATE_PDF_LIST, listTemplatePDF );
 
         HtmlTemplate page = AppTemplateService.getTemplate( TEMPLATE_CONFIG_GLOBAL_FORMSPDF, locale, model );
@@ -136,17 +135,16 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
         return null;
     }
 
-
     @Override
     public String doValidateTask( int nIdResource, String strResourceType, HttpServletRequest request, Locale locale, ITask task )
     {
         return null;
     }
 
-	@Override
-	public String getDisplayTaskForm(int nIdResource, String strResourceType, HttpServletRequest request, Locale locale,
-			ITask task) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getDisplayTaskForm( int nIdResource, String strResourceType, HttpServletRequest request, Locale locale, ITask task )
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

@@ -57,7 +57,7 @@ public abstract class AbstractFileGenerator implements IFileGenerator
     // 4: size for file extension (.pdf, .zip, .csv)
     private static final int MAX_NAME_LENGTH = 250 - PATTERN_TIMESTAMP.length( );
     protected static final String TMP_DIR = System.getProperty( "java.io.tmpdir" );
-    
+
     protected final FormResponse _formResponse;
     protected final String _fileName;
     protected final String _fileDescription;
@@ -73,10 +73,10 @@ public abstract class AbstractFileGenerator implements IFileGenerator
      */
     protected AbstractFileGenerator( String fileName, String fileDescription, FormResponse formResponse, String template )
     {
-    	_formResponse = formResponse;
-    	_fileName = StringUtils.substring( fileName, 0, MAX_NAME_LENGTH ) + LocalDateTime.now( ).format( DateTimeFormatter.ofPattern( PATTERN_TIMESTAMP ) );
-    	_fileDescription = fileDescription;
-    	_template = template;
+        _formResponse = formResponse;
+        _fileName = StringUtils.substring( fileName, 0, MAX_NAME_LENGTH ) + LocalDateTime.now( ).format( DateTimeFormatter.ofPattern( PATTERN_TIMESTAMP ) );
+        _fileDescription = fileDescription;
+        _template = template;
     }
 
     @Override
@@ -88,7 +88,8 @@ public abstract class AbstractFileGenerator implements IFileGenerator
     /**
      * Generate file name.
      *
-     * @param response the response
+     * @param response
+     *            the response
      * @return the string
      */
     protected String generateFileName( FormResponse response )

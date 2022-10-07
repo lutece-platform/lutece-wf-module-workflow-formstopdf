@@ -78,9 +78,9 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTask( ) );
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdForms( ) );
         daoUtil.setString( ++nIndex, formsJasperTaskConfig.getFormat( ) );
-        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getTemplate() );
+        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getTemplate( ) );
 
-        daoUtil.executeUpdate( );  
+        daoUtil.executeUpdate( );
         if ( daoUtil.nextGeneratedKey( ) )
         {
             formsJasperTaskConfig.setIdTask( daoUtil.getGeneratedKeyInt( 1 ) );
