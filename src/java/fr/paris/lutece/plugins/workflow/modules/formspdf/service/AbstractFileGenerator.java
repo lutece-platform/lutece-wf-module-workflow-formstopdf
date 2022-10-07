@@ -71,19 +71,6 @@ public abstract class AbstractFileGenerator implements IFileGenerator
      * 
      * @param _listFormResponseItems
      */
-    /*
-    protected AbstractFileGenerator( String fileName, FormPanel formPanel, List<IFormColumn> listFormColumn, List<FormFilter> listFormFilter,
-            FormResponseItemSortConfig sortConfig, String fileDescription )
-    {
-        _fileName = StringUtils.substring( fileName, 0, MAX_NAME_LENGTH ) + LocalDateTime.now( ).format( DateTimeFormatter.ofPattern( PATTERN_TIMESTAMP ) );
-        _formPanel = formPanel;
-        _listFormColumn = new ArrayList<>( listFormColumn );
-        _listFormFilter = new ArrayList<>( listFormFilter );
-        _sortConfig = sortConfig;
-        _fileDescription = fileDescription;
-    }
-    */
-    
     protected AbstractFileGenerator( String fileName, String fileDescription, FormResponse formResponse, String template )
     {
     	_formResponse = formResponse;
@@ -98,6 +85,12 @@ public abstract class AbstractFileGenerator implements IFileGenerator
         return _fileDescription;
     }
 
+    /**
+     * Generate file name.
+     *
+     * @param response the response
+     * @return the string
+     */
     protected String generateFileName( FormResponse response )
     {
         if ( CollectionUtils.isEmpty( _configList ) )

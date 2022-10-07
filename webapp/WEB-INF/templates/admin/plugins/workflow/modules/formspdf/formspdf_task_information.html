@@ -37,7 +37,7 @@
 				</@formGroup>
 
 				<@formGroup formStyle='inline' labelKey='#i18n{module.workflow.formsjasper.task_formsjasper_info.label.jasper_formats}' >
-					<@select name='format' items=jasper_formats_list params='disabled' default_value='${(config.format)!0}' />
+					<@select name='format' items=formats_list params='disabled' default_value='${(config.format)!0}' />
 				</@formGroup>
 
 				<@formGroup formStyle='inline' labelKey='#i18n{module.workflow.formsjasper.task_formsjasper_info.label.jasper_params_optionnel}' >

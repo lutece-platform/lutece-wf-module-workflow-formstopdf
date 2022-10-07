@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2022, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.forms.business.FormHome;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskConfig;
-import fr.paris.lutece.plugins.workflow.modules.formspdf.util.FormsPDFUtil;
 import fr.paris.lutece.plugins.workflow.web.task.AbstractTaskComponent;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
@@ -53,7 +52,7 @@ import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
 
 /**
- * This class represents a component for the task {@link fr.paris.lutece.plugins.workflow.modules.formspdf.service.task.FormsPDFTask FormsJasperTask}
+ * This class represents a component for the task {@link fr.paris.lutece.plugins.workflow.modules.formspdf.service.task.FormsPDFTask FormsPDFTask}
  *
  */
 public class FormsPDFTaskComponent extends AbstractTaskComponent
@@ -74,14 +73,7 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
     /**
      * the marker used for the list of compatible formats to generate reports
      */
-    private static final String MARK_JASPER_FORMATS_LIST = "jasper_formats_list";
-
-    /**
-     * the marker used for the JSON representation of the user forms
-     */
-    private static final String MARK_JASPER_JSON_OUTPUT = "jasper_json_output";
-
-    private static final String MARK_IS_FORM_TASK_REQUIRED = "isFormTaskRequired";
+    private static final String MARK_FORMATS_LIST = "formats_list";
 
     /**
      * the list of compatible formats to generate reports
@@ -92,42 +84,6 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
      * Freemarker template of the task configuration vue
      */
     private static final String TEMPLATE_CONFIG_GLOBAL_FORMSPDF = "admin/plugins/workflow/modules/formspdf/global_formspdf_task_config.html";
-
-    /**
-     * Freemarker template of the task information vue
-     */
-    private static final String TEMPLATE_TASK_INFO_FORMSPDF = "admin/plugins/workflow/modules/formspdf/formspdf_task_information.html";
-
-    @Override
-    public String getDisplayTaskForm( int nIdResource, String strResourceType, HttpServletRequest request, Locale locale, ITask task )
-    {
-
-        Map<String, Object> model = new HashMap<>( );
-        FormsPDFTaskConfig config = getTaskConfigService( ).findByPrimaryKey( task.getId( ) );
-
-        model.put( MARK_CONFIG, config );
-        
-        model.put( MARK_FORMS_LIST, FormHome.getFormsReferenceList( ) );
-        String [ ] arrayListFormats = AppPropertiesService.getProperty( PROPERTY_LIST_FORMATS, "pdf" ).split( "," );
-        ReferenceList listFormats = new ReferenceList( );
-        for ( String strFormat : arrayListFormats )
-        {
-            ReferenceItem itemFormat = new ReferenceItem( );
-            itemFormat.setCode( strFormat );
-            itemFormat.setName( strFormat );
-            listFormats.add( itemFormat );
-        }
-
-        model.put( MARK_JASPER_FORMATS_LIST, listFormats );
-
-        model.put( MARK_JASPER_JSON_OUTPUT, FormsPDFUtil.getJsonFromFormResponse( nIdResource ) );
-
-        // O2T 76358 : ne pas afficher le bloc si booleen false
-        model.put( MARK_IS_FORM_TASK_REQUIRED, task.getTaskType( ).isFormTaskRequired( ));
-
-        HtmlTemplate page = AppTemplateService.getTemplate( TEMPLATE_TASK_INFO_FORMSPDF, locale, model );
-        return page.getHtml( );
-    }
 
     @Override
     public String getDisplayConfigForm( HttpServletRequest request, Locale locale, ITask task )
@@ -148,7 +104,7 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
             listFormats.add( itemFormat );
         }
 
-        model.put( MARK_JASPER_FORMATS_LIST, listFormats );
+        model.put( MARK_FORMATS_LIST, listFormats );
         
         ReferenceList listTemplatePDF = new ReferenceList( );
         
@@ -186,4 +142,11 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
     {
         return null;
     }
+
+	@Override
+	public String getDisplayTaskForm(int nIdResource, String strResourceType, HttpServletRequest request, Locale locale,
+			ITask task) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2022, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.formspdf.service.task;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +44,6 @@ import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.forms.business.FormResponseHome;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskConfig;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.service.HtmlToPDFGenerator;
-import fr.paris.lutece.plugins.workflow.modules.formspdf.util.FormsPDFUtil;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
 import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
 import fr.paris.lutece.plugins.workflowcore.service.resource.IResourceHistoryService;
@@ -90,7 +88,6 @@ public class FormsPDFTask extends Task
         ResourceHistory resourceHistory = _resourceHistoryService.findByPrimaryKey( nIdResourceHistory );
 
         // Get the task configuration
-        //FormsJasperTaskConfig formsJasperTaskConfig = _formsJasperTaskConfigService.findByPrimaryKey( getId( ) );
         FormsPDFTaskConfig formsPDFTaskConfig = _formsPDFTaskConfigService.findByPrimaryKey( getId( ) );
 
         // Id of the Form to modify
@@ -100,7 +97,6 @@ public class FormsPDFTask extends Task
         {
             nIdFormResponse = resourceHistory.getIdResource( );
 
-            // Export the file and save it to the blobstore
     		FormResponse frep = FormResponseHome.findByPrimaryKey(nIdFormResponse);
     		Form form = FormHome.findByPrimaryKey(frep.getFormId());
 

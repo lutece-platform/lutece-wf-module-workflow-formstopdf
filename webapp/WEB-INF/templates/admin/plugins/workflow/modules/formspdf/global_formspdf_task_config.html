@@ -11,7 +11,7 @@
 			</@formGroup>
 			
 			<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.jasper_formats}' mandatory=true >
-				<@select params='required' name='format' items=jasper_formats_list default_value='${(config.format)!0}' />
+				<@select params='required' name='format' items=formats_list default_value='${(config.format)!0}' />
 			</@formGroup>
 			
 			<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.template}' >
