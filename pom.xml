@@ -7,21 +7,20 @@
 		<version>6.0.0</version>
 	</parent>
 	<groupId>fr.paris.lutece.plugins</groupId>
-	<artifactId>module-workflow-formspdf</artifactId>
+	<artifactId>module-workflow-formstopdf</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>lutece-plugin</packaging>
 	<name>Lutece workflow forms PDF module</name>
-	<url>https://dev.lutece.paris.fr/gitlab/tmma/f64/module-workflow-formsjasper</url>
 	<scm>
-		<connection>scm:git:https://dev.lutece.paris.fr/gitlab/tmma/f64/module-workflow-formsjasper.git</connection>
-		<developerConnection>scm:git:https://dev.lutece.paris.fr/gitlab/tmma/f64/module-workflow-formsjasper.git</developerConnection>
-		<url>https://dev.lutece.paris.fr/gitlab/tmma/f64/module-workflow-formsjasper</url>
+		<connection>scm:git:https://github.com/lutece-platform/lutece-wf-module-workflow-formstopdf.git</connection>
+		<developerConnection>scm:git:https://github.com/lutece-platform/lutece-wf-module-workflow-formstopdf.git</developerConnection>
+		<url>https://github.com/lutece-platform/lutece-wf-module-workflow-formstopdf.git</url>
 		<tag>HEAD</tag>
 	</scm>
 	<properties>
-		<componentName>workflow-formspdf</componentName>
-		<jiraProjectName>MFORMSPDF</jiraProjectName>
-		<jiraComponentId>15363</jiraComponentId>
+		<componentName>workflow-formstopdf</componentName>
+		<jiraProjectName>MWFTOPDF</jiraProjectName>
+		<jiraComponentId>16765</jiraComponentId>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -59,42 +58,13 @@
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+	
 	<repositories>
-		<repository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>luteceReleaseRepository</id>
-			<name>luteceReleaseRepository</name>
-			<url>http://dev.lutece.paris.fr/nexus/content/groups/maven_repository/</url>
-		</repository>
-		<repository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>luteceSnapshotRepository</id>
-			<name>luteceSnapshotRepository</name>
-			<url>http://dev.lutece.paris.fr/nexus/content/groups/snapshot_repository/</url>
-		</repository>
-		<repository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>tmmaReleaseRepository</id>
-			<name>tmmaReleaseRepository</name>
-			<url>http://dev.lutece.paris.fr/tmma_nexus/content/repositories/releases/</url>
-		</repository>
-		<repository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>tmmaSnapshotRepository</id>
-			<name>tmmaSnapshotRepository</name>
-			<url>http://dev.lutece.paris.fr/tmma_nexus/content/repositories/snapshots/</url>
-		</repository>
-	</repositories>
+        <repository>
+            <id>lutece</id>
+            <name>luteceRepository</name>
+            <url>http://dev.lutece.paris.fr/maven_repository</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
 </project>
