@@ -52,7 +52,7 @@ public class FormsPDFTaskConfig extends TaskConfig
      */
     private String _strFormat;
 
-    private String _strTemplate;
+    private int _nIdTemplate;
 
     /**
      * @return _nIdForms : The id of the forms to be considered as the report datasource
@@ -93,19 +93,19 @@ public class FormsPDFTaskConfig extends TaskConfig
      *
      * @return the template
      */
-    public String getTemplate( )
+    public int getIdTemplate( )
     {
-        return _strTemplate;
+        return _nIdTemplate;
     }
 
     /**
      * Sets the template.
      *
-     * @param _strTemplate
+     * @param _nIdTemplate
      *            the new template
      */
-    public void setTemplate( String strTemplate )
+    public void setIdTemplate( int nIdTemplate )
     {
-        this._strTemplate = strTemplate;
+        this._nIdTemplate = nIdTemplate;
     }
 }

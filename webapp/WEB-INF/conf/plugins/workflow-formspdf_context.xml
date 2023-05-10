@@ -34,5 +34,11 @@
 	<bean id="workflow-formspdf.formsPDFTaskConfigService"
 		class="fr.paris.lutece.plugins.workflowcore.service.config.TaskConfigService"
 		p:taskConfigDAO-ref="workflow-formspdf.formsPDFTaskConfigDAO" />
+		
+	<bean id="workflow-formspdf.formsPDFTaskTemplate" class="fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate" 
+		scope="prototype" />
+		
+	<bean id="workflow-formspdf.formsPDFTaskTemplateDAO"
+		class="fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplateDAO" />
 
 </beans>

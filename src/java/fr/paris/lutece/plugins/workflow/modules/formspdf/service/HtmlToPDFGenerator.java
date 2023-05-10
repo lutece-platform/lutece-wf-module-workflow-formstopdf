@@ -41,6 +41,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -80,6 +81,9 @@ import fr.paris.lutece.plugins.genericattributes.service.entrytype.EntryTypeServ
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.IEntryTypeService;
 import fr.paris.lutece.plugins.html2pdf.service.PdfConverterService;
 import fr.paris.lutece.plugins.html2pdf.service.PdfConverterServiceException;
+import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
+import fr.paris.lutece.plugins.workflow.modules.formspdf.service.provider.FormsProvider;
+import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
 import fr.paris.lutece.portal.service.file.FileService;
 import fr.paris.lutece.portal.service.file.IFileStoreServiceProvider;
 import fr.paris.lutece.portal.service.i18n.I18nService;
@@ -104,20 +108,25 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      *            the file description
      * @param formResponse
      *            the form response
-     * @param template
+     * @param formsProvider TODO
+     * @param htmlTemplate
      *            the template
      */
-    public HtmlToPDFGenerator( String fileName, String fileDescription, FormResponse formResponse, String template )
+    public HtmlToPDFGenerator( String fileName, String fileDescription, FormResponse formResponse, FormsPDFTaskTemplate formsPDFTaskTemplate, FormsProvider formsProvider )
     {
-        super( fileName, fileDescription, formResponse, template );
+        super( fileName, fileDescription, formResponse, formsPDFTaskTemplate );
+        _formsProvider = formsProvider;
     }
 
     private static final boolean ZIP_EXPORT = Boolean.parseBoolean( AppPropertiesService.getProperty( "workflow-formspdf.export.pdf.zip", "false" ) );
     private static final String CONSTANT_MIME_TYPE_PDF = "application/pdf";
     private static final String EXTENSION_PDF = ".pdf";
-    private static final String MARK_STEP_FORMS = "list_summary_step_display";
+    // private static final String MARK_STEP_FORMS = "list_summary_step_display";
     private static final String KEY_LABEL_YES = "portal.util.labelYes";
     private static final String KEY_LABEL_NO = "portal.util.labelNo";
+    private static final String DEFAULT_TEMPLATE_FORMSPDF = "admin/plugins/workflow/modules/formspdf/form_response_summary.html";
+    
+    private final FormsProvider _formsProvider;
 
     /**
      * Generate file.
@@ -194,6 +203,8 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      *            the formresponse
      * @return the value forms reponse
      */
+    @SuppressWarnings("unused")
+	@Deprecated
     private List<String> getValueFormsReponse( FormResponse formresponse )
     {
         List<String> lstValue = new ArrayList<String>( );
@@ -222,6 +233,8 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      *            the formresponse
      * @return the pdf cell value forms reponse
      */
+    @SuppressWarnings("unused")
+	@Deprecated
     private List<PdfCell> getPdfCellValueFormsReponse( FormResponse formresponse )
     {
         List<PdfCell> listContent = new ArrayList<>( );
@@ -245,6 +258,8 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      *            the form response step
      * @return the list
      */
+    @SuppressWarnings("unused")
+	@Deprecated
     private List<PdfCell> createCellsForStep( FormResponseStep formResponseStep )
     {
         Step step = formResponseStep.getStep( );
@@ -280,6 +295,8 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      *            the form display
      * @return the list
      */
+    @SuppressWarnings("unused")
+	@Deprecated
     private List<PdfCell> createCellsForGroup( FormResponseStep formResponseStep, FormDisplay formDisplay )
     {
         List<PdfCell> listContent = new ArrayList<>( );
@@ -308,7 +325,10 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      * @param formDisplay
      *            the form display
      * @return the pdf cell
+     * 
      */
+    @SuppressWarnings("unused")
+	@Deprecated
     private PdfCell createPdfCellNoGroup( FormResponseStep formResponseStep, FormDisplay formDisplay )
     {
         return createPdfCell( formResponseStep, formDisplay, null, 0 );
@@ -327,6 +347,8 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      *            the iteration number
      * @return the pdf cell
      */
+    @SuppressWarnings("unused")
+	@Deprecated
     private PdfCell createPdfCell( FormResponseStep formResponseStep, FormDisplay formDisplay, Group group, int iterationNumber )
     {
         FormQuestionResponse formQuestionResponse = formResponseStep.getQuestions( ).stream( )
@@ -368,6 +390,8 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      *            the iteration
      * @return the response value
      */
+    @SuppressWarnings("unused")
+	@Deprecated
     private List<String> getResponseValue( FormQuestionResponse formQuestionResponse, int iteration )
     {
         Entry entry = formQuestionResponse.getQuestion( ).getEntry( );
@@ -462,9 +486,16 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
         Map<String, Object> model = new HashMap<>( );
         String strError = "";
 
-        model.put( MARK_STEP_FORMS, getPdfCellValueFormsReponse( _formResponse ) );
-        HtmlTemplate htmltemplate = AppTemplateService.getTemplate( _template, Locale.getDefault( ), model );
-
+        markersToModel(model, _formsProvider.provideMarkerValues());
+        
+        HtmlTemplate htmltemplate = null;
+        if (_formsPDFTaskTemplate == null)
+        {
+        	htmltemplate = AppTemplateService.getTemplate(DEFAULT_TEMPLATE_FORMSPDF, Locale.getDefault(), model);
+        } else {
+        	htmltemplate = AppTemplateService.getTemplateFromStringFtl(_formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model);
+        }
+        
         try ( OutputStream outputStream = Files.newOutputStream( directoryFile.resolve( generateFileName( _formResponse ) + ".pdf" ) ) )
         {
             Document doc = Jsoup.parse( htmltemplate.getHtml( ), "UTF-8" );
@@ -487,6 +518,15 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
             throw new RuntimeException( strError, e );
         }
 
+    }
+    
+    private Map<String, Object> markersToModel( Map<String, Object> model, Collection<InfoMarker> collectionInfoMarkers )
+    {
+        for ( InfoMarker infoMarker : collectionInfoMarkers )
+        {
+            model.put( infoMarker.getMarker(), infoMarker.getValue() );
+        }
+        return model;
     }
 
 }
