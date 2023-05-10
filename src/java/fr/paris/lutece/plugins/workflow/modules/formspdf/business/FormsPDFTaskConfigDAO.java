@@ -34,7 +34,6 @@
 package fr.paris.lutece.plugins.workflow.modules.formspdf.business;
 
 import java.sql.Statement;
-import java.util.Arrays;
 
 import fr.paris.lutece.plugins.workflow.modules.formspdf.service.FormsPDFPlugin;
 import fr.paris.lutece.plugins.workflowcore.business.config.ITaskConfigDAO;
@@ -51,12 +50,12 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
     /**
      * configuration select query
      */
-    private static final String SQL_QUERY_SELECT = "SELECT id_task, id_forms, format, template FROM workflow_task_formspdf_cf WHERE id_task = ?";
+    private static final String SQL_QUERY_SELECT = "SELECT id_task, id_forms, format, id_template FROM workflow_task_formspdf_cf WHERE id_task = ?";
 
     /**
      * configuration insert query
      */
-    private static final String SQL_QUERY_INSERT = "INSERT INTO workflow_task_formspdf_cf ( id_task, id_forms, format, template ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO workflow_task_formspdf_cf ( id_task, id_forms, format, id_template ) VALUES ( ?, ?, ?, ? ) ";
 
     /**
      * configuration delete query
@@ -66,7 +65,7 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
     /**
      * configuration update query
      */
-    private static final String SQL_QUERY_UPDATE = "UPDATE workflow_task_formspdf_cf SET id_task = ?, id_forms = ?, format = ?, template = ? WHERE id_task = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE workflow_task_formspdf_cf SET id_task = ?, id_forms = ?, format = ?, id_template = ? WHERE id_task = ?";
 
     @Override
     public void insert( FormsPDFTaskConfig formsJasperTaskConfig )
@@ -78,7 +77,7 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTask( ) );
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdForms( ) );
         daoUtil.setString( ++nIndex, formsJasperTaskConfig.getFormat( ) );
-        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getTemplate( ) );
+        daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTemplate() );
 
         daoUtil.executeUpdate( );
         if ( daoUtil.nextGeneratedKey( ) )
@@ -98,7 +97,7 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTask( ) );
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdForms( ) );
         daoUtil.setString( ++nIndex, formsJasperTaskConfig.getFormat( ) );
-        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getTemplate( ) );
+        daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTemplate() );
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTask( ) );
 
         daoUtil.executeUpdate( );
@@ -122,7 +121,7 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
             formsPDFTaskConfig.setIdTask( daoUtil.getInt( "id_task" ) );
             formsPDFTaskConfig.setIdForms( daoUtil.getInt( "id_forms" ) );
             formsPDFTaskConfig.setFormat( daoUtil.getString( "format" ) );
-            formsPDFTaskConfig.setTemplate( daoUtil.getString( "template" ) );
+            formsPDFTaskConfig.setIdTemplate( daoUtil.getInt( "id_template" ) );
         }
 
         daoUtil.free( );

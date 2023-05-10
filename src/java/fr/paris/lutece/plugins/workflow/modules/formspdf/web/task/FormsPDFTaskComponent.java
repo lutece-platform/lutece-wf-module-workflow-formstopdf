@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.workflow.modules.formspdf.web.task;
 
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -43,6 +44,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.forms.business.FormHome;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskConfig;
+import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
+import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplateHome;
 import fr.paris.lutece.plugins.workflow.web.task.AbstractTaskComponent;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
@@ -62,6 +65,8 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
      * the marker used for the task configuration
      */
     private static final String MARK_CONFIG = "config";
+    
+    private static final String MARK_ID_TASK = "id_task";
 
     private static final String MARK_TEMPLATE_PDF_LIST = "template_pdf_list";
 
@@ -84,16 +89,19 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
      * Freemarker template of the task configuration vue
      */
     private static final String TEMPLATE_CONFIG_GLOBAL_FORMSPDF = "admin/plugins/workflow/modules/formspdf/global_formspdf_task_config.html";
+    
+    private static final String PARAMETER_ID_TASK = "id_task";
 
     @Override
     public String getDisplayConfigForm( HttpServletRequest request, Locale locale, ITask task )
     {
         Map<String, Object> model = new HashMap<>( );
         FormsPDFTaskConfig config = getTaskConfigService( ).findByPrimaryKey( task.getId( ) );
+        model.put( MARK_ID_TASK, request.getParameter(PARAMETER_ID_TASK));
         model.put( MARK_CONFIG, config );
 
         model.put( MARK_FORMS_LIST, FormHome.getFormsReferenceList( ) );
-
+        
         String [ ] arrayListFormats = AppPropertiesService.getProperty( PROPERTY_LIST_FORMATS, "pdf" ).split( "," );
         ReferenceList listFormats = new ReferenceList( );
         for ( String strFormat : arrayListFormats )
@@ -119,8 +127,14 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
                 String [ ] strClassName = name.split( ".name" );
                 StringBuilder strClassLocation = new StringBuilder( strClassName [0] );
                 strClassLocation.append( ".path" );
-                listTemplatePDF.addItem( AppPropertiesService.getProperty( strClassLocation.toString( ) ), AppPropertiesService.getProperty( name ) );
+                listTemplatePDF.addItem( 0, AppPropertiesService.getProperty( name ) );
             }
+        }
+        
+        List<FormsPDFTaskTemplate> listFormsPDFTaskTemplate = FormsPDFTaskTemplateHome.findAll();
+        for(FormsPDFTaskTemplate formsPDFTaskTemplate : listFormsPDFTaskTemplate)
+        {
+        	listTemplatePDF.addItem(formsPDFTaskTemplate.getId(), formsPDFTaskTemplate.getName());
         }
 
         model.put( MARK_TEMPLATE_PDF_LIST, listTemplatePDF );

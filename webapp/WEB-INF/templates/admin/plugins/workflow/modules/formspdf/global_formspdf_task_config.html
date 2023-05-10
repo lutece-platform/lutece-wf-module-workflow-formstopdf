@@ -15,9 +15,10 @@
 			</@formGroup>
 			
 			<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.template}' >
-				<@select name='template' id='template' items=template_pdf_list default_value='${(config.template)!0}' />
+				<@select name='idTemplate' id='idTemplate' items=template_pdf_list default_value='${(config.idTemplate)!0}' />
 			</@formGroup>
 			
+			<a class="btn btn-primary " href="jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=manageTemplates&task_id=${id_task!0}">#i18n{module.workflow.formspdf.manage.template.button}</a>
 		</@columns>
 	</@row>
 

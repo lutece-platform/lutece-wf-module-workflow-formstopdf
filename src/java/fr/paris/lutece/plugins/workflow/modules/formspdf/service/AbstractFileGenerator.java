@@ -48,6 +48,7 @@ import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.forms.business.export.FormExportConfig;
 import fr.paris.lutece.plugins.forms.business.export.FormExportConfigHome;
 import fr.paris.lutece.plugins.forms.export.ExportServiceManager;
+import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
 import fr.paris.lutece.util.file.FileUtil;
 
 public abstract class AbstractFileGenerator implements IFileGenerator
@@ -61,22 +62,22 @@ public abstract class AbstractFileGenerator implements IFileGenerator
     protected final FormResponse _formResponse;
     protected final String _fileName;
     protected final String _fileDescription;
-    protected final String _template;
+    protected final FormsPDFTaskTemplate _formsPDFTaskTemplate;
 
     private List<FormExportConfig> _configList = null;
-    private Form _form;
+    protected Form _form;
 
     /**
      * Constructor
      * 
      * @param _listFormResponseItems
      */
-    protected AbstractFileGenerator( String fileName, String fileDescription, FormResponse formResponse, String template )
+    protected AbstractFileGenerator( String fileName, String fileDescription, FormResponse formResponse, FormsPDFTaskTemplate formsPDFTaskTemplate )
     {
         _formResponse = formResponse;
         _fileName = StringUtils.substring( fileName, 0, MAX_NAME_LENGTH ) + LocalDateTime.now( ).format( DateTimeFormatter.ofPattern( PATTERN_TIMESTAMP ) );
         _fileDescription = fileDescription;
-        _template = template;
+        _formsPDFTaskTemplate = formsPDFTaskTemplate;
     }
 
     @Override

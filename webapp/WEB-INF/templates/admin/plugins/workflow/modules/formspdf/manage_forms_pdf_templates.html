@@ -1,0 +1,44 @@
+<@row>
+    <@columns>
+        <@box>
+            <@boxHeader title='#i18n{module.workflow.formspdf.manage.template.title}' boxTools=true>
+            	<@tform class='form-inline pull-right' name='manage_formspdftasktemplate' action='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp'>
+                	<@button type='submit' name='view_modifyTemplate' buttonIcon='plus' title='#i18n{module.workflow.formspdf.manage.template.buttonAdd}' />
+                </@tform>
+            </@boxHeader>
+            <@boxBody>    
+                    <#if template_pdf_list?size gt 0>
+                    	<@table>
+	                        <tr>
+	                        	<th>#i18n{module.workflow.formspdf.template.table.name}</th>
+	                        </tr>
+	                        <thead>
+								<tr>
+									<@th xs=6 sm=5 md=7>#i18n{module.workflow.formspdf.manage.template.name}</@th>
+									<@th xs=5 sm=6 md=4>#i18n{module.workflow.formspdf.manage.template.columnActions}</@th>
+								</tr>
+							</thead>
+	                        <tbody>
+	                        	<#list template_pdf_list as template_pdf >
+			                        <tr>
+			                        	<@td sm=6>${template_pdf.name}</@td>
+			                            <@td sm=3>
+			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${template_pdf.id}' title='#i18n{manage.template.modify}' buttonIcon='pencil' showTitle=false />
+			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?action=removeTemplate&template_id=${template_pdf.id}' title='#i18n{manage.template.delete}' buttonIcon='trash' color='danger' showTitle=false />
+			                            </@td>
+			                        </tr>
+		                        </#list>
+	                        </tbody>
+	                    </@table>
+                    <#else>
+                    	<@alert color='warning'>
+							<@icon style='exclamation-triangle' /> #i18n{module.workflow.formspdf.manage.template.noResults}
+						</@alert>
+                    </#if>
+            </@boxBody>
+            <@boxFooter>
+            	<@aButton href='jsp/admin/plugins/workflow/ModifyTask.jsp?id_task=${task_id}' buttonIcon='times-circle' title='#i18n{module.workflow.formspdf.manage.template.buttonCancel}' color='secondary'/>
+            </@boxFooter>
+        </@box>
+    </@columns>
+</@row>
