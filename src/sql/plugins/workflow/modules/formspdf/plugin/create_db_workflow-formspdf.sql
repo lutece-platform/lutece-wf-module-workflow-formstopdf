@@ -13,8 +13,8 @@ DROP TABLE IF EXISTS workflow_task_formspdf_template ;
 
 CREATE TABLE `workflow_task_formspdf_template` (
 	`id_template` int AUTO_INCREMENT,
-	`name` VARCHAR(50) NOT NULL,
-	`content` text COLLATE utf8_unicode_ci,
+	`name` VARCHAR(255) NOT NULL,
+	`content` LONGTEXT,
 	PRIMARY KEY (`id_template`)
 )
 ;

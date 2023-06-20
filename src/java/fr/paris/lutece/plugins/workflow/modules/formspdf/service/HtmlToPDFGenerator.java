@@ -327,8 +327,6 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      * @return the pdf cell
      * 
      */
-    @SuppressWarnings("unused")
-	@Deprecated
     private PdfCell createPdfCellNoGroup( FormResponseStep formResponseStep, FormDisplay formDisplay )
     {
         return createPdfCell( formResponseStep, formDisplay, null, 0 );

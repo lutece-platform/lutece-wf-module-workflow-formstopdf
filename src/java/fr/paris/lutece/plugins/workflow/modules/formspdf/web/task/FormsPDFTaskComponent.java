@@ -127,7 +127,9 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
                 String [ ] strClassName = name.split( ".name" );
                 StringBuilder strClassLocation = new StringBuilder( strClassName [0] );
                 strClassLocation.append( ".path" );
-                listTemplatePDF.addItem( 0, AppPropertiesService.getProperty( name ) );
+                if (name.startsWith("workflow-formspdf.template_pdf.default.")) {
+                    listTemplatePDF.addItem(0, AppPropertiesService.getProperty(name));
+                }
             }
         }
         
