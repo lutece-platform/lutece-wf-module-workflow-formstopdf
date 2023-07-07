@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2022, City of Paris
+ * Copyright (c) 2002-2023, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,10 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.formspdf.web.task;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -53,6 +51,7 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import org.apache.commons.collections.CollectionUtils;
 
 /**
  * This class represents a component for the task {@link fr.paris.lutece.plugins.workflow.modules.formspdf.service.task.FormsPDFTask FormsPDFTask}
@@ -116,23 +115,19 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
 
         ReferenceList listTemplatePDF = new ReferenceList( );
 
-        Properties allProps = AppPropertiesService.getProperties( );
-        Enumeration<?> enumKeys = allProps.propertyNames( );
+        List<String> listKeys = AppPropertiesService.getKeys( "workflow-formspdf.template_pdf.");
 
-        while ( enumKeys.hasMoreElements( ) )
-        {
-            String name = (String) enumKeys.nextElement( );
-            if ( name.contains( "template_pdf" ) && name.contains( "name" ) )
-            {
-                String [ ] strClassName = name.split( ".name" );
-                StringBuilder strClassLocation = new StringBuilder( strClassName [0] );
-                strClassLocation.append( ".path" );
-                if (name.startsWith("workflow-formspdf.template_pdf.default.")) {
-                    listTemplatePDF.addItem(0, AppPropertiesService.getProperty(name));
+        if ( CollectionUtils.isNotEmpty( listKeys ) ) {
+            for (String key : listKeys) {
+                if (key.endsWith(".name")) {
+                    String[] strKeyTable = key.split(".name");
+                    StringBuilder strTemplateKeyRoot = new StringBuilder(strKeyTable[0]);
+                    String templateName = AppPropertiesService.getProperty(strTemplateKeyRoot + ".name");
+                    String templatePath = AppPropertiesService.getProperty(strTemplateKeyRoot + ".path");
+                    listTemplatePDF.addItem(templatePath, templateName);
                 }
             }
         }
-        
         List<FormsPDFTaskTemplate> listFormsPDFTaskTemplate = FormsPDFTaskTemplateHome.findAll();
         for(FormsPDFTaskTemplate formsPDFTaskTemplate : listFormsPDFTaskTemplate)
         {
