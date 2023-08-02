@@ -10,6 +10,16 @@
                     <@formGroup labelFor='template_name' labelKey='#i18n{module.workflow.formspdf.modify.template.name}' mandatory=true>
 	                    <@input type='text' name='template_name' id='template_name' value="${forms_pdf_task_template.name!}" maxlength=50 />
                     </@formGroup>
+                    <br/>
+					<@formGroup>
+						<@checkBox orientation='switch' labelFor='template_associate_form' labelKey='#i18n{module.workflow.formspdf.modify.template.generic}' name='template_associate_form' id='template_associate_form' value='true' checked=(!forms_pdf_task_template.generic)!false params='onchange="javascript:toggleAssociateForm();"' />
+					</@formGroup>
+					<@formGroup id="list_forms" labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.forms}' >
+						<@inputGroup>
+							<@select name='template_id_form' id="template_id_form" items=forms_list default_value='${(forms_pdf_task_template.idForm)!0}' />
+						 </@inputGroup>
+					</@formGroup>
+                    <br/>
                     <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
                     	<@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>
 	                    	${forms_pdf_task_template.content!}
@@ -27,3 +37,14 @@
     	<@marker_descriptions />
     </@columns>
 </@row>
+<script type="text/javascript">
+	toggleAssociateForm();
+	function toggleAssociateForm() {
+		if(document.getElementById("template_associate_form").checked)
+		{
+			document.getElementById("list_forms").style.display = 'block';
+		} else {
+			document.getElementById("list_forms").style.display = 'none';
+		}
+  	}
+</script>

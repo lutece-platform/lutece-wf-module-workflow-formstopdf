@@ -43,9 +43,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities.EscapeMode;
+
 import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.html2pdf.service.PdfConverterService;
 import fr.paris.lutece.plugins.html2pdf.service.PdfConverterServiceException;
@@ -86,7 +88,6 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
     private static final boolean ZIP_EXPORT = Boolean.parseBoolean( AppPropertiesService.getProperty( "workflow-formspdf.export.pdf.zip", "false" ) );
     private static final String CONSTANT_MIME_TYPE_PDF = "application/pdf";
     private static final String EXTENSION_PDF = ".pdf";
-    private static final String DEFAULT_TEMPLATE_FORMSPDF = "admin/plugins/workflow/modules/formspdf/form_response_summary.html";
     
     private final FormsProvider _formsProvider;
 
@@ -173,13 +174,7 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
 
         markersToModel(model, _formsProvider.provideMarkerValues());
         
-        HtmlTemplate htmltemplate = null;
-        if (_formsPDFTaskTemplate == null)
-        {
-        	htmltemplate = AppTemplateService.getTemplate(DEFAULT_TEMPLATE_FORMSPDF, Locale.getDefault(), model);
-        } else {
-        	htmltemplate = AppTemplateService.getTemplateFromStringFtl(_formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model);
-        }
+        HtmlTemplate htmltemplate = AppTemplateService.getTemplateFromStringFtl(_formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model);
         
         try ( OutputStream outputStream = Files.newOutputStream( directoryFile.resolve( generateFileName( _formResponse ) + ".pdf" ) ) )
         {

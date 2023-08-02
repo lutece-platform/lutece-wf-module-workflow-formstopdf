@@ -9,9 +9,13 @@ public interface IFormsPDFTaskTemplateDAO {
 	void store(FormsPDFTaskTemplate formsPDFTaskTemplate);
 
 	FormsPDFTaskTemplate load(int nIdTemplate);
+	
+	List<FormsPDFTaskTemplate> loadByIdFormPlusGenerics(int nIdForm);
 
 	void delete(int nIdTemplate);
 
 	List<FormsPDFTaskTemplate> selectAll();
+
+	List<FormsPDFTaskTemplateDTO> selectAllWithForms();
 
 }

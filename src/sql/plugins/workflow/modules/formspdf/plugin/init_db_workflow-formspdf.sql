@@ -1,0 +1,2 @@
+DELETE FROM workflow_task_formspdf_template;
+INSERT INTO workflow_task_formspdf_template (name, content) VALUES ('Default Template','<!DOCTYPE html><html><head><title>Meilleur PDF du monde</title></head><body><div id="form-response-summary" class="box-body"><#if list_summary_step_display?has_content> <form><#list list_summary_step_display as summary_step_display> <p>${summary_step_display.group!} ${summary_step_display.title!} ${summary_step_display.value!}</p></#list></form></#if></div><div class="panel-footer"></div></body></html>');

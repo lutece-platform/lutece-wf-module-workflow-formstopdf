@@ -40,6 +40,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import fr.paris.lutece.plugins.forms.business.FormHome;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskConfig;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
@@ -51,7 +53,6 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
-import org.apache.commons.collections.CollectionUtils;
 
 /**
  * This class represents a component for the task {@link fr.paris.lutece.plugins.workflow.modules.formspdf.service.task.FormsPDFTask FormsPDFTask}
@@ -68,6 +69,8 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
     private static final String MARK_ID_TASK = "id_task";
 
     private static final String MARK_TEMPLATE_PDF_LIST = "template_pdf_list";
+    
+    private static final String MARK_ID_FORM_SELECTED = "id_form_selected";
 
     /**
      * the marker used for the forms list
@@ -90,6 +93,8 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
     private static final String TEMPLATE_CONFIG_GLOBAL_FORMSPDF = "admin/plugins/workflow/modules/formspdf/global_formspdf_task_config.html";
     
     private static final String PARAMETER_ID_TASK = "id_task";
+    
+    private static final String PARAMETER_ID_FORM_SELECTED = "id_form_selected";
 
     @Override
     public String getDisplayConfigForm( HttpServletRequest request, Locale locale, ITask task )
@@ -101,6 +106,13 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
 
         model.put( MARK_FORMS_LIST, FormHome.getFormsReferenceList( ) );
         
+        int nIdFormSelected = NumberUtils.toInt(request.getParameter(PARAMETER_ID_FORM_SELECTED), FormsPDFTaskTemplateJspBean.DEFAULT_ID_VALUE);
+        if (nIdFormSelected == FormsPDFTaskTemplateJspBean.DEFAULT_ID_VALUE)
+        {
+        	nIdFormSelected = (config != null ? config.getIdForms() : FormsPDFTaskTemplateJspBean.DEFAULT_ID_VALUE);
+        }
+        model.put(MARK_ID_FORM_SELECTED, String.valueOf(nIdFormSelected));
+        
         String [ ] arrayListFormats = AppPropertiesService.getProperty( PROPERTY_LIST_FORMATS, "pdf" ).split( "," );
         ReferenceList listFormats = new ReferenceList( );
         for ( String strFormat : arrayListFormats )
@@ -110,30 +122,22 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
             itemFormat.setName( strFormat );
             listFormats.add( itemFormat );
         }
-
         model.put( MARK_FORMATS_LIST, listFormats );
 
-        ReferenceList listTemplatePDF = new ReferenceList( );
-
-        List<String> listKeys = AppPropertiesService.getKeys( "workflow-formspdf.template_pdf.");
-
-        if ( CollectionUtils.isNotEmpty( listKeys ) ) {
-            for (String key : listKeys) {
-                if (key.endsWith(".name")) {
-                    String[] strKeyTable = key.split(".name");
-                    StringBuilder strTemplateKeyRoot = new StringBuilder(strKeyTable[0]);
-                    String templateName = AppPropertiesService.getProperty(strTemplateKeyRoot + ".name");
-                    String templatePath = AppPropertiesService.getProperty(strTemplateKeyRoot + ".path");
-                    listTemplatePDF.addItem(templatePath, templateName);
-                }
-            }
+        List<FormsPDFTaskTemplate> listFormsPDFTaskTemplate = null;
+        if (nIdFormSelected != FormsPDFTaskTemplateJspBean.DEFAULT_ID_VALUE)
+        {
+        	listFormsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByIdFormPlusGenerics(nIdFormSelected);
         }
-        List<FormsPDFTaskTemplate> listFormsPDFTaskTemplate = FormsPDFTaskTemplateHome.findAll();
+        else
+        {
+        	listFormsPDFTaskTemplate = FormsPDFTaskTemplateHome.findAll();
+        }
+        ReferenceList listTemplatePDF = new ReferenceList( );
         for(FormsPDFTaskTemplate formsPDFTaskTemplate : listFormsPDFTaskTemplate)
         {
         	listTemplatePDF.addItem(formsPDFTaskTemplate.getId(), formsPDFTaskTemplate.getName());
         }
-
         model.put( MARK_TEMPLATE_PDF_LIST, listTemplatePDF );
 
         HtmlTemplate page = AppTemplateService.getTemplate( TEMPLATE_CONFIG_GLOBAL_FORMSPDF, locale, model );
@@ -155,7 +159,6 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
     @Override
     public String getDisplayTaskForm( int nIdResource, String strResourceType, HttpServletRequest request, Locale locale, ITask task )
     {
-        // TODO Auto-generated method stub
         return null;
     }
 }

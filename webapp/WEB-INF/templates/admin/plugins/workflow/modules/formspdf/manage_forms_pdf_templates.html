@@ -15,13 +15,15 @@
 	                        <thead>
 								<tr>
 									<@th xs=6 sm=5 md=7>#i18n{module.workflow.formspdf.manage.template.name}</@th>
-									<@th xs=5 sm=6 md=4>#i18n{module.workflow.formspdf.manage.template.columnActions}</@th>
+									<@th xs=6 sm=5 md=4>#i18n{module.workflow.formspdf.manage.template.form}</@th>
+									<@th xs=5 sm=3 md=4>#i18n{module.workflow.formspdf.manage.template.columnActions}</@th>
 								</tr>
 							</thead>
 	                        <tbody>
 	                        	<#list template_pdf_list as template_pdf >
 			                        <tr>
 			                        	<@td sm=6>${template_pdf.name}</@td>
+			                        	<@td sm=6>${template_pdf.formTitle!}</@td>
 			                            <@td sm=3>
 			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${template_pdf.id}' title='#i18n{manage.template.modify}' buttonIcon='pencil' showTitle=false />
 			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?action=removeTemplate&template_id=${template_pdf.id}' title='#i18n{manage.template.delete}' buttonIcon='trash' color='danger' showTitle=false />
