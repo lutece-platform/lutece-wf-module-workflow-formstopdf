@@ -7,7 +7,7 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 public final class FormsPDFTaskTemplateHome {
 
 	private static IFormsPDFTaskTemplateDAO _dao = SpringContextService.getBean( "workflow-formspdf.formsPDFTaskTemplateDAO" );
-	
+
 	private FormsPDFTaskTemplateHome()
 	{
 		
@@ -35,8 +35,19 @@ public final class FormsPDFTaskTemplateHome {
 		return _dao.load( nIdTemplate );
 	}
 	
+	public static List<FormsPDFTaskTemplate> findByIdFormPlusGenerics( int nIdForm )
+	{
+		return _dao.loadByIdFormPlusGenerics( nIdForm );
+	}
+	
 	public static List<FormsPDFTaskTemplate> findAll()
 	{
 		return _dao.selectAll();
 	}
+	
+	public static List<FormsPDFTaskTemplateDTO> findAllWithFormTitles()
+	{
+		return _dao.selectAllWithForms();
+	}
+
 }
