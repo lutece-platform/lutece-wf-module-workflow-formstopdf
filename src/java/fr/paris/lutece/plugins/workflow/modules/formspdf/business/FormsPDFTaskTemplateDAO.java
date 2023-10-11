@@ -42,45 +42,44 @@ public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO {
 			{
 				formsPDFTaskTemplate.setId( daoUtil.getGeneratedKeyInt( 1 ) );
 			}
-			daoUtil.free( );
         }
 	 }
 	 
 	 @Override
 	 public void store(FormsPDFTaskTemplate formsPDFTaskTemplate)
 	 {
-		@SuppressWarnings( "resource" )
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, FormsPDFPlugin.getPlugin( ) );
-		
-		int nIndex = 0;
-		daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getName( ) );
-		daoUtil.setInt( ++nIndex, formsPDFTaskTemplate.getIdForm());
-		daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isGeneric());
-		daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getContent( ) );
-		
-		daoUtil.setInt( ++nIndex, formsPDFTaskTemplate.getId( ) );
-		
-		daoUtil.executeUpdate( );
-		daoUtil.free( );
+		 try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, FormsPDFPlugin.getPlugin( ) ))
+		 {
+
+			 int nIndex = 0;
+			 daoUtil.setString(++nIndex, formsPDFTaskTemplate.getName());
+			 daoUtil.setInt(++nIndex, formsPDFTaskTemplate.getIdForm());
+			 daoUtil.setBoolean(++nIndex, formsPDFTaskTemplate.isGeneric());
+			 daoUtil.setString(++nIndex, formsPDFTaskTemplate.getContent());
+
+			 daoUtil.setInt(++nIndex, formsPDFTaskTemplate.getId());
+
+			 daoUtil.executeUpdate();
+		 }
 	 }
 	 
 	 @Override
 	 public FormsPDFTaskTemplate load( int nIdTemplate )
 	 {
-		@SuppressWarnings( "resource" )
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, FormsPDFPlugin.getPlugin( ) );
-		daoUtil.setInt( 1, nIdTemplate );
-		daoUtil.executeQuery( );
-		
-		FormsPDFTaskTemplate formsPDFTaskTemplate = null;
-		
-		if ( daoUtil.next( ) )
+		try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, FormsPDFPlugin.getPlugin( ) ))
 		{
-			formsPDFTaskTemplate = dataToObject(daoUtil);
+			daoUtil.setInt(1, nIdTemplate);
+			daoUtil.executeQuery();
+
+			FormsPDFTaskTemplate formsPDFTaskTemplate = null;
+
+			if (daoUtil.next())
+			{
+				formsPDFTaskTemplate = dataToObject(daoUtil);
+			}
+
+			return formsPDFTaskTemplate;
 		}
-		
-		daoUtil.free( );
-		return formsPDFTaskTemplate;
 	}
 	
 	@Override
@@ -88,45 +87,43 @@ public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO {
 	{
 		List<FormsPDFTaskTemplate> listFormsPDFTaskTemplate = new ArrayList<>();
 		
-		@SuppressWarnings( "resource" )
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID_FORM_OR_GENERIC, FormsPDFPlugin.getPlugin( ) );
-		daoUtil.setInt( 1, nIdForm );
-		
-		daoUtil.executeQuery( );
-		while ( daoUtil.next( ) )
+		try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID_FORM_OR_GENERIC, FormsPDFPlugin.getPlugin( ) ))
 		{
-			listFormsPDFTaskTemplate.add( dataToObject( daoUtil ) );
+			daoUtil.setInt(1, nIdForm);
+
+			daoUtil.executeQuery();
+			while (daoUtil.next())
+			{
+				listFormsPDFTaskTemplate.add(dataToObject(daoUtil));
+			}
 		}
-		
-		daoUtil.free( );
 		return listFormsPDFTaskTemplate;
 	}
 	 
 	@Override
 	public void delete( int nIdTemplate )
 	{
-	    @SuppressWarnings( "resource" )
-	    DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, FormsPDFPlugin.getPlugin( ) );
-	    daoUtil.setInt( 1, nIdTemplate );
-	    daoUtil.executeUpdate( );
-	    daoUtil.free( );
+	    try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, FormsPDFPlugin.getPlugin( ) ))
+		{
+			daoUtil.setInt( 1, nIdTemplate );
+			daoUtil.executeUpdate( );
+		}
 	}
 	
 	@Override
 	public List<FormsPDFTaskTemplate> selectAll()
 	{
 		List<FormsPDFTaskTemplate> listFormsPDFTaskTemplate = new ArrayList<>();
-		
-		@SuppressWarnings( "resource" )
-	    DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, FormsPDFPlugin.getPlugin( ) );
-		
-		daoUtil.executeQuery( );
-        while ( daoUtil.next( ) )
-        {
-        	listFormsPDFTaskTemplate.add( dataToObject( daoUtil ) );
-        }
-        daoUtil.free( );
-        return listFormsPDFTaskTemplate;
+
+		try (	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, FormsPDFPlugin.getPlugin( ) ))
+		{
+			daoUtil.executeQuery();
+			while (daoUtil.next())
+			{
+				listFormsPDFTaskTemplate.add(dataToObject(daoUtil));
+			}
+		}
+		return listFormsPDFTaskTemplate;
 	}
 	
 	@Override
@@ -141,7 +138,6 @@ public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO {
             {
             	listFormsPDFTaskTemplateDto.add( dataToObjectDto( daoUtil ) );
             }
-            daoUtil.free( );
         }
         return listFormsPDFTaskTemplateDto;
 	}
