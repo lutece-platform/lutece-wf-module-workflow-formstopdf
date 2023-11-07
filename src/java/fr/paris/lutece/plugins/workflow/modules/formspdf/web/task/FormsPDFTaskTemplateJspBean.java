@@ -1,3 +1,36 @@
+/*
+ * Copyright (c) 2002-2023, City of Paris
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *  1. Redistributions of source code must retain the above copyright notice
+ *     and the following disclaimer.
+ *
+ *  2. Redistributions in binary form must reproduce the above copyright notice
+ *     and the following disclaimer in the documentation and/or other materials
+ *     provided with the distribution.
+ *
+ *  3. Neither the name of 'Mairie de Paris' nor 'Lutece' nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * License 1.0
+ */
 package fr.paris.lutece.plugins.workflow.modules.formspdf.web.task;
 
 import java.util.Locale;
@@ -12,12 +45,10 @@ import fr.paris.lutece.plugins.forms.business.FormHome;
 import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplateHome;
-import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
-import fr.paris.lutece.util.html.HtmlTemplate;
 
 @Controller( controllerJsp = "ManageTemplates.jsp", controllerPath = "jsp/admin/plugins/workflow/modules/formspdf/", right = "WORKFLOW_MANAGEMENT" )
 public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
@@ -45,7 +76,7 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
     private static final String PARAMETER_TEMPLATE_ID_FORM = "template_id_form";
     private static final String PARAMETER_TEMPLATE_ASSOCIATE_FORM = "template_associate_form";
     private static final String PARAMETER_TEMPLATE_CONTENT = "template_content";
-    
+
 	// Markers
     private static final String MARK_TEMPLATE_PDF_LIST = "template_pdf_list";
     private static final String MARK_FORMS_PDF_TASK_TEMPLATE = "forms_pdf_task_template";
@@ -55,7 +86,11 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
     
     // session fields
     private int _nIdTask;
-    
+
+	//Properties
+
+	private static final String PROPERTY_PAGE_TITLE_MANAGE_FORMS_PDF_TEMPLATES = "module.workflow.formspdf.manage.template.title";
+	private static final String PROPERTY_PAGE_TITLE_MODIFY_FORMS_PDF_TEMPLATES = "module.workflow.formspdf.modify.template.title";
     @View( value = VIEW_MANAGE_TEMPLATES, defaultView = true )
     public String getManageTemplates( HttpServletRequest request )
     {
@@ -69,9 +104,8 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
         model.put(MARK_TASK_ID, _nIdTask);
         
         model.put(MARK_TEMPLATE_PDF_LIST, FormsPDFTaskTemplateHome.findAllWithFormTitles());
-    	
-    	HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_MANAGE_FORMS_PDF_TEMPLATES, locale, model );
-    	return getAdminPage( templateList.getHtml( ) );
+
+		return getPage(PROPERTY_PAGE_TITLE_MANAGE_FORMS_PDF_TEMPLATES, TEMPLATE_MANAGE_FORMS_PDF_TEMPLATES, model);
     }
     
     @View( value = VIEW_MODIFY_TEMPLATE )
@@ -96,10 +130,9 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
     	// markers
     	Form form = FormHome.findByPrimaryKey( formsPDFTaskTemplate.getIdForm());
     	model.put(MARK_LIST_MARKERS, GenericFormsProvider.getProviderMarkerDescriptions(form != null ? form : new Form()));
-    	
-    	HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_MODIFY_FORMS_PDF_TEMPLATE, locale, model );
-    	return getAdminPage( templateList.getHtml( ) );
-    }
+
+		return getPage(PROPERTY_PAGE_TITLE_MODIFY_FORMS_PDF_TEMPLATES, TEMPLATE_MODIFY_FORMS_PDF_TEMPLATE, model);
+	}
     
     @Action( value = ACTION_MODIFY_TEMPLATE )
     public String doModifyTemplate( HttpServletRequest request )

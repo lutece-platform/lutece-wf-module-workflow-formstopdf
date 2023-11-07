@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2022, City of Paris
+ * Copyright (c) 2002-2023, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,15 +42,11 @@ import fr.paris.lutece.plugins.forms.business.Form;
 import fr.paris.lutece.plugins.forms.business.FormHome;
 import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.forms.business.FormResponseHome;
-import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskConfig;
-import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplateHome;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.service.HtmlToPDFGenerator;
-import fr.paris.lutece.plugins.workflow.modules.formspdf.service.provider.FormsProvider;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
 import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
-import fr.paris.lutece.plugins.workflowcore.service.provider.IProvider;
 import fr.paris.lutece.plugins.workflowcore.service.resource.IResourceHistoryService;
 import fr.paris.lutece.plugins.workflowcore.service.resource.ResourceHistoryService;
 import fr.paris.lutece.plugins.workflowcore.service.task.Task;
@@ -58,9 +54,7 @@ import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
-import fr.paris.lutece.util.html.HtmlTemplate;
 
 /**
  * @author norbert.le.garrec
@@ -91,7 +85,6 @@ public class FormsPDFTask extends Task
 
         // Get the resourceHistory to find the resource to work with
         ResourceHistory resourceHistory = _resourceHistoryService.findByPrimaryKey( nIdResourceHistory );
-        FormsProvider provider = new FormsProvider(resourceHistory, request);
 
         // Get the task configuration
         FormsPDFTaskConfig formsPDFTaskConfig = _formsPDFTaskConfigService.findByPrimaryKey( getId( ) );
@@ -114,7 +107,7 @@ public class FormsPDFTask extends Task
             }
             
             HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ), I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep,
-            		FormsPDFTaskTemplateHome.findByPrimaryKey(formsPDFTaskConfig.getIdTemplate()), provider );
+            		FormsPDFTaskTemplateHome.findByPrimaryKey(formsPDFTaskConfig.getIdTemplate()) );
 
             TemporaryFileGeneratorService.getInstance( ).generateFile( htmltopdf, user );
 

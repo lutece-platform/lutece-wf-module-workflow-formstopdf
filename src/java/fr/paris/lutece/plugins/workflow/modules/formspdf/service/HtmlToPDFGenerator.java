@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2022, City of Paris
+ * Copyright (c) 2002-2023, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import fr.paris.lutece.plugins.forms.business.Form;
+import fr.paris.lutece.plugins.forms.business.FormHome;
+import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities.EscapeMode;
@@ -52,7 +55,6 @@ import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.html2pdf.service.PdfConverterService;
 import fr.paris.lutece.plugins.html2pdf.service.PdfConverterServiceException;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
-import fr.paris.lutece.plugins.workflow.modules.formspdf.service.provider.FormsProvider;
 import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
@@ -75,21 +77,18 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      *            the file description
      * @param formResponse
      *            the form response
-     * @param formsProvider TODO
-     * @param htmlTemplate
+     * @param formsPDFTaskTemplate
      *            the template
      */
-    public HtmlToPDFGenerator( String fileName, String fileDescription, FormResponse formResponse, FormsPDFTaskTemplate formsPDFTaskTemplate, FormsProvider formsProvider )
+    public HtmlToPDFGenerator( String fileName, String fileDescription, FormResponse formResponse, FormsPDFTaskTemplate formsPDFTaskTemplate )
     {
         super( fileName, fileDescription, formResponse, formsPDFTaskTemplate );
-        _formsProvider = formsProvider;
     }
 
     private static final boolean ZIP_EXPORT = Boolean.parseBoolean( AppPropertiesService.getProperty( "workflow-formspdf.export.pdf.zip", "false" ) );
     private static final String CONSTANT_MIME_TYPE_PDF = "application/pdf";
     private static final String EXTENSION_PDF = ".pdf";
     
-    private final FormsProvider _formsProvider;
 
     /**
      * Generate file.
@@ -171,8 +170,12 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
     {
         Map<String, Object> model = new HashMap<>( );
         String strError = "";
+        // markers
+        Form form = FormHome.findByPrimaryKey( _formsPDFTaskTemplate.getIdForm());
+        Collection<InfoMarker> collectionNotifyMarkers = GenericFormsProvider.getProviderMarkerDescriptions(form);
 
-        markersToModel(model, _formsProvider.provideMarkerValues());
+
+        markersToModel(model, collectionNotifyMarkers);
         
         HtmlTemplate htmltemplate = AppTemplateService.getTemplateFromStringFtl(_formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model);
         
