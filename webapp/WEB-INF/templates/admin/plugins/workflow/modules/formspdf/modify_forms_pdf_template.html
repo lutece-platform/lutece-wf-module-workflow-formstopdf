@@ -1,4 +1,6 @@
 <#include "/admin/plugins/workflow/modules/formspdf/include/formstopdf-commons.html"/>
+<#include "/admin/util/editor/editor.html" />
+<@initEditor />
 <@row>
     <@columns sm=8>
         <@box>
@@ -21,7 +23,7 @@
 					</@formGroup>
                     <br/>
                     <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
-                    	<@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>
+                    	<@input type='textarea' richtext=true name='template_content' id='template_content' rows=15 cols=70>
 	                    	${forms_pdf_task_template.content!}
 	                   	</@input>
                     </@formGroup>
