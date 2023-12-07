@@ -208,6 +208,11 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
         for ( InfoMarker infoMarker : collectionInfoMarkers )
         {
             model.put( infoMarker.getMarker(), infoMarker.getValue() );
+
+            if(infoMarker.getMarker().equals("form_title"))
+            {
+                model.put( infoMarker.getMarker(), form.getTitle() );
+            }
         }
         return model;
     }
