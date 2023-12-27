@@ -87,6 +87,7 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
 
     private static final boolean ZIP_EXPORT = Boolean.parseBoolean( AppPropertiesService.getProperty( "workflow-formspdf.export.pdf.zip", "false" ) );
     private static final String CONSTANT_MIME_TYPE_PDF = "application/pdf";
+    private static final String CONSTANT_FORM_TITLE = "form_title";
     private static final String EXTENSION_PDF = ".pdf";
     
 
@@ -173,9 +174,11 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
         // markers
         Form form = FormHome.findByPrimaryKey( _formsPDFTaskTemplate.getIdForm());
         Collection<InfoMarker> collectionNotifyMarkers = GenericFormsProvider.getProviderMarkerDescriptions(form);
-
-
+        
         markersToModel(model, collectionNotifyMarkers);
+        
+        // add title
+        model.put( CONSTANT_FORM_TITLE , (form != null)?form.getTitle():"" );
         
         HtmlTemplate htmltemplate = AppTemplateService.getTemplateFromStringFtl(_formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model);
         
@@ -203,18 +206,12 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
 
     }
     
-    private Map<String, Object> markersToModel( Map<String, Object> model, Collection<InfoMarker> collectionInfoMarkers )
+    private void markersToModel( Map<String, Object> model, Collection<InfoMarker> collectionInfoMarkers )
     {
         for ( InfoMarker infoMarker : collectionInfoMarkers )
         {
-            model.put( infoMarker.getMarker(), infoMarker.getValue() );
-
-            if(infoMarker.getMarker().equals("form_title"))
-            {
-                model.put( infoMarker.getMarker(), form.getTitle() );
-            }
+            model.put( infoMarker.getMarker(), infoMarker.getValue() );           
         }
-        return model;
     }
 
 }
