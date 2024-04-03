@@ -16,9 +16,18 @@
                     </#if>
                 </#if>
             </@td>
-            <@td>
-                <@span class='copy-content'>&#36;&#123;${marker.marker}&#33;&#125;</@span>
-            </@td>
+       <#if marker.marker?contains("position_")>
+         <#if rte>
+             <#assign markerMacro = "[@displayEntry q="+ marker.marker + "/]">
+         <#else>
+             <#assign markerMacro = "<@displayEntry q="+ marker.marker +"/>">
+         </#if>
+       <#else>
+            <#assign markerMacro = "${"+marker.marker+"}">
+       </#if>
+           <@td>
+              <@span class='copy-content'>${markerMacro}</@span>
+           </@td>
         </tr>
     </#list>
     <#else>
@@ -27,6 +36,7 @@
         </tr>
     </#if>
 </@table>
+
 <@copyElementToClipboard selector='.copy-content' class='"copy-icon"' />
 <style>
 		.marker:hover:hover {

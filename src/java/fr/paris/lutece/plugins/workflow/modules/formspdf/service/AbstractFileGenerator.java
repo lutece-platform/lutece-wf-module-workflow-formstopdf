@@ -74,11 +74,17 @@ public abstract class AbstractFileGenerator implements IFileGenerator
      */
     protected AbstractFileGenerator( String fileName, String fileDescription, FormResponse formResponse, FormsPDFTaskTemplate formsPDFTaskTemplate )
     {
+
         _formResponse = formResponse;
-        _fileName = StringUtils.substring( fileName, 0, MAX_NAME_LENGTH ) + LocalDateTime.now( ).format( DateTimeFormatter.ofPattern( PATTERN_TIMESTAMP ) );
+        if (fileName.length() >= MAX_NAME_LENGTH) {
+            _fileName = StringUtils.substring( fileName, 0, MAX_NAME_LENGTH ) + LocalDateTime.now( ).format( DateTimeFormatter.ofPattern( PATTERN_TIMESTAMP ) );
+        } else {
+            _fileName = fileName  + LocalDateTime.now( ).format( DateTimeFormatter.ofPattern( PATTERN_TIMESTAMP ) );
+        }
         _fileDescription = fileDescription;
         _formsPDFTaskTemplate = formsPDFTaskTemplate;
     }
+
 
     @Override
     public String getDescription( )

@@ -17,6 +17,7 @@ CREATE TABLE `workflow_task_formspdf_template` (
 	`id_form` INT(11) NOT NULL DEFAULT -1,
 	`is_generic` SMALLINT NOT NULL DEFAULT 1,
 	`content` LONGTEXT,
+    'is_rte' SMALLINT NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id_template`)
 )
 ;
