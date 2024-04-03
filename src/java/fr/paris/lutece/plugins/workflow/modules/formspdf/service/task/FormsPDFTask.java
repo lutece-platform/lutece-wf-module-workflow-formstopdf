@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.workflow.modules.formspdf.service.task;
 import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 
 import fr.paris.lutece.plugins.filegenerator.service.TemporaryFileGeneratorService;
 import fr.paris.lutece.plugins.forms.business.Form;
@@ -50,11 +51,15 @@ import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
 import fr.paris.lutece.plugins.workflowcore.service.resource.IResourceHistoryService;
 import fr.paris.lutece.plugins.workflowcore.service.resource.ResourceHistoryService;
 import fr.paris.lutece.plugins.workflowcore.service.task.Task;
+import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
+import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
+import fr.paris.lutece.plugins.forms.business.FormQuestionResponse;
+import fr.paris.lutece.portal.service.template.AppTemplateService;
 
 /**
  * @author norbert.le.garrec
@@ -68,6 +73,7 @@ public class FormsPDFTask extends Task
      */
     private static final String PROPERTY_LABEL_TITLE = "module.workflow.formspdf.title";
     private static final String PROPERTY_LABEL_DESCRIPTION = "module.workflow.formspdf.export.pdf.description";
+    private static final String FTL_SQUARE_BRACKET_TAG = "[#ftl]";
 
     /**
      * the FormJasperConfigService to manage the task configuration
@@ -92,6 +98,8 @@ public class FormsPDFTask extends Task
         // Id of the Form to modify
         int nIdFormResponse = 0;
         String strError = "";
+        AdminUser user = null;
+        FormsPDFTaskTemplate formsPDFTaskTemplate = null;
         try
         {
             nIdFormResponse = resourceHistory.getIdResource( );
@@ -100,25 +108,32 @@ public class FormsPDFTask extends Task
             Form form = FormHome.findByPrimaryKey( frep.getFormId( ) );
 
             // TODO Gerer le cas null quand il s'agit d'une action automatique
-            AdminUser user = null;
             if ( request != null )
             {
                 user = AdminUserService.getAdminUser( request );
             }
-            
+            FormResponse formResponse = FormResponseHome.findByPrimaryKey( nIdFormResponse );
+            Map<String, InfoMarker> collectionMarkersValue = GenericFormsProvider.provideMarkerValues( formResponse, request );
+            Map<String, Object> model = new HashMap<>( );
+            markersToModels(model, collectionMarkersValue);
+            formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
+           if(formsPDFTaskTemplate.isRte())
+           {
+               formsPDFTaskTemplate.setContent( addSquareBracketTag( formsPDFTaskTemplate.getContent( ) ) );
+           }
+            formsPDFTaskTemplate.setContent(AppTemplateService.getTemplateFromStringFtl(formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model).getHtml());
             HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ), I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep,
-            		FormsPDFTaskTemplateHome.findByPrimaryKey(formsPDFTaskConfig.getIdTemplate()) );
-
+                    formsPDFTaskTemplate );
             TemporaryFileGeneratorService.getInstance( ).generateFile( htmltopdf, user );
-
         }
         catch( Exception e )
         {
-            strError = "Une erreur s'est produite lors de la generation de l'edition";
-            AppLogService.error( strError, e );
+            // print the error in a pdf
+            formsPDFTaskTemplate.setContent( e.getMessage());
+            HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( "error", I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), new FormResponse(), formsPDFTaskTemplate );
+            TemporaryFileGeneratorService.getInstance( ).generateFile( htmltopdf, user );
             throw new RuntimeException( strError, e );
         }
-
     }
 
     @Override
@@ -154,4 +169,53 @@ public class FormsPDFTask extends Task
         _formsPDFTaskConfigService.remove( getId( ) );
     }
 
+    /**
+     * In a loop, call the markersToModel method to add the markers to the model
+     * @param model
+     * @param collectionMarkersValue
+     */
+    private void markersToModels( Map<String, Object> model, Map<String, InfoMarker> collectionMarkersValue  )
+    {
+        for ( int i = 0; i < collectionMarkersValue.size(); i++ )
+        {
+            String key = collectionMarkersValue.keySet().toArray()[i].toString();
+            markersToModel( model, collectionMarkersValue, key );
+
+        }
+    }
+
+    /**
+     * Add the markers to the model
+     * @param model
+     * @param collectionMarkersValue
+     * @param key
+     */
+    private void markersToModel( Map<String, Object> model, Map<String, InfoMarker> collectionMarkersValue, String key  )
+    {
+         if(key.contains( "position_" ) )
+            {
+                FormQuestionResponse formQuestionResponse = (FormQuestionResponse) collectionMarkersValue.get( key ).getValue( );
+                if(formQuestionResponse.getQuestion().getEntry() != null)
+                {
+                    model.put( key, formQuestionResponse );
+                }
+            }
+            else
+            {
+                model.put( key, collectionMarkersValue.get( key ).getValue( ) );
+            }
+        }
+
+    /**
+     * Add square bracket tag at the beginning of the template to process the template with the brackets included in the RTE
+     * @param strtemplate
+     * @return
+     */
+
+    private String addSquareBracketTag(String strtemplate)
+    {
+        strtemplate =  FTL_SQUARE_BRACKET_TAG+strtemplate;
+
+        return strtemplate;
+    }
 }

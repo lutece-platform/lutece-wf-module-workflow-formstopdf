@@ -76,8 +76,10 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
     private static final String PARAMETER_TEMPLATE_ID_FORM = "template_id_form";
     private static final String PARAMETER_TEMPLATE_ASSOCIATE_FORM = "template_associate_form";
     private static final String PARAMETER_TEMPLATE_CONTENT = "template_content";
+	private static final String PARAMETER_RICH_TEXT_EDITOR = "rte";
 
 	// Markers
+	private static final String MARK_RICH_TEXT_EDITOR = "rte";
     private static final String MARK_TEMPLATE_PDF_LIST = "template_pdf_list";
     private static final String MARK_FORMS_PDF_TASK_TEMPLATE = "forms_pdf_task_template";
     private static final String MARK_TASK_ID = "task_id";
@@ -113,8 +115,7 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
     {
     	Locale locale = getLocale( );
     	Map<String, Object> model = getModel( );
-    	
-    	FormsPDFTaskTemplate formsPDFTaskTemplate = null;
+		FormsPDFTaskTemplate formsPDFTaskTemplate = null;
     	int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
     	if (nIdTemplate > 0)
     	{
@@ -122,7 +123,24 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
     	} else {
     		formsPDFTaskTemplate = new FormsPDFTaskTemplate();
     		formsPDFTaskTemplate.setGeneric(true);
+			formsPDFTaskTemplate.setRte(true);
     	}
+		Boolean isRichTextEditor = Boolean.parseBoolean( request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) );
+		if(request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) == null)
+		{
+			isRichTextEditor = formsPDFTaskTemplate.isRte();
+		} 
+			model.put(MARK_RICH_TEXT_EDITOR, isRichTextEditor );
+		// format the content
+		if (isRichTextEditor) {
+			if(!formsPDFTaskTemplate.isRte()) {
+				formsPDFTaskTemplate.setContent(convertMacroToSquareBrackets(formsPDFTaskTemplate.getContent()));
+			}
+		} else {
+			if(formsPDFTaskTemplate.isRte()) {
+				formsPDFTaskTemplate.setContent(convertMacroToSuppMinor(formsPDFTaskTemplate.getContent()));
+			}
+		}
     	model.put(MARK_FORMS_PDF_TASK_TEMPLATE, formsPDFTaskTemplate);
     	
     	model.put( MARK_FORMS_LIST, FormHome.getFormsReferenceList( ) );
@@ -181,8 +199,31 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
     	}
     	
 		formsPDFTaskTemplateToEdit.setContent(request.getParameter( PARAMETER_TEMPLATE_CONTENT ));
+		formsPDFTaskTemplateToEdit.setRte(Boolean.parseBoolean( request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) ));
 		
 		return formsPDFTaskTemplateToEdit;
     }
+
+	/**
+	 * Convert the macro to display responses to the usual supp and minor
+	 * @param strtemplate
+	 * @return the string with the macro converted
+	 */
+	private String convertMacroToSuppMinor(String strtemplate)
+	{
+		strtemplate = strtemplate.replaceAll("\\[@displayEntry q=position_(\\d+)/]", "<@displayEntry q=position_$1/>");
+		return strtemplate;
+	}
+
+	/**
+	 * Convert the macro to display responses to the square brackets
+	 * @param strtemplate
+	 * @return the string with the macro converted
+	 */
+	private String convertMacroToSquareBrackets(String strtemplate)
+	{
+		strtemplate = strtemplate.replaceAll("<@displayEntry q=position_(\\d+)/>", "[@displayEntry q=position_$1/]");
+		return strtemplate;
+	}
 
 }

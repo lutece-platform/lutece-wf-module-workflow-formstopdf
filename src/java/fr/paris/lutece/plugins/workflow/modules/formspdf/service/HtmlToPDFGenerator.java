@@ -39,14 +39,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
-import fr.paris.lutece.plugins.forms.business.Form;
-import fr.paris.lutece.plugins.forms.business.FormHome;
-import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities.EscapeMode;
@@ -55,11 +48,8 @@ import fr.paris.lutece.plugins.forms.business.FormResponse;
 import fr.paris.lutece.plugins.html2pdf.service.PdfConverterService;
 import fr.paris.lutece.plugins.html2pdf.service.PdfConverterServiceException;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
-import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
-import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.html.HtmlTemplate;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -84,10 +74,8 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
     {
         super( fileName, fileDescription, formResponse, formsPDFTaskTemplate );
     }
-
     private static final boolean ZIP_EXPORT = Boolean.parseBoolean( AppPropertiesService.getProperty( "workflow-formspdf.export.pdf.zip", "false" ) );
     private static final String CONSTANT_MIME_TYPE_PDF = "application/pdf";
-    private static final String CONSTANT_FORM_TITLE = "form_title";
     private static final String EXTENSION_PDF = ".pdf";
     
 
@@ -169,22 +157,10 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      */
     private void writeExportFile( Path directoryFile ) throws IOException
     {
-        Map<String, Object> model = new HashMap<>( );
         String strError = "";
-        // markers
-        Form form = FormHome.findByPrimaryKey( _formsPDFTaskTemplate.getIdForm());
-        Collection<InfoMarker> collectionNotifyMarkers = GenericFormsProvider.getProviderMarkerDescriptions(form);
-        
-        markersToModel(model, collectionNotifyMarkers);
-        
-        // add title
-        model.put( CONSTANT_FORM_TITLE , (form != null)?form.getTitle():"" );
-        
-        HtmlTemplate htmltemplate = AppTemplateService.getTemplateFromStringFtl(_formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model);
-        
         try ( OutputStream outputStream = Files.newOutputStream( directoryFile.resolve( generateFileName( _formResponse ) + ".pdf" ) ) )
         {
-            Document doc = Jsoup.parse( htmltemplate.getHtml( ), "UTF-8" );
+            Document doc = Jsoup.parse( _formsPDFTaskTemplate.getContent( ), "UTF-8" );
             doc.outputSettings( ).syntax( Document.OutputSettings.Syntax.xml );
             doc.outputSettings( ).escapeMode( EscapeMode.base.xhtml );
             doc.outputSettings( ).charset( "UTF-8" );
@@ -204,14 +180,6 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
             throw new RuntimeException( strError, e );
         }
 
-    }
-    
-    private void markersToModel( Map<String, Object> model, Collection<InfoMarker> collectionInfoMarkers )
-    {
-        for ( InfoMarker infoMarker : collectionInfoMarkers )
-        {
-            model.put( infoMarker.getMarker(), infoMarker.getValue() );           
-        }
     }
 
 }

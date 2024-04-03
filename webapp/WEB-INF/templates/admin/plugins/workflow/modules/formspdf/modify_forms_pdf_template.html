@@ -22,11 +22,16 @@
 						 </@inputGroup>
 					</@formGroup>
                     <br/>
-                    <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
-                    	<@input type='textarea' richtext=true name='template_content' id='template_content' rows=15 cols=70>
-	                    	${forms_pdf_task_template.content!}
-	                   	</@input>
-                    </@formGroup>
+                       <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' name='rte' id='rte' checked=rte params='onchange="javascript:toggleRTE();"' />
+                         <#if rte>
+                           <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
+                             <@input type='textarea' richtext=true name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
+                           </@formGroup>
+                         <#else>
+                           <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
+                             <@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
+                           </@formGroup>
+                         </#if>
                     <@formGroup>
 						<@button type='submit' name='action_modifyTemplate' buttonIcon='check' title='#i18n{module.workflow.formspdf.modify.template.buttonSave}' />
 						<@button type='cancel' buttonIcon='times' title='#i18n{module.workflow.formspdf.modify.template.buttonCancel}' cancel=true />
@@ -49,4 +54,23 @@
 			document.getElementById("list_forms").style.display = 'none';
 		}
   	}
+
+    /**
+     * Toggle the RTE
+     */
+    function toggleRTE() {
+        let url = window.location.href;
+        let rteValue = !document.getElementById("rte").checked;
+        const rteIndex = url.indexOf("rte=");
+        if(rteIndex === -1) {
+            url = url + "&rte=" + rteValue;
+        }
+        if(rteValue){
+            url = url.replace("rte=true", "rte=false");
+            document.location.replace(url);
+        } else {
+            url = url.replace("rte=false", "rte=true");
+            document.location.replace(url);
+        }
+    }
 </script>

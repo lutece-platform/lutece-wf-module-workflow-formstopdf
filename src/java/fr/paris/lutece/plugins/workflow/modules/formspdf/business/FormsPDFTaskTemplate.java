@@ -44,6 +44,8 @@ public class FormsPDFTaskTemplate {
 	private boolean _bGeneric;
 
 	private String _strContent;
+
+	private boolean _isRte;
 	
 	public int getId() {
 		return _nId;
@@ -83,6 +85,12 @@ public class FormsPDFTaskTemplate {
 
 	public void setGeneric(boolean bGeneric) {
 		this._bGeneric = bGeneric;
+	}
+	public boolean isRte() {
+		return _isRte;
+	}
+	public void setRte(boolean isRte) {
+		this._isRte = isRte;
 	}
 
 }
