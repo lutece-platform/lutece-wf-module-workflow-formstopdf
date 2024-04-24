@@ -22,6 +22,7 @@
 						 </@inputGroup>
 					</@formGroup>
                     <br/>
+                   <@input type='hidden' name='rte' value=rte?c />
                          <#if rte>
 		        <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
                            <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
