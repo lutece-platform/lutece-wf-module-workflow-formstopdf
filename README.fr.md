@@ -1,13 +1,13 @@
 **# module-workflow-formspdf
 # module-workflow-formspdf
-EN | [FR](README.fr.md) 
-## Customizing the display of question types (entrytype)
+FR | [EN](README.md)
+## Personnaliser l’affichage des types de questions (entrytype)
 
-The Form plugin offers different types of questions: date, text, image, file etc. To adapt the display of answers according to their type (Entrytype), the module-workflow-formstopdf uses Freemarker macros (wiki macro links).
+Le plugin Form proposent différents types question : date, text, image, fichier etc. Pour adapter l’affichage des réponses selon leur type (Entrytype), le module-workflow-formstopdf utilise des macros Freemarker (liens wiki macro). 
 
-In the source code of the module, there is a macro whose role is to call the macro that corresponds to the Entrytype of the question.
+Dans le code source du module, il y a une macro dont le rôle est d’appeler la macro qui correspond à l’Entrytype de la question. 
 
-This macro is here: lutece-wf-module-workflow-formstopdf/webapp/WEB-INF/templates/admin/plugins/workflow/modules/formspdf/display_entries/displayEntry.ftl
+Cette macro se trouve ici : lutece-wf-module-workflow-formstopdf/webapp/WEB-INF/templates/admin/plugins/workflow/modules/formspdf/display_entries/displayEntry.ftl
 
 ```xml
 <#macro displayEntry q>
@@ -64,38 +64,40 @@ This macro is here: lutece-wf-module-workflow-formstopdf/webapp/WEB-INF/template
 </#macro>
 ```
 
-This “redirection” macro takes a parameter “q” which corresponds to the value of the answer contained in “position_X”
-To call it according to the chosen syntax:
+Cette macro de “redirection” prend un paramètre “q” qui corresponds à la valeur de la réponse contenue dans “position_X”
+Pour l’appeler selon la syntaxe choisie :
+
 ```xml
 <#@displayEntry q=position_7/>
 ```
-Or 
+Ou 
 ```xml
 [#@displayEntry q=position_7/]
 ```
 ![bookmarks](https://lutece.paris.fr/support/image?resource_type=wiki_image&id=615)
-## Configuration of Freemarker Macros Syntax
-Freemarker tags are usually defined in a similar way to that of html with “<” and >”. For example to define a macro: “<#macro myMacro arg1/>”. And to call it: “ <@myMacro arg1= arg1/>”.
-This syntax is incompatible with the use of the RichTextEditor which reformats the elements to prevent display bugs and XSS attacks. For example: “<@myMacro arg1= arg1/>” becomes "<p>&lt;@myMacro arg1= arg1/&gt;</p>”.
-To use the Response Bookmarks (which are actually calls to macros) with the RTE, you must modify the Freemarker syntax.
-Adding [#ftl] at the very beginning of the template makes it possible to use Freemarker macros with a different syntax that is compatible with the RichTextEditor.
+## Configuration la syntaxe des Macros Freemarker
+Les balises freemarker sont habituellement définies de façon similaire à celle de l’html avec “<” et >”. Par exemple pour définir une macro :   “<#macro maMacro arg1/>”. Et pour l’appeler : “ <@maMacro arg1= arg1/>”.
+Cette syntaxe est incompatible avec l’utilisation du RichTextEditor qui reformatte les éléments afin de prévenir les bugs d’affichage et les attaques XSS. Par exemple :  “<@maMacro arg1= arg1/>” devient "<p>&lt;@maMacro arg1= arg1/&gt;</p>”.
+Pour utiliser les Bookmarks de réponse (qui sont en fait des appelle à des macros) avec le RTE, il faut modifier la syntaxe Freemarker.
+Ajouter [#ftl] au tout début du template rend possible l’utilisation des macros Freemarker avec une syntaxe différente qui est compatible avec le RichTextEditor. 
 ```xml
 [#ftl]
  ```
-To call a macro: “ [@myMacro arg1= arg1/]”.
-The module automatically adds and removes the [#ftl] header when editing the option below.
-Without the RTE, it is possible to configure the display of a macro, because the RTE reformats the HTML. It is also easier to customize a macro without RTE with the syntax in “<>”, because you can then copy and paste the existing display macros that you want to modify.
-## Example of customization
-At the template editing step, we have to select the “without Rich Text editor” option.
-You have to retrieve the macro of the Entrytype that you want to modify in the source code of the module-workflow-formstopdf.
-Here, we identify the macro: “DisplayEntryTypeText”. We copy/paste the content of the macro into the template form.
+Pour appeler une macro : “ [@maMacro arg1= arg1/]”. 
+Le module ajoute et supprime l’entête [#ftl] automatiquement lors de la modification l’option ci-dessous.  
+Sans le RTE, il est possible de configurer l’affichage d’une macro, car le RTE reformate le HTML. Il est aussi plus aisé de personnaliser une macro sans RTE avec la syntaxe en “<>”, car on peut alors copier et coller les macros d’affichage existantes que l’on souhaite modifier.   
+## Exemple de personnalisation
+À l’étape d’édition de la template, nous avons a sélectionner l’option “sans Rich Text editor”.
+Il faut récupérer la macro de l’Entrytype que l’on souhaite modifier dans le code source du module-workflow-formstopdf. 
+Ici, on repère la macro : “DisplayEntryTypeText”. On fait un copier/coller du contenu de la macro dans le formulaire du template.
+
 ![macrotext](https://lutece.paris.fr/support/image?resource_type=wiki_image&id=616)
-We can now modify the macro to have the desired display.
-In this example, the color and style are customized.
+
+On peut maintenant modifier la macro pour avoir l’affichage souhaité.
+Dans cet exemple, la couleur et le style sont personnalisés.
 
 ![custommacro](https://lutece.paris.fr/support/image?resource_type=wiki_image&id=618)
 
-As a result, we have the answer whose style has been customized.
+En résultat, nous avons la réponse dont le style a été personnalisé.
 
 ![result](https://lutece.paris.fr/support/image?resource_type=wiki_image&id=619)
-
