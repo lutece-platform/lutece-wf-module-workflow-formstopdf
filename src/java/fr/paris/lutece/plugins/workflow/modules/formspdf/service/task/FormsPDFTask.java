@@ -194,7 +194,7 @@ public class FormsPDFTask extends Task
     {
          if(key.contains( "position_" ) )
             {
-                FormQuestionResponse formQuestionResponse = (FormQuestionResponse) collectionMarkersValue.get( key ).getValue( );
+                FormQuestionResponse formQuestionResponse = (FormQuestionResponse) collectionMarkersValue.get( key ).getData( );
                 if(formQuestionResponse.getQuestion().getEntry() != null)
                 {
                     model.put( key, formQuestionResponse );
@@ -202,7 +202,7 @@ public class FormsPDFTask extends Task
             }
             else
             {
-                model.put( key, collectionMarkersValue.get( key ).getValue( ) );
+                model.put( key, collectionMarkersValue.get( key ).getData( ) );
             }
         }
 
