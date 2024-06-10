@@ -4,16 +4,16 @@ Description: Display an entry of type Check Box
 Parameters: entry, list_responses
 -->
 <#macro displayEntryTypeCheckBox entry, list_responses >
-	<div style="display: flex; flex-wrap: wrap;">
-		<div style="flex: 0 0 75%; max-width: 75%;">
 			<#if list_responses?has_content>
+				<#assign iteration = 0>
 				<#list list_responses as response>
-					<p>
+					<#if iteration != 0 && response.file.title?has_content>
+						<span>; </span>
+					</#if>
+					<#assign iteration = iteration + 1>
+					<span>
 						<#if response.field??>${response.field.title!''}</#if>
-					<#--image url deleted-->
-					</p>
+					</span>
 				</#list>
 			</#if>
-		</div>
-	</div>
 </#macro>

@@ -5,16 +5,16 @@ Parameters: entry, list_responses
 Entry not found in basic config of forms entrytype, not tested
 -->
 <#macro displayEntryTypeSelectOrder entry, list_responses >
-	<div style="display: flex; flex-wrap: wrap;">
-		<div style="flex: 0 0 25%; max-width: 25%;"><p style="text-align: right; font-weight: bold;">${entry.title!''}</p></div>
-		<div style="flex: 0 0 75%; max-width: 75%;">
 			<#if list_responses?has_content>
+				<#assign iteration = 0>
 				<#list list_responses?sort_by('sortOrder') as response>
-					<p>
+					<#if iteration != 0 && response.field??>
+						<span>; </span>
+					</#if>
+					<#assign iteration = iteration + 1>
+					<span>
 						<#if response.field??>${response.sortOrder}: ${response.field.title!''}</#if>
-					</p>
+					</span>
 				</#list>
 			</#if>
-		</div>
-	</div>
 </#macro>

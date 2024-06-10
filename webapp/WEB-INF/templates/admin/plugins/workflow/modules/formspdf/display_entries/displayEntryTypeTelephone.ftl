@@ -4,12 +4,14 @@ Description: Display an entry of type Telephone
 Parameters: entry, list_responses
 -->
 <#macro displayEntryTypeTelephone entry, list_responses >
-	<div style="display: flex; flex-wrap: wrap;">
-		<div style="flex: 0 0 75%; max-width: 75%;">
 			<#if list_responses?has_content>
+                <#assign iteration = 0>
 				<#list list_responses as response>
-					<p>${response.toStringValueResponse!''}</p>
+					<#if iteration != 0 && response.toStringValueResponse?has_content>
+						<span>; </span>
+					</#if>
+					<#assign iteration = iteration + 1>
+					<span>${response.toStringValueResponse!''}</span>
 				</#list>
 			</#if>
-	</div>
 </#macro>
