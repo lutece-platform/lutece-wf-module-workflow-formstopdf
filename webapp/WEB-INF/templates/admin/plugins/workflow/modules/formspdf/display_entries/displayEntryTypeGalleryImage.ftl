@@ -8,7 +8,6 @@ Parameters: entry, list_responses
 		<div style="flex: 0 0 75%; max-width: 75%;">
 			<#if list_responses?has_content>
 				<#list list_responses as response>
-					<p>
 						<#assign displayImageWithBase64 = false>
 						<#if base64?exists && base64?is_boolean>
 							<#assign displayImageWithBase64 = base64>
@@ -24,7 +23,6 @@ Parameters: entry, list_responses
 								</@link>
 							</#if>
 						</#if>
-					</p>
 				</#list>
 			</#if>
 		</div>

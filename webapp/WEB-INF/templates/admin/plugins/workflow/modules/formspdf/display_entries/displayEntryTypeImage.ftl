@@ -4,18 +4,19 @@ Description: Display an entry of type Image
 Parameters: entry, list_responses
 -->
 <#macro displayEntryTypeImage entry, list_responses >
-	<div style="display: flex; flex-wrap: wrap;">
-		<div style="flex: 0 0 75%; max-width: 75%;">
-			<#if list_responses?has_content>
+		<#if list_responses?has_content>
 				<#list list_responses as response>
-					<p>
 						<#assign displayImageWithBase64 = false>
 						<#if base64?exists && base64?is_boolean>
 							<#assign displayImageWithBase64 = base64>
 						</#if>
 						<#if displayImageWithBase64>
 							<#if response.file?exists && entry?exists >
-								<img src="data:image/jpeg;base64,${response.toStringValueResponse!}" width="100px" height="100px"/>
+								<div style="display: flex; flex-wrap: wrap;">
+								  <div style="flex: 0 0 75%; max-width: 75%;">
+								    <img src="data:image/jpeg;base64,${response.toStringValueResponse!}" width="100px" height="100px"/>
+								  </div>
+								</div>
 							</#if>
 						<#else>
 							<#if response.file?exists && entry?exists >
@@ -24,9 +25,6 @@ Parameters: entry, list_responses
 								</@link>
 							</#if>
 						</#if>
-					</p>
 				</#list>
 			</#if>
-		</div>
-	</div>
 </#macro>
