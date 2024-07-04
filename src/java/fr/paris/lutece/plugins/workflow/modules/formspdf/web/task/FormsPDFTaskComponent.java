@@ -53,7 +53,8 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
-
+import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 /**
  * This class represents a component for the task {@link fr.paris.lutece.plugins.workflow.modules.formspdf.service.task.FormsPDFTask FormsPDFTask}
  *
@@ -95,6 +96,10 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
     private static final String PARAMETER_ID_TASK = "id_task";
     
     private static final String PARAMETER_ID_FORM_SELECTED = "id_form_selected";
+    private static final String MESSAGE_KEY_EXPORTED = "module.workflow.formspdf.exported.message";
+    private static final String MESSAGE_KEY_ERROR = "module.workflow.formspdf.notExported.message";
+    private static final String MESSAGE_EXPORT_PAGE_TITLE = "module.workflow.formspdf.exportPage";
+    private static final String URL_EXPORT_PAGE = "jsp/admin/plugins/filegenerator/ManageMyFiles.jsp";
 
     @Override
     public String getDisplayConfigForm( HttpServletRequest request, Locale locale, ITask task )
@@ -144,10 +149,16 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
         return page.getHtml( );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getDisplayTaskInformation( int nIdHistory, HttpServletRequest request, Locale locale, ITask task )
+    public String getDisplayTaskInformation( int nIdHistory, HttpServletRequest request, Locale locale, fr.paris.lutece.plugins.workflowcore.service.task.ITask task )
     {
-        return null;
+        String urlExportPage = AppPathService.getBaseUrl( request );
+        urlExportPage += URL_EXPORT_PAGE;
+        return I18nService.getLocalizedString(MESSAGE_KEY_EXPORTED, locale) +  "<div><a href=\"" + urlExportPage + "\">" + I18nService.getLocalizedString( MESSAGE_EXPORT_PAGE_TITLE, locale ) + "</a></div>";
+
     }
 
     @Override
