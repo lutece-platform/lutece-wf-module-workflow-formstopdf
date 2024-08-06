@@ -93,10 +93,10 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
 
 	private static final String PROPERTY_PAGE_TITLE_MANAGE_FORMS_PDF_TEMPLATES = "module.workflow.formspdf.manage.template.title";
 	private static final String PROPERTY_PAGE_TITLE_MODIFY_FORMS_PDF_TEMPLATES = "module.workflow.formspdf.modify.template.title";
+	
     @View( value = VIEW_MANAGE_TEMPLATES, defaultView = true )
     public String getManageTemplates( HttpServletRequest request )
     {
-    	Locale locale = getLocale( );
     	Map<String, Object> model = getModel( );
     	
         if (_nIdTask == 0)
@@ -113,14 +113,16 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
     @View( value = VIEW_MODIFY_TEMPLATE )
     public String getModifyTemplate( HttpServletRequest request )
     {
-    	Locale locale = getLocale( );
     	Map<String, Object> model = getModel( );
 		FormsPDFTaskTemplate formsPDFTaskTemplate = null;
-    	int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
+		int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
+		
     	if (nIdTemplate > 0)
     	{
     		formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey(nIdTemplate);
-    	} else {
+    	} 
+    	else 
+    	{
     		formsPDFTaskTemplate = new FormsPDFTaskTemplate();
     		formsPDFTaskTemplate.setGeneric(true);
 			formsPDFTaskTemplate.setRte(true);
@@ -146,8 +148,8 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
     	model.put( MARK_FORMS_LIST, FormHome.getFormsReferenceList( ) );
     	
     	// markers
-    	Form form = FormHome.findByPrimaryKey( formsPDFTaskTemplate.getIdForm());
-    	model.put(MARK_LIST_MARKERS, GenericFormsProvider.getProviderMarkerDescriptions(form != null ? form : new Form()));
+    	Form form = FormHome.findByPrimaryKey( formsPDFTaskTemplate.getIdForm( ) );
+    	model.put(MARK_LIST_MARKERS, GenericFormsProvider.getProviderMarkerDescriptions( form ) );
 
 		return getPage(PROPERTY_PAGE_TITLE_MODIFY_FORMS_PDF_TEMPLATES, TEMPLATE_MODIFY_FORMS_PDF_TEMPLATE, model);
 	}
@@ -183,6 +185,12 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
     	return redirectView( request, VIEW_MANAGE_TEMPLATES );
     }
     
+    /**
+     * 
+     * @param request
+     * @param formsPDFTaskTemplateToEdit
+     * @return the populated template
+     */
     private FormsPDFTaskTemplate populateFormsPDFTaskTemplate(HttpServletRequest request, FormsPDFTaskTemplate formsPDFTaskTemplateToEdit)
     {
     	formsPDFTaskTemplateToEdit.setName(request.getParameter( PARAMETER_TEMPLATE_NAME ));

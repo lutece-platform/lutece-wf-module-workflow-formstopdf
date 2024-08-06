@@ -68,154 +68,114 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 public class FormsPDFTask extends Task
 {
 
-    /**
-     * The task title
-     */
-    private static final String PROPERTY_LABEL_TITLE = "module.workflow.formspdf.title";
-    private static final String PROPERTY_LABEL_DESCRIPTION = "module.workflow.formspdf.export.pdf.description";
-    private static final String FTL_SQUARE_BRACKET_TAG = "[#ftl]";
+	/**
+	 * The task title
+	 */
+	private static final String PROPERTY_LABEL_TITLE = "module.workflow.formspdf.title";
+	private static final String PROPERTY_LABEL_DESCRIPTION = "module.workflow.formspdf.export.pdf.description";
+	private static final String FTL_SQUARE_BRACKET_TAG = "[#ftl]";
+	private static final String MARK_QUESTION_LIST = "question_list";
+	
+	/**
+	 * the FormJasperConfigService to manage the task configuration
+	 */
+	private static final ITaskConfigService _formsPDFTaskConfigService = SpringContextService.getBean( "workflow-formspdf.formsPDFTaskConfigService" );
 
-    /**
-     * the FormJasperConfigService to manage the task configuration
-     */
-    private static final ITaskConfigService _formsPDFTaskConfigService = SpringContextService.getBean( "workflow-formspdf.formsPDFTaskConfigService" );
+	/**
+	 * the ResourceHistoryService to get the forms to process
+	 */
+	private static final IResourceHistoryService _resourceHistoryService = SpringContextService.getBean( ResourceHistoryService.BEAN_SERVICE );
+	
 
-    /**
-     * the ResourceHistoryService to get the forms to process
-     */
-    private static final IResourceHistoryService _resourceHistoryService = SpringContextService.getBean( ResourceHistoryService.BEAN_SERVICE );
+	@Override
+	public void processTask( int nIdResourceHistory, HttpServletRequest request, Locale locale )
+	{
 
-    @Override
-    public void processTask( int nIdResourceHistory, HttpServletRequest request, Locale locale )
-    {
+		// Get the resourceHistory to find the resource to work with
+		ResourceHistory resourceHistory = _resourceHistoryService.findByPrimaryKey( nIdResourceHistory );
 
-        // Get the resourceHistory to find the resource to work with
-        ResourceHistory resourceHistory = _resourceHistoryService.findByPrimaryKey( nIdResourceHistory );
+		// Get the task configuration
+		FormsPDFTaskConfig formsPDFTaskConfig = _formsPDFTaskConfigService.findByPrimaryKey( getId( ) );
 
-        // Get the task configuration
-        FormsPDFTaskConfig formsPDFTaskConfig = _formsPDFTaskConfigService.findByPrimaryKey( getId( ) );
+		// Id of the Form to modify
+		int nIdFormResponse = 0;
+		String strError = "";
+		AdminUser user = null;
+		FormsPDFTaskTemplate formsPDFTaskTemplate = null;
+		try
+		{
+			nIdFormResponse = resourceHistory.getIdResource( );
 
-        // Id of the Form to modify
-        int nIdFormResponse = 0;
-        String strError = "";
-        AdminUser user = null;
-        FormsPDFTaskTemplate formsPDFTaskTemplate = null;
-        try
-        {
-            nIdFormResponse = resourceHistory.getIdResource( );
+			FormResponse frep = FormResponseHome.findByPrimaryKey( nIdFormResponse );
+			Form form = FormHome.findByPrimaryKey( frep.getFormId( ) );
 
-            FormResponse frep = FormResponseHome.findByPrimaryKey( nIdFormResponse );
-            Form form = FormHome.findByPrimaryKey( frep.getFormId( ) );
+			// request could be null if the task is launched by daemon
+			if ( request != null )
+			{
+				user = AdminUserService.getAdminUser( request );
+			}
+			FormResponse formResponse = FormResponseHome.findByPrimaryKey( nIdFormResponse );
 
-            // TODO Gerer le cas null quand il s'agit d'une action automatique
-            if ( request != null )
-            {
-                user = AdminUserService.getAdminUser( request );
-            }
-            FormResponse formResponse = FormResponseHome.findByPrimaryKey( nIdFormResponse );
-            Map<String, InfoMarker> collectionMarkersValue = GenericFormsProvider.provideMarkerValues( formResponse, request );
-            Map<String, Object> model = new HashMap<>( );
-            markersToModels(model, collectionMarkersValue);
-            formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
-           if(formsPDFTaskTemplate.isRte())
-           {
-               formsPDFTaskTemplate.setContent( addSquareBracketTag( formsPDFTaskTemplate.getContent( ) ) );
-           }
-            formsPDFTaskTemplate.setContent(AppTemplateService.getTemplateFromStringFtl(formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model).getHtml());
-            HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ), I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep,
-                    formsPDFTaskTemplate );
-            TemporaryFileGeneratorService.getInstance( ).generateFile( htmltopdf, user );
-        }
-        catch( Exception e )
-        {
-            // print the error in a pdf
-            formsPDFTaskTemplate.setContent( e.getMessage());
-            HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( "error", I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), new FormResponse(), formsPDFTaskTemplate );
-            TemporaryFileGeneratorService.getInstance( ).generateFile( htmltopdf, user );
-            throw new RuntimeException( strError, e );
-        }
-    }
+			Map<String, Object> model = new HashMap<>( );
+			model.putAll( GenericFormsProvider.getValuesModel( formResponse, request ) );
+			model.put( MARK_QUESTION_LIST, GenericFormsProvider.getTitlesModel( form ) );
 
-    @Override
-    public String getTitle( Locale locale )
-    {
-        return I18nService.getLocalizedString( PROPERTY_LABEL_TITLE, locale );
-    }
+			formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
+			
+			if ( formsPDFTaskTemplate.isRte( ) )
+			{
+				// if RTE is the choosen edit mode, square brackets are used for markers, its must be announced in FTL template
+				formsPDFTaskTemplate.setContent( FTL_SQUARE_BRACKET_TAG  + formsPDFTaskTemplate.getContent( ) );
+			}
+			
+			formsPDFTaskTemplate.setContent( AppTemplateService.getTemplateFromStringFtl( formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model).getHtml());
+			
+			HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( 
+					form.getTitle( ), I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), 
+					frep, formsPDFTaskTemplate );
+			TemporaryFileGeneratorService.getInstance( ).generateFile( htmltopdf, user );
+		}
+		catch( Exception e )
+		{
+			// print the error in a pdf
+			formsPDFTaskTemplate.setContent( e.getMessage());
+			HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( "error", I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), new FormResponse(), formsPDFTaskTemplate );
+			TemporaryFileGeneratorService.getInstance( ).generateFile( htmltopdf, user );
+			throw new RuntimeException( strError, e );
+		}
+	}
 
-    @Override
-    public Map<String, String> getTaskFormEntries( Locale locale )
-    {
-        return null;
-    }
+	@Override
+	public String getTitle( Locale locale )
+	{
+		return I18nService.getLocalizedString( PROPERTY_LABEL_TITLE, locale );
+	}
 
-    @Override
-    public void init( )
-    {
-        // Do nothing
+	@Override
+	public Map<String, String> getTaskFormEntries( Locale locale )
+	{
+		return null;
+	}
 
-    }
+	@Override
+	public void init( )
+	{
+		// Do nothing
 
-    @Override
-    public void doRemoveTaskInformation( int nIdHistory )
-    {
-        // Do Nothing
+	}
 
-    }
+	@Override
+	public void doRemoveTaskInformation( int nIdHistory )
+	{
+		// Do Nothing
 
-    @Override
-    public void doRemoveConfig( )
-    {
-        // _formsJasperTaskConfigService.remove( getId( ) );
-        _formsPDFTaskConfigService.remove( getId( ) );
-    }
+	}
 
-    /**
-     * In a loop, call the markersToModel method to add the markers to the model
-     * @param model
-     * @param collectionMarkersValue
-     */
-    private void markersToModels( Map<String, Object> model, Map<String, InfoMarker> collectionMarkersValue  )
-    {
-        for ( int i = 0; i < collectionMarkersValue.size(); i++ )
-        {
-            String key = collectionMarkersValue.keySet().toArray()[i].toString();
-            markersToModel( model, collectionMarkersValue, key );
+	@Override
+	public void doRemoveConfig( )
+	{
+		// _formsJasperTaskConfigService.remove( getId( ) );
+		_formsPDFTaskConfigService.remove( getId( ) );
+	}
 
-        }
-    }
-
-    /**
-     * Add the markers to the model
-     * @param model
-     * @param collectionMarkersValue
-     * @param key
-     */
-    private void markersToModel( Map<String, Object> model, Map<String, InfoMarker> collectionMarkersValue, String key  )
-    {
-         if(key.contains( "position_" ) )
-            {
-                FormQuestionResponse formQuestionResponse = (FormQuestionResponse) collectionMarkersValue.get( key ).getData( );
-                if(formQuestionResponse.getQuestion().getEntry() != null)
-                {
-                    model.put( key, formQuestionResponse );
-                }
-            }
-            else
-            {
-                model.put( key, collectionMarkersValue.get( key ).getData( ) );
-            }
-        }
-
-    /**
-     * Add square bracket tag at the beginning of the template to process the template with the brackets included in the RTE
-     * @param strtemplate
-     * @return
-     */
-
-    private String addSquareBracketTag(String strtemplate)
-    {
-        strtemplate =  FTL_SQUARE_BRACKET_TAG+strtemplate;
-
-        return strtemplate;
-    }
 }
