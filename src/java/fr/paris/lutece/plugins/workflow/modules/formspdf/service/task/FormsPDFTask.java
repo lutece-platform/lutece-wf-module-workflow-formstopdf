@@ -113,10 +113,11 @@ public class FormsPDFTask extends Task
                 user = AdminUserService.getAdminUser( request );
             }
             FormResponse formResponse = FormResponseHome.findByPrimaryKey( nIdFormResponse );
-            Map<String, InfoMarker> collectionMarkersValue = GenericFormsProvider.provideMarkerValues( formResponse, request );
-            Map<String, Object> model = new HashMap<>( );
-            markersToModels(model, collectionMarkersValue);
+            Map<String, Object> model = GenericFormsProvider.getValuesModel( formResponse, request );
+            removeNullEntries ( model );
+            
             formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
+            
            if(formsPDFTaskTemplate.isRte())
            {
                formsPDFTaskTemplate.setContent( addSquareBracketTag( formsPDFTaskTemplate.getContent( ) ) );
@@ -170,41 +171,28 @@ public class FormsPDFTask extends Task
     }
 
     /**
-     * In a loop, call the markersToModel method to add the markers to the model
-     * @param model
-     * @param collectionMarkersValue
-     */
-    private void markersToModels( Map<String, Object> model, Map<String, InfoMarker> collectionMarkersValue  )
-    {
-        for ( int i = 0; i < collectionMarkersValue.size(); i++ )
-        {
-            String key = collectionMarkersValue.keySet().toArray()[i].toString();
-            markersToModel( model, collectionMarkersValue, key );
-
-        }
-    }
-
-    /**
-     * Add the markers to the model
+     * remove null values from the  model
+     * 
      * @param model
      * @param collectionMarkersValue
      * @param key
      */
-    private void markersToModel( Map<String, Object> model, Map<String, InfoMarker> collectionMarkersValue, String key  )
+    private void removeNullEntries( Map<String, Object> model )
     {
-         if(key.contains( "position_" ) )
-            {
-                FormQuestionResponse formQuestionResponse = (FormQuestionResponse) collectionMarkersValue.get( key ).getData( );
-                if(formQuestionResponse.getQuestion().getEntry() != null)
-                {
-                    model.put( key, formQuestionResponse );
-                }
-            }
-            else
-            {
-                model.put( key, collectionMarkersValue.get( key ).getData( ) );
-            }
-        }
+	model.entrySet().removeIf( e -> 
+	{
+	    if ( e.getKey( ).contains( "position_" ) )
+	    {
+		FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get( e.getKey( ) );
+	        return  ( formQuestionResponse == null || formQuestionResponse.getQuestion().getEntry() == null ) ;
+	    } 
+	    else 
+	    {
+		return false;
+	    }
+	});
+    }
+
 
     /**
      * Add square bracket tag at the beginning of the template to process the template with the brackets included in the RTE
@@ -214,7 +202,7 @@ public class FormsPDFTask extends Task
 
     private String addSquareBracketTag(String strtemplate)
     {
-        strtemplate =  FTL_SQUARE_BRACKET_TAG+strtemplate;
+        strtemplate =  FTL_SQUARE_BRACKET_TAG + strtemplate;
 
         return strtemplate;
     }

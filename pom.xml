@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>fr.paris.lutece.plugins</groupId>
 			<artifactId>plugin-forms</artifactId>
-			<version>[3.0.1]</version>
+			<version>[3.0.1,)</version>
 			<type>lutece-plugin</type>
 		</dependency>
 		<dependency>
