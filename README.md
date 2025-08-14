@@ -1,6 +1,11 @@
 **# module-workflow-formspdf
 # module-workflow-formspdf
 EN | [FR](README.fr.md) 
+
+This module provides a task to create a PDF from a template and the data of a form Response.
+
+Prerequisite : the libawt_xawt.so library should be provided by the JDK.
+
 ## Customizing the display of question types (entrytype)
 
 The Form plugin offers different types of questions: date, text, image, file etc. To adapt the display of answers according to their type (Entrytype), the module-workflow-formstopdf uses Freemarker macros (wiki macro links).
