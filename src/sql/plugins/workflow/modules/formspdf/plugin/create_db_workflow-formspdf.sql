@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset workflow-formspdf:create_db_workflow-formspdf.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 DROP TABLE IF EXISTS workflow_task_formspdf_cf ;
 
 CREATE TABLE workflow_task_formspdf_cf (
