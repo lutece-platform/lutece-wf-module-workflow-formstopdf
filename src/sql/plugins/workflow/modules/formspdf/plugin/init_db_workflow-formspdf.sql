@@ -1,2 +1,5 @@
+-- liquibase formatted sql
+-- changeset workflow-formspdf:init_db_workflow-formspdf.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 DELETE FROM workflow_task_formspdf_template;
 INSERT INTO workflow_task_formspdf_template (name, content) VALUES ('Default Template','<!DOCTYPE html><html><head><title>Export PDF formulaire ${form_title} le ${creation_date!}</title></head><body><h1 style="font-size: 30px; text-align: center; background-color: #f0f0f0;">${form_title}</h1><!-- division pour les reponses du formulaire a copier depuis les signets disponibles --><div id="form-response-summary" style="margin-bottom: 3em;"><h2 style="font-size: 18px;"> signet rep 1 </h2><h2 style="font-size: 18px;"> signet rep 2 </h2><h2 style="font-size: 18px;"> signet rep n </h2></div><!-- division pour le texte du copyright --><div id="copyright" style="position: fixed; bottom: 0; width: 100%; text-align: center; background-color: #f0f0f0; padding: 5px;"> Copyright (c) 2002-2023, City of Paris All rights reserved</div></body></html>');
