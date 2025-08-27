@@ -24,12 +24,12 @@
                     <br/>
                    <@input type='hidden' name='rte' value=rte?c />
                          <#if rte>
-		        <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
+		        <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
                            <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
                              <@input type='textarea' richtext=true name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
                            </@formGroup>
                          <#else>
-			<@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />	 
+			<@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />	 
                            <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
                              <@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
                            </@formGroup>
