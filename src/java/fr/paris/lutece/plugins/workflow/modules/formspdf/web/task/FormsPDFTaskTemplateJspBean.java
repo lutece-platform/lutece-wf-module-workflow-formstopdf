@@ -211,7 +211,10 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
 	 */
 	private String convertMacroToSuppMinor(String strtemplate)
 	{
-		strtemplate = strtemplate.replaceAll("\\[@displayEntry q=position_(\\d+)/]", "<@displayEntry q=position_$1/>");
+		if( strtemplate != null )
+		{
+			strtemplate = strtemplate.replaceAll("\\[@displayEntry q=position_(\\d+)/]", "<@displayEntry q=position_$1/>");
+		}
 		return strtemplate;
 	}
 
@@ -222,7 +225,10 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean{
 	 */
 	private String convertMacroToSquareBrackets(String strtemplate)
 	{
-		strtemplate = strtemplate.replaceAll("<@displayEntry q=position_(\\d+)/>", "[@displayEntry q=position_$1/]");
+		if( strtemplate != null )
+		{
+			strtemplate = strtemplate.replaceAll("<@displayEntry q=position_(\\d+)/>", "[@displayEntry q=position_$1/]");
+		}
 		return strtemplate;
 	}
 

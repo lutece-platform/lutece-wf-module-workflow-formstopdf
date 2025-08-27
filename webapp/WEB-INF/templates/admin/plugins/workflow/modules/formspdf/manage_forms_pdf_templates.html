@@ -2,9 +2,7 @@
     <@columns>
         <@box>
             <@boxHeader title='#i18n{module.workflow.formspdf.manage.template.title}' boxTools=true>
-            	<@tform class='form-inline pull-right' name='manage_formspdftasktemplate' action='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp'>
-                	<@button type='submit' name='view_modifyTemplate' buttonIcon='plus' title='#i18n{module.workflow.formspdf.manage.template.buttonAdd}' />
-                </@tform>
+                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate' buttonIcon='plus' title='#i18n{module.workflow.formspdf.manage.template.buttonAdd}' />                
             </@boxHeader>
             <@boxBody>    
                     <#if template_pdf_list?size gt 0>
