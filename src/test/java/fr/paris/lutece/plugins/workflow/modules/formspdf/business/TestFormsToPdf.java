@@ -1,14 +1,21 @@
 package fr.paris.lutece.plugins.workflow.modules.formspdf.business;
 
 
+import org.junit.jupiter.api.Test;
+
 import fr.paris.lutece.plugins.workflowcore.business.config.ITaskConfigDAO;
 import fr.paris.lutece.test.LuteceTestCase;
+import jakarta.inject.Inject;
 
 public class TestFormsToPdf extends LuteceTestCase 
 {
-	private ITaskConfigDAO<FormsPDFTaskConfig> _formsPDFTaskConfigDAO = new FormsPDFTaskConfigDAO( );
-	private IFormsPDFTaskTemplateDAO _formsPDFTaskTemplateDAO = new FormsPDFTaskTemplateDAO( );
+	@Inject
+	private ITaskConfigDAO<FormsPDFTaskConfig> _formsPDFTaskConfigDAO;
+	
+	@Inject
+	private IFormsPDFTaskTemplateDAO _formsPDFTaskTemplateDAO;
 
+	@Test
 	public void testIsActiveWhenActivationIsTrue( )
     {
 	  	 // default test for CI
@@ -16,6 +23,7 @@ public class TestFormsToPdf extends LuteceTestCase
     }
 
 	//Test operations on workflow_task_formspdf_cf table
+	@Test
 	public void testFormsPDFConfigTableCRUD( )
 	{
 		FormsPDFTaskConfig formsPDFTaskConfig = new FormsPDFTaskConfig( );
@@ -45,6 +53,7 @@ public class TestFormsToPdf extends LuteceTestCase
 	}
 
 	//Test CRUD operations on workflow_task_formspdf_template table
+	@Test
 	public void testFormsPDFTemplateTableCRUD( )
 	{
 		FormsPDFTaskTemplate formsPDFTaskTemplate = new FormsPDFTaskTemplate( );

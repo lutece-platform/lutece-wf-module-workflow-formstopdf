@@ -33,6 +33,11 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.formspdf.business;
 
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Named;
+
+@Dependent
+@Named( "workflow-formspdf.formsPDFTaskTemplate" )
 public class FormsPDFTaskTemplate {
 
 	private int _nId;

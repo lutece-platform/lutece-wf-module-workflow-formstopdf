@@ -38,10 +38,14 @@ import java.sql.Statement;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.service.FormsPDFPlugin;
 import fr.paris.lutece.plugins.workflowcore.business.config.ITaskConfigDAO;
 import fr.paris.lutece.util.sql.DAOUtil;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 /**
  * This class provides Data Access methods for FormsJasperTaskConfig objects
  */
+@ApplicationScoped
+@Named( "workflow-formspdf.formsPDFTaskConfigDAO" )
 public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
 {
 

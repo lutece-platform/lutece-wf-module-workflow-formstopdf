@@ -9,6 +9,7 @@
                 <@tform name='modify_template' action='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp'>
                     <@messages errors=errors />
                     <@input type="hidden" id="template_id" name="template_id" value="${forms_pdf_task_template.id}"/>
+                    <@input type="hidden" id="task_id" name="task_id" value="${task_id}"/>
                     <@formGroup labelFor='template_name' labelKey='#i18n{module.workflow.formspdf.modify.template.name}' mandatory=true>
 	                    <@input type='text' name='template_name' id='template_name' value="${forms_pdf_task_template.name!}" maxlength=50 />
                     </@formGroup>

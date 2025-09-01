@@ -35,8 +35,6 @@ package fr.paris.lutece.plugins.workflow.modules.formspdf.service.task;
 
 import java.util.Locale;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 
 import fr.paris.lutece.plugins.filegenerator.service.TemporaryFileGeneratorService;
 import fr.paris.lutece.plugins.forms.business.Form;
@@ -49,22 +47,25 @@ import fr.paris.lutece.plugins.workflow.modules.formspdf.service.HtmlToPDFGenera
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
 import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
 import fr.paris.lutece.plugins.workflowcore.service.resource.IResourceHistoryService;
-import fr.paris.lutece.plugins.workflowcore.service.resource.ResourceHistoryService;
 import fr.paris.lutece.plugins.workflowcore.service.task.Task;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
-import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
 import fr.paris.lutece.plugins.forms.business.FormQuestionResponse;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author norbert.le.garrec
  *
  */
+@Dependent
+@Named( "workflow-formspdf.formsPDFTask" )
 public class FormsPDFTask extends Task
 {
 
@@ -78,12 +79,21 @@ public class FormsPDFTask extends Task
     /**
      * the FormJasperConfigService to manage the task configuration
      */
-    private static final ITaskConfigService _formsPDFTaskConfigService = SpringContextService.getBean( "workflow-formspdf.formsPDFTaskConfigService" );
+    @Inject
+    @Named( "workflow-formspdf.formsPDFTaskConfigService" )
+    private ITaskConfigService _formsPDFTaskConfigService;
 
     /**
      * the ResourceHistoryService to get the forms to process
      */
-    private static final IResourceHistoryService _resourceHistoryService = SpringContextService.getBean( ResourceHistoryService.BEAN_SERVICE );
+    @Inject
+    private IResourceHistoryService _resourceHistoryService;
+    
+    /**
+     * the TemporaryFileGeneratorService to generate the temporary file
+     */
+    @Inject
+    private TemporaryFileGeneratorService _temporaryFileGeneratorService;
 
     @Override
     public void processTask( int nIdResourceHistory, HttpServletRequest request, Locale locale )
@@ -125,14 +135,14 @@ public class FormsPDFTask extends Task
             formsPDFTaskTemplate.setContent(AppTemplateService.getTemplateFromStringFtl(formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model).getHtml());
             HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ), I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep,
                     formsPDFTaskTemplate );
-            TemporaryFileGeneratorService.getInstance( ).generateFile( htmltopdf, user );
+            _temporaryFileGeneratorService.generateFile( htmltopdf, user );
         }
         catch( Exception e )
         {
             // print the error in a pdf
             formsPDFTaskTemplate.setContent( e.getMessage());
             HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( "error", I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), new FormResponse(), formsPDFTaskTemplate );
-            TemporaryFileGeneratorService.getInstance( ).generateFile( htmltopdf, user );
+            _temporaryFileGeneratorService.generateFile( htmltopdf, user );
             throw new RuntimeException( strError, e );
         }
     }

@@ -1,9 +1,8 @@
-<jsp:useBean id="manageFormsPDFTaskTemplate" scope="session" class="fr.paris.lutece.plugins.workflow.modules.formspdf.web.task.FormsPDFTaskTemplateJspBean" />
-<% String strContent = manageFormsPDFTaskTemplate.processController ( request , response ); %>
+${ pageContext.setAttribute( 'strContent', formsPDFTaskTemplateJspBean.processController( pageContext.request , pageContext.response ) ) }
 
 <%@ page errorPage="../../../../ErrorPage.jsp" %>
 <jsp:include page="../../../../AdminHeader.jsp" />
 
-<%= strContent %>
+${ pageContext.getAttribute( 'strContent' ) }
 
 <%@ include file="../../../../AdminFooter.jsp" %>

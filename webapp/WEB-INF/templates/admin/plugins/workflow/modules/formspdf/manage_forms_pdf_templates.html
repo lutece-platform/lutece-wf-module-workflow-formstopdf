@@ -2,7 +2,7 @@
     <@columns>
         <@box>
             <@boxHeader title='#i18n{module.workflow.formspdf.manage.template.title}' boxTools=true>
-                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate' buttonIcon='plus' title='#i18n{module.workflow.formspdf.manage.template.buttonAdd}' />                
+                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&task_id=${task_id}' buttonIcon='plus' title='#i18n{module.workflow.formspdf.manage.template.buttonAdd}' />                
             </@boxHeader>
             <@boxBody>    
                     <#if template_pdf_list?size gt 0>
@@ -23,8 +23,8 @@
 			                        	<@td sm=6>${template_pdf.name}</@td>
 			                        	<@td sm=6>${template_pdf.formTitle!}</@td>
 			                            <@td sm=3>
-			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${template_pdf.id}' title='#i18n{manage.template.modify}' buttonIcon='pencil' showTitle=false />
-			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?action=removeTemplate&template_id=${template_pdf.id}' title='#i18n{manage.template.delete}' buttonIcon='trash' color='danger' showTitle=false />
+			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{manage.template.modify}' buttonIcon='pencil' showTitle=false />
+			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?action=removeTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{manage.template.delete}' buttonIcon='trash' color='danger' showTitle=false />
 			                            </@td>
 			                        </tr>
 		                        </#list>

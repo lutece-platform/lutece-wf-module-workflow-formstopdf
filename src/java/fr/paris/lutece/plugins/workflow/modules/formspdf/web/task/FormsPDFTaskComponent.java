@@ -33,12 +33,13 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.formspdf.web.task;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -47,9 +48,12 @@ import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskCo
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplateHome;
 import fr.paris.lutece.plugins.workflow.web.task.AbstractTaskComponent;
+import fr.paris.lutece.plugins.workflowcore.business.task.ITaskType;
+import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.web.cdi.mvc.Models;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
@@ -58,6 +62,8 @@ import fr.paris.lutece.util.html.HtmlTemplate;
  * This class represents a component for the task {@link fr.paris.lutece.plugins.workflow.modules.formspdf.service.task.FormsPDFTask FormsPDFTask}
  *
  */
+@ApplicationScoped
+@Named( "workflow-formspdf.formsPDFTaskComponent" )
 public class FormsPDFTaskComponent extends AbstractTaskComponent
 {
 
@@ -96,10 +102,20 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
     
     private static final String PARAMETER_ID_FORM_SELECTED = "id_form_selected";
 
+    @Inject
+    public FormsPDFTaskComponent( @Named( "workflow-formspdf.taskTypeFormsPDFTask" ) ITaskType taskType, 
+    		                      @Named( "workflow-formspdf.formsPDFTaskConfigService" ) ITaskConfigService taskConfigService )
+    {
+        setTaskType( taskType );
+        setTaskConfigService( taskConfigService );
+    }
+    
+    @Inject
+    private Models model;
+    
     @Override
     public String getDisplayConfigForm( HttpServletRequest request, Locale locale, ITask task )
     {
-        Map<String, Object> model = new HashMap<>( );
         FormsPDFTaskConfig config = getTaskConfigService( ).findByPrimaryKey( task.getId( ) );
         model.put( MARK_ID_TASK, request.getParameter(PARAMETER_ID_TASK));
         model.put( MARK_CONFIG, config );
