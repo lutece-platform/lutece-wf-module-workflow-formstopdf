@@ -40,7 +40,9 @@ import java.util.List;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.service.FormsPDFPlugin;
 import fr.paris.lutece.plugins.workflow.utils.WorkflowUtils;
 import fr.paris.lutece.util.sql.DAOUtil;
+import jakarta.enterprise.context.ApplicationScoped;
 
+@ApplicationScoped
 public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO {
 	
 	 private static final String SQL_QUERY_SELECTALL = "SELECT id_template, name, id_form, is_generic, content, is_rte FROM workflow_task_formspdf_template";

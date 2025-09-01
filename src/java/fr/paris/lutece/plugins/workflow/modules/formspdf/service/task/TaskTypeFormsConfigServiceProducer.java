@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2023, City of Paris
+ * Copyright (c) 2002-2025, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,56 +31,28 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.workflow.modules.formspdf.business;
+package fr.paris.lutece.plugins.workflow.modules.formspdf.service.task;
 
-import java.util.List;
 
-import jakarta.enterprise.inject.spi.CDI;
+import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskConfig;
+import fr.paris.lutece.plugins.workflowcore.business.config.ITaskConfigDAO;
+import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
+import fr.paris.lutece.plugins.workflowcore.service.config.TaskConfigService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
-public final class FormsPDFTaskTemplateHome {
-
-	private static IFormsPDFTaskTemplateDAO _dao = CDI.current( ).select( IFormsPDFTaskTemplateDAO.class ).get( );
-
-	private FormsPDFTaskTemplateHome()
-	{
-		
-	}
-	
-	public static FormsPDFTaskTemplate create( FormsPDFTaskTemplate formsPDFTaskTemplate )
+@ApplicationScoped
+public class TaskTypeFormsConfigServiceProducer 
+{
+	@Produces
+    @ApplicationScoped
+    @Named( "workflow-formspdf.formsPDFTaskConfigService" )
+    public ITaskConfigService produceTaskTypeFormsConfigService(
+            @Named( "workflow-formspdf.formsPDFTaskConfigDAO" ) ITaskConfigDAO<FormsPDFTaskConfig> taskTypeFormsConfigDAO )
     {
-		_dao.insert(formsPDFTaskTemplate);
-		return formsPDFTaskTemplate;
+        TaskConfigService taskService = new TaskConfigService( );
+        taskService.setTaskConfigDAO( (ITaskConfigDAO) taskTypeFormsConfigDAO );
+        return taskService;
     }
-	
-	public static FormsPDFTaskTemplate update( FormsPDFTaskTemplate formsPDFTaskTemplate )
-    {
-		_dao.store(formsPDFTaskTemplate);
-		return formsPDFTaskTemplate;
-    }
-	
-	public static void remove( int nIdTemplate )
-    {
-        _dao.delete( nIdTemplate );
-    }
-	
-	public static FormsPDFTaskTemplate findByPrimaryKey( int nIdTemplate )
-	{
-		return _dao.load( nIdTemplate );
-	}
-	
-	public static List<FormsPDFTaskTemplate> findByIdFormPlusGenerics( int nIdForm )
-	{
-		return _dao.loadByIdFormPlusGenerics( nIdForm );
-	}
-	
-	public static List<FormsPDFTaskTemplate> findAll()
-	{
-		return _dao.selectAll();
-	}
-	
-	public static List<FormsPDFTaskTemplateDTO> findAllWithFormTitles()
-	{
-		return _dao.selectAllWithForms();
-	}
-
 }

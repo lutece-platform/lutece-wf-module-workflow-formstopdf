@@ -34,11 +34,15 @@
 package fr.paris.lutece.plugins.workflow.modules.formspdf.business;
 
 import fr.paris.lutece.plugins.workflowcore.business.config.TaskConfig;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Named;
 
 /**
  * Configuration for the FormsJasper workflow module
  *
  */
+@Dependent
+@Named( "workflow-formspdf.formsPDFTaskConfig" )
 public class FormsPDFTaskConfig extends TaskConfig
 {
 
