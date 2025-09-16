@@ -8,14 +8,14 @@
 	</parent>
 	<groupId>fr.paris.lutece.plugins</groupId>
 	<artifactId>module-workflow-formstopdf</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>lutece-plugin</packaging>
 	<name>Lutece workflow forms PDF module</name>
 	<scm>
 		<connection>scm:git:https://github.com/lutece-platform/lutece-wf-module-workflow-formstopdf.git</connection>
 		<developerConnection>scm:git:https://github.com/lutece-platform/lutece-wf-module-workflow-formstopdf.git</developerConnection>
 		<url>https://github.com/lutece-platform/lutece-wf-module-workflow-formstopdf.git</url>
-		<tag>module-workflow-formstopdf-1.0.1-develop-1.0.x</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<properties>
 		<componentName>workflow-formstopdf</componentName>
