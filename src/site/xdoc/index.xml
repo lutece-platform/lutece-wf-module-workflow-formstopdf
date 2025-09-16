@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
     <properties>
-        <title>Plugin workflow-forms</title>
+        <title>Module workflow formsToPdf</title>
     </properties>
     <body>
-        <section name="Plugin workflow-forms">
+        <section name="module workflow formsToPdf">
             <!--
             <p>
                 <img src="images/workflow-forms.png" />
             </p>
             -->
             <subsection name="Introduction">
-                <p></p>
+                <p>This module provides a task to create a PDF from a template and the data of a form Response.</p>
             </subsection>
             <subsection name="Configuration">
-                <p></p>
+                <p>Create a template, and select this template in the configuration page of the task.</p>
             </subsection>
             <subsection name="Usage">
                 <p></p>
