@@ -1,23 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
     <properties>
-        <title>Plugin workflow-forms</title>
+        <title>module-workflow-formstopdf</title>
     </properties>
+	<head>
+        	<meta name="keywords" content="pdf, html, template, form, workflow, task"/>
+    	</head>
     <body>
-        <section name="Plugin workflow-forms">
+        <section name="Module workflow forms-to-pdf">
             <!--
             <p>
                 <img src="images/workflow-forms.png" />
             </p>
             -->
             <subsection name="Introduction">
-                <p></p>
+                <p>This module provides a task to create a PDF from templates and form Response data.</p>
+                
             </subsection>
             <subsection name="Configuration">
-                <p></p>
+                <p>/!\  Prerequisite : the libawt_xawt.so library should be provided by the JDK. /!\ </p>
+                
+                
+                
+                
+                
             </subsection>
             <subsection name="Usage">
-                <p></p>
+                <p><strong>Templates</strong></p>
+                <p>Templates should be created from the back office feature. Templates use HTML.</p>
+                
+
+                <p>The "displayEntry" macro is used to display form response data in the HTML template. 
+
+This  macro takes a parameter “q” which corresponds to the value of the answer contained in “position_X”.</p>
+
+<p>Examples :</p>
+
+<pre><![CDATA[
+<#@displayEntry q=position_7/>
+]]></pre>
+Or 
+<pre><![CDATA[
+[#@displayEntry q=position_7/]
+]]></pre>
+
+          
+
+
+
+<p><strong>Customizing the display of question types (entrytype)</strong></p>
+
+<p>
+The Form plugin offers different types of questions: date, text, image, file etc. To adapt the display of answers according to their type (Entrytype), the module-workflow-formstopdf uses Freemarker macros.
+
+In the source code of the module, there is a macro whose role is to call the macro that corresponds to the Entrytype of the question.
+
+This "displayEntry" can be overridden , it is located here : .../webapp/WEB-INF/templates/admin/plugins/workflow/modules/formspdf/display_entries/displayEntry.ftl
+</p>
+
+<pre><![CDATA[
+<#macro displayEntry q>
+    <#if q??>
+        <#assign entry=q.question.entry >
+        <#assign list_responses=q.getEntryResponse() >
+
+        <#if entry.entryType.beanName == "forms.entryTypeArray">
+            <@displayEntryTypeArray entry=entry list_responses=list_responses  />
+        <#elseif entry.entryType.beanName == "forms.entryTypeAutomaticFileReading">
+            <@displayEntryTypeAutoFileReading entry=entry list_responses=list_responses  />
+            ...
+]]></pre>
+
+<p>The entry macros can be overriden, like </p>
+
+<pre><![CDATA[
+<#macro displayEntryTypeText entry list_responses>
+  <!-- override with custom content -->
+</#macro>  	     
+]]></pre>
+
+
+
+ <p><strong>Choice of Freemarker Macros Syntax</strong></p>
+                <p>To use macros in RichTextEditor, and avoid character escaping from the editor, you must modify the Freemarker syntax mode, by selecting the "brackets" mode.</p>
+                <p> <code> [#ftl] </code> will be added in the beginning of the template, and  Freemarker will recognize  macros use such as : </p>
+<pre><![CDATA[ [@myMacro arg1= arg1/]”.]]></pre>
+
+                
+                
             </subsection>
         </section>
     </body>
