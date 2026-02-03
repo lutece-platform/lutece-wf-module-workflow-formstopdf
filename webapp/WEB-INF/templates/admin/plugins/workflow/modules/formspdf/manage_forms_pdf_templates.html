@@ -7,9 +7,6 @@
             <@boxBody>    
                     <#if template_pdf_list?size gt 0>
                     	<@table>
-	                        <tr>
-	                        	<th>#i18n{module.workflow.formspdf.template.table.name}</th>
-	                        </tr>
 	                        <thead>
 								<tr>
 									<@th xs=6 sm=5 md=7>#i18n{module.workflow.formspdf.manage.template.name}</@th>
@@ -23,8 +20,8 @@
 			                        	<@td sm=6>${template_pdf.name}</@td>
 			                        	<@td sm=6>${template_pdf.formTitle!}</@td>
 			                            <@td sm=3>
-			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{manage.template.modify}' buttonIcon='pencil' showTitle=false />
-			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?action=removeTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{manage.template.delete}' buttonIcon='trash' color='danger' showTitle=false />
+			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{module.workflow.formspdf.manage.template.modify}' hideTitle=['all'] buttonIcon='pencil' showTitle=false />
+			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?action=removeTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{module.workflow.formspdf.manage.template.delete}' hideTitle=['all'] buttonIcon='trash' color='danger' showTitle=false />
 			                            </@td>
 			                        </tr>
 		                        </#list>
