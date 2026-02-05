@@ -27,8 +27,8 @@ Parameters: q (forms.FormQuestionResponse) - The form question response
 <#include "/admin/plugins/workflow/modules/formspdf/display_entries/displayEntryTypeTextArea.ftl" />
 
 
-<#macro displayEntry q>
-    <#if q??>
+<#macro displayEntry q="">
+    <#if q?? && q?has_content>
         <#assign entry=q.question.entry >
         <#assign list_responses=q.getEntryResponse() >
 
