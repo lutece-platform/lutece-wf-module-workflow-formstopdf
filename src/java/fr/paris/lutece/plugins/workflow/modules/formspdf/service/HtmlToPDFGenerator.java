@@ -50,6 +50,7 @@ import fr.paris.lutece.plugins.html2pdf.service.PdfConverterServiceException;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.file.FileUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -72,7 +73,7 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
      */
     public HtmlToPDFGenerator( String fileName, String fileDescription, FormResponse formResponse, FormsPDFTaskTemplate formsPDFTaskTemplate )
     {
-        super( fileName, fileDescription, formResponse, formsPDFTaskTemplate );
+        super( FileUtil.normalizeFileName( fileName ), fileDescription, formResponse, formsPDFTaskTemplate );
     }
     private static final boolean ZIP_EXPORT = Boolean.parseBoolean( AppPropertiesService.getProperty( "workflow-formspdf.export.pdf.zip", "false" ) );
     private static final String CONSTANT_MIME_TYPE_PDF = "application/pdf";
