@@ -25,12 +25,12 @@
                     <br/>
                    <@input type='hidden' name='rte' value=rte?c />
                          <#if rte>
-		        <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
+		                   <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
                            <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
                              <@input type='textarea' richtext=true name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
                            </@formGroup>
                          <#else>
-			<@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />	 
+			               <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
                            <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
                              <@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
                            </@formGroup>
@@ -43,7 +43,7 @@
             </@boxBody>
         </@box>
     </@columns>
-    <@columns sm=4>
+    <@columns sm=4 id="marker_descriptions_section">
     	<@marker_descriptions />
     </@columns>
 </@row>
@@ -55,6 +55,9 @@
 			document.getElementById("list_forms").style.display = 'block';
 		} else {
 			document.getElementById("list_forms").style.display = 'none';
+            const templatesForms = document.getElementById("template_id_form");
+            templatesForms.selectedIndex = 0;
+            templatesForms.dispatchEvent(new Event('change'));
 		}
   	}
 
@@ -76,4 +79,29 @@
             document.location.replace(url);
         }
     }
+
+    document.getElementById("template_id_form").addEventListener("change", function() {
+        const formId = this.value;
+        if (!formId) return;
+
+        const isRte = document.getElementById("rte").checked;
+        const params = new URLSearchParams({
+            action: "getMarkerDescriptions",
+            form_id: formId,
+            rte: isRte
+        });
+
+        fetch("jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?" + params)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById("marker_descriptions_section").innerHTML = data;
+            })
+            .catch(err => console.error(err));
+    });
+
 </script>
