@@ -24,9 +24,14 @@
 	<br/>
 </div>
 <script type="text/javascript">
-	$('#idForms').change(function(){
-		var selectedIdForm = $(this).val();
-		var idTask = "${id_task}";
-		window.location.href = "jsp/admin/plugins/workflow/ModifyTask.jsp?id_task=" + idTask + "&id_form_selected=" + selectedIdForm;
+	document.addEventListener('DOMContentLoaded', function () {
+		var formSelect = document.getElementById('idForms');
+		if (formSelect) {
+			formSelect.addEventListener('change', function () {
+				var selectedIdForm = this.value;
+				var idTask = "${id_task}";
+				window.location.href = "jsp/admin/plugins/workflow/ModifyTask.jsp?id_task=" + idTask + "&id_form_selected=" + selectedIdForm;
+			});
+		}
 	});
 </script>

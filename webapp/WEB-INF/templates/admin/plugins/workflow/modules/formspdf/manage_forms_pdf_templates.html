@@ -33,9 +33,11 @@
 						</@alert>
                     </#if>
             </@boxBody>
-            <@boxFooter>
-            	<@aButton href='jsp/admin/plugins/workflow/ModifyTask.jsp?id_task=${task_id}' buttonIcon='times-circle' title='#i18n{module.workflow.formspdf.manage.template.buttonCancel}' color='secondary'/>
-            </@boxFooter>
+            <#if task_id?? && task_id gt 0 >
+                <@boxFooter>
+            	    <@aButton href='jsp/admin/plugins/workflow/ModifyTask.jsp?id_task=${task_id}' buttonIcon='times-circle' title='#i18n{module.workflow.formspdf.manage.template.buttonCancel}' color='secondary'/>
+                </@boxFooter>
+            </#if>
         </@box>
     </@columns>
 </@row>

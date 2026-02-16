@@ -34,13 +34,21 @@
 package fr.paris.lutece.plugins.workflow.modules.formspdf.web.task;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import fr.paris.lutece.plugins.forms.util.FormsConstants;
+import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.RequestParam;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.ResponseBody;
+import fr.paris.lutece.util.ReferenceList;
+import fr.paris.lutece.util.html.HtmlTemplate;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import fr.paris.lutece.plugins.forms.business.Form;
@@ -56,7 +64,7 @@ import fr.paris.lutece.portal.web.cdi.mvc.Models;
 
 @RequestScoped
 @Named
-@Controller( controllerJsp = "ManageTemplates.jsp", controllerPath = "jsp/admin/plugins/workflow/modules/formspdf/", right = "WORKFLOW_MANAGEMENT", securityTokenEnabled = true )
+@Controller( controllerJsp = "ManageTemplates.jsp", controllerPath = "jsp/admin/plugins/workflow/modules/formspdf/", right = "FORMSPDF_TEMPLATES_MANAGEMENT", securityTokenEnabled = true )
 public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
 {
 
@@ -67,6 +75,7 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
 	// Templates
 	private static final String TEMPLATE_MANAGE_FORMS_PDF_TEMPLATES = "/admin/plugins/workflow/modules/formspdf/manage_forms_pdf_templates.html";
 	private static final String TEMPLATE_MODIFY_FORMS_PDF_TEMPLATE = "/admin/plugins/workflow/modules/formspdf/modify_forms_pdf_template.html";
+	private static final String TEMPLATE_MARKER_DESCRIPTIONS = "/admin/plugins/workflow/modules/formspdf/formspdf_marker_descriptions.html";
 	
 	// Views
     private static final String VIEW_MANAGE_TEMPLATES = "manageTemplates";
@@ -75,6 +84,7 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
     // Actions
     private static final String ACTION_MODIFY_TEMPLATE = "modifyTemplate";
     private static final String ACTION_REMOVE_TEMPLATE = "removeTemplate";
+	private static final String ACTION_GET_MARKER_DESCRIPTIONS = "getMarkerDescriptions";
     
     // Parameters
     private static final String PARAMETER_TASK_ID = "task_id";
@@ -148,7 +158,7 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
 		}
     	model.put( MARK_FORMS_PDF_TASK_TEMPLATE, formsPDFTaskTemplate );
     	
-    	model.put( MARK_FORMS_LIST, FormHome.getFormsReferenceList( ) );
+    	model.put( MARK_FORMS_LIST, getFormsList( ) );
     	
     	// markers
     	Form form = FormHome.findByPrimaryKey( formsPDFTaskTemplate.getIdForm( ) );
@@ -244,5 +254,44 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
 		}
 		return strtemplate;
 	}
+
+	@Action( value = ACTION_GET_MARKER_DESCRIPTIONS, securityTokenDisabled = true )
+	@ResponseBody
+	public String getMarkerDescriptions( @RequestParam(value = "form_id" ) int formId,
+										 @RequestParam(value = "rte" ) boolean rte,
+										 HttpServletRequest request )
+	{
+		Locale locale = null;
+		if( request != null )
+		{
+			locale = request.getLocale( );
+		}
+
+		Form form = FormHome.findByPrimaryKey( formId );
+		model.put( MARK_LIST_MARKERS, GenericFormsProvider.getProviderMarkerDescriptions( form != null ? form : new Form( ) ) );
+		model.put( MARK_RICH_TEXT_EDITOR, rte );
+
+		HtmlTemplate templateMarker = AppTemplateService.getTemplate( TEMPLATE_MARKER_DESCRIPTIONS, locale, model );
+		return templateMarker.getHtml( );
+	}
+
+	/**
+	 * Get the list of forms
+	 *
+	 * @return a ReferenceList
+	 */
+    private ReferenceList getFormsList( )
+    {
+        ReferenceList formsList = FormHome.getFormsReferenceList( );
+        ReferenceList referenceListForms = new ReferenceList( );
+		referenceListForms.addItem( FormsConstants.DEFAULT_ID_VALUE, StringUtils.EMPTY );
+
+        if ( formsList != null )
+        {
+			referenceListForms.addAll( formsList );
+        }
+
+        return referenceListForms;
+    }
 
 }
