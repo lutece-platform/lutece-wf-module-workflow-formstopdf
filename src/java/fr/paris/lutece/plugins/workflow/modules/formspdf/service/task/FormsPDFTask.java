@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.workflow.modules.formspdf.service.task;
 import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 
 import fr.paris.lutece.plugins.filegenerator.service.TemporaryFileGeneratorService;
 import fr.paris.lutece.plugins.forms.business.Form;
@@ -57,7 +56,6 @@ import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
-import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
 import fr.paris.lutece.plugins.forms.business.FormQuestionResponse;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 
@@ -113,7 +111,7 @@ public class FormsPDFTask extends Task
                 user = AdminUserService.getAdminUser( request );
             }
             FormResponse formResponse = FormResponseHome.findByPrimaryKey( nIdFormResponse );
-            Map<String, Object> model = GenericFormsProvider.getValuesModel( formResponse, request );
+            Map<String, Object> model = GenericFormsProvider.getValuesModel( formResponse, request, false );
             removeNullEntries ( model );
             
             formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
