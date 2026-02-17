@@ -123,7 +123,7 @@ public class FormsPDFTask extends Task
                 user = AdminUserService.getAdminUser( request );
             }
             FormResponse formResponse = FormResponseHome.findByPrimaryKey( nIdFormResponse );
-            Map<String, Object> model = GenericFormsProvider.getValuesModel( formResponse, request );
+            Map<String, Object> model = GenericFormsProvider.getValuesModel( formResponse, request, false );
             removeNullEntries ( model );
             
             formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
