@@ -36,6 +36,8 @@ package fr.paris.lutece.plugins.workflow.modules.formspdf.service.task;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jsoup.Jsoup;
+
 import fr.paris.lutece.plugins.filegenerator.service.TemporaryFileGeneratorService;
 import fr.paris.lutece.plugins.forms.business.Form;
 import fr.paris.lutece.plugins.forms.business.FormHome;
@@ -55,6 +57,8 @@ import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
 import fr.paris.lutece.plugins.forms.business.FormQuestionResponse;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.web.l10n.LocaleService;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -127,13 +131,39 @@ public class FormsPDFTask extends Task
             removeNullEntries ( model );
             
             formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
+             
+            if ( formsPDFTaskTemplate.isRte( ) )
+            {
+                formsPDFTaskTemplate.setContent( addSquareBracketTag( formsPDFTaskTemplate.getContent( ) ) );
+            }
+
+            Locale currentLocale = null != locale ? locale : LocaleService.getContextUserLocale( request );
+            String pdfFileName = "";
+            String templatePdfFileName = formsPDFTaskTemplate.getFileName( );
+            if ( null != templatePdfFileName && !"".equals( templatePdfFileName ) )
+            {
+                if ( formsPDFTaskTemplate.isRte( ) )
+                {
+                    formsPDFTaskTemplate.setFileName( addSquareBracketTag( formsPDFTaskTemplate.getFileName( ) ) );
+                }
+
+                try
+                {
+                    String templatedName = AppTemplateService.getTemplateFromStringFtl( formsPDFTaskTemplate.getFileName( ), currentLocale, model ).getHtml( );
+                    pdfFileName = Jsoup.parse( templatedName ).text( );
+                }
+                catch( Exception e )
+                {
+                    AppLogService.error( "FormsPDFTask, invalid file_name {} for template {}", ( ) -> templatePdfFileName, ( ) -> formsPDFTaskConfig.getIdTemplate( ) );
+                }
+                if ( 0 < pdfFileName.length( ) )
+                {
+                    pdfFileName = "_" + pdfFileName;
+                }
+            }
             
-           if(formsPDFTaskTemplate.isRte())
-           {
-               formsPDFTaskTemplate.setContent( addSquareBracketTag( formsPDFTaskTemplate.getContent( ) ) );
-           }
-            formsPDFTaskTemplate.setContent(AppTemplateService.getTemplateFromStringFtl(formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model).getHtml());
-            HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ), I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep,
+            formsPDFTaskTemplate.setContent(AppTemplateService.getTemplateFromStringFtl(formsPDFTaskTemplate.getContent(), currentLocale, model).getHtml());
+            HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ) + pdfFileName, I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep,
                     formsPDFTaskTemplate );
             _temporaryFileGeneratorService.generateFile( htmltopdf, user );
         }
