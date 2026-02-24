@@ -45,20 +45,20 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO {
 	
-	 private static final String SQL_QUERY_SELECTALL = "SELECT id_template, name, id_form, is_generic, content, is_rte FROM workflow_task_formspdf_template";
+	 private static final String SQL_QUERY_SELECTALL = "SELECT id_template, name, id_form, is_generic, content, is_rte, file_name FROM workflow_task_formspdf_template";
 
 	 private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECTALL + " WHERE id_template = ?";
 	 
-	 private static final String SQL_QUERY_SELECT_WITH_FORM = "SELECT worklow_template.id_template, worklow_template.name, worklow_template.id_form, form.title, worklow_template.is_generic, worklow_template.content, worklow_template.is_rte FROM workflow_task_formspdf_template worklow_template"
+	 private static final String SQL_QUERY_SELECT_WITH_FORM = "SELECT worklow_template.id_template, worklow_template.name, worklow_template.id_form, form.title, worklow_template.is_generic, worklow_template.content, worklow_template.is_rte, worklow_template.file_name FROM workflow_task_formspdf_template worklow_template"
 	 		+ " LEFT JOIN forms_form form ON form.id_form = worklow_template.id_form";
 	 
 	 private static final String SQL_QUERY_SELECT_BY_ID_FORM_OR_GENERIC = SQL_QUERY_SELECTALL + " WHERE id_form = ? OR is_generic = true";
 	 
-	 private static final String SQL_QUERY_INSERT = "INSERT INTO workflow_task_formspdf_template ( name, id_form, is_generic, content, is_rte ) VALUES ( ?, ?, ?, ?, ? ) ";
+	 private static final String SQL_QUERY_INSERT = "INSERT INTO workflow_task_formspdf_template ( name, id_form, is_generic, content, is_rte, file_name ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
 	 
 	 private static final String SQL_QUERY_DELETE = "DELETE FROM workflow_task_formspdf_template WHERE id_template = ? ";
 	 
-	 private static final String SQL_QUERY_UPDATE = "UPDATE workflow_task_formspdf_template SET name = ?, id_form = ?, is_generic = ?, content = ?, is_rte = ? WHERE id_template = ?";
+	 private static final String SQL_QUERY_UPDATE = "UPDATE workflow_task_formspdf_template SET name = ?, id_form = ?, is_generic = ?, content = ?, is_rte = ?, file_name = ? WHERE id_template = ?";
 	 @Override
 	 public void insert(FormsPDFTaskTemplate formsPDFTaskTemplate)
 	 {
@@ -70,6 +70,7 @@ public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO {
 			daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isGeneric());
 			daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getContent() );
 			daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isRte() );
+			daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getFileName( ) );
 			
 			daoUtil.executeUpdate( );
 			
@@ -92,6 +93,7 @@ public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO {
 			 daoUtil.setBoolean(++nIndex, formsPDFTaskTemplate.isGeneric());
 			 daoUtil.setString(++nIndex, formsPDFTaskTemplate.getContent());
 			 daoUtil.setBoolean(++nIndex, formsPDFTaskTemplate.isRte());
+			 daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getFileName( ) );
 
 			 daoUtil.setInt(++nIndex, formsPDFTaskTemplate.getId());
 
@@ -189,7 +191,8 @@ public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO {
 		formsPDFTaskTemplateDto.setContent(formsPDFTaskTemplate.getContent());
 		formsPDFTaskTemplateDto.setRte(formsPDFTaskTemplate.isRte());
 		formsPDFTaskTemplateDto.setFormTitle(daoUtil.getString( "title" ));
-		
+		formsPDFTaskTemplateDto.setFileName(formsPDFTaskTemplate.getFileName( ) );
+
 		return formsPDFTaskTemplateDto;
 	}
 	
@@ -203,7 +206,8 @@ public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO {
 		formsPDFTaskTemplate.setGeneric(daoUtil.getBoolean( "is_generic" ) );
 		formsPDFTaskTemplate.setContent( daoUtil.getString( "content" ) );
 		formsPDFTaskTemplate.setRte( daoUtil.getBoolean( "is_rte" ) );
-		
+		formsPDFTaskTemplate.setFileName( daoUtil.getString( "file_name" ) );
+
 		return formsPDFTaskTemplate;
 	}
 }
