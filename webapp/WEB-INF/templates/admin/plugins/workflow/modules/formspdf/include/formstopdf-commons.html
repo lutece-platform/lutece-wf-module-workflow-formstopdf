@@ -16,7 +16,13 @@
                     </#if>
                 </#if>
             </@td>
-       <#if marker.marker?contains("position_")>
+       <#if marker.marker?starts_with("position_")>
+         <#if rte>
+             <#assign markerMacro = "[@displayEntry q="+ marker.marker + "/]">
+         <#else>
+             <#assign markerMacro = "<@displayEntry q="+ marker.marker +"/>">
+         </#if>
+       <#elseif marker.marker?starts_with("code_")>
          <#if rte>
              <#assign markerMacro = "[@displayEntry q="+ marker.marker + "/]">
          <#else>
