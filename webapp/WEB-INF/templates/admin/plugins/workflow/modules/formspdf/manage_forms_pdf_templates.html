@@ -1,43 +1,23 @@
-<@row>
-    <@columns>
-        <@box>
-            <@boxHeader title='#i18n{module.workflow.formspdf.manage.template.title}' boxTools=true>
-                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&task_id=${task_id}' buttonIcon='plus' title='#i18n{module.workflow.formspdf.manage.template.buttonAdd}' />                
-            </@boxHeader>
-            <@boxBody>    
-                    <#if template_pdf_list?size gt 0>
-                    	<@table>
-	                        <thead>
-								<tr>
-									<@th xs=6 sm=5 md=7>#i18n{module.workflow.formspdf.manage.template.name}</@th>
-									<@th xs=6 sm=5 md=4>#i18n{module.workflow.formspdf.manage.template.form}</@th>
-									<@th xs=5 sm=3 md=4>#i18n{module.workflow.formspdf.manage.template.columnActions}</@th>
-								</tr>
-							</thead>
-	                        <tbody>
-	                        	<#list template_pdf_list as template_pdf >
-			                        <tr>
-			                        	<@td sm=6>${template_pdf.name}</@td>
-			                        	<@td sm=6>${template_pdf.formTitle!}</@td>
-			                            <@td sm=3>
-			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{module.workflow.formspdf.manage.template.modify}' hideTitle=['all'] buttonIcon='pencil' showTitle=false />
-			                                <@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?action=removeTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{module.workflow.formspdf.manage.template.delete}' hideTitle=['all'] buttonIcon='trash' color='danger' showTitle=false />
-			                            </@td>
-			                        </tr>
-		                        </#list>
-	                        </tbody>
-	                    </@table>
-                    <#else>
-                    	<@alert color='warning'>
-							<@icon style='exclamation-triangle' /> #i18n{module.workflow.formspdf.manage.template.noResults}
-						</@alert>
-                    </#if>
-            </@boxBody>
-            <#if task_id?? && task_id gt 0 >
-                <@boxFooter>
-            	    <@aButton href='jsp/admin/plugins/workflow/ModifyTask.jsp?id_task=${task_id}' buttonIcon='times-circle' title='#i18n{module.workflow.formspdf.manage.template.buttonCancel}' color='secondary'/>
-                </@boxFooter>
-            </#if>
-        </@box>
-    </@columns>
-</@row>
+<@pageContainer>
+    <@pageColumn>
+		<@pageHeader title='#i18n{module.workflow.formspdf.manage.template.title}' boxTools=true>
+			<@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&task_id=${task_id}' buttonIcon='plus' title='#i18n{module.workflow.formspdf.manage.template.buttonAdd}' />                
+		</@pageHeader>
+		<#if template_pdf_list?size gt 0>
+			<@manageFeature>
+			<#list template_pdf_list as template_pdf >
+				<@manageFeatureItem>
+					<@manageFeatureItemColumn>#i18n{module.workflow.formspdf.manage.template.name} : ${template_pdf.name} - #i18n{module.workflow.formspdf.manage.template.form} : ${template_pdf.formTitle!}</@manageFeatureItemColumn>
+					<@manageFeatureItemColumn align='end'>
+						<@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{module.workflow.formspdf.manage.template.modify}' hideTitle=['all'] buttonIcon='pencil' showTitle=false />
+						<@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?action=removeTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{module.workflow.formspdf.manage.template.delete}' hideTitle=['all'] buttonIcon='trash' color='danger' showTitle=false />
+					</@manageFeatureItemColumn>
+				</@manageFeatureItem>
+			</#list>
+			</@manageFeature>
+			<#if task_id?? && task_id gt 0 ><@p><@aButton href='jsp/admin/plugins/workflow/ModifyTask.jsp?id_task=${task_id}' buttonIcon='times-circle' title='#i18n{module.workflow.formspdf.manage.template.buttonCancel}' color='secondary'/></@p></#if>
+		<#else>
+			<@empty title='#i18n{module.workflow.formspdf.manage.template.noResults}' />
+		</#if>
+	</@pageColumn>
+</@pageContainer>
