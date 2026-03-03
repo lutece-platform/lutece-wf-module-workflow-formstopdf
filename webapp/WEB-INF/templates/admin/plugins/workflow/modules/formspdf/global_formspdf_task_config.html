@@ -1,37 +1,36 @@
-<div class="container">
-	<@row>
-		<@columns xs=12 sm=12 md=12 lg=12 xl=12 >
-			<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.forms}' mandatory=true >
-				<@inputGroup>
-					<@select params='required' name='idForms' id="idForms" items=forms_list default_value='${id_form_selected}' />
-				 </@inputGroup>
-			</@formGroup>
-			
-			<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.jasper_formats}' mandatory=true >
-				<@select params='required' name='format' items=formats_list default_value='${(config.format)!0}' />
-			</@formGroup>
-			
-			<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.template}' >
+<@row>
+	<@columns>
+		<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.name}' mandatory=true >
+			<@input type='text' name='name' id='name' value='${(config.name)!}' params='required' /> 
+		</@formGroup>
+		<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.description}' >
+			<@input type='textarea' name='description' id='description' value='${(config.description)!}' />
+		</@formGroup>
+		<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.forms}' mandatory=true >
+			<@inputGroup>
+				<@select params='required' name='idForms' id="idForms" items=forms_list default_value='${id_form_selected}' />
+			</@inputGroup>
+		</@formGroup>
+		<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.jasper_formats}' mandatory=true >
+			<@select params='required' name='format' items=formats_list default_value='${(config.format)!0}' />
+		</@formGroup>
+		<@formGroup labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.template}' >
+			<@inputGroup>
 				<@select name='idTemplate' id='idTemplate' items=template_pdf_list default_value='${(config.idTemplate)!0}' />
-			</@formGroup>
-		</@columns>
-	</@row>
-	<@row>
-		<@columns xs=4 sm=4 md=4 lg=4 xl=4 >
-			<a class="btn btn-primary " href="jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=manageTemplates&task_id=${id_task!0}">#i18n{module.workflow.formspdf.manage.template.button}</a>
-		</@columns>
-	</@row>
-	<br/>
-</div>
-<script type="text/javascript">
-	document.addEventListener('DOMContentLoaded', function () {
-		var formSelect = document.getElementById('idForms');
-		if (formSelect) {
-			formSelect.addEventListener('change', function () {
-				var selectedIdForm = this.value;
-				var idTask = "${id_task}";
-				window.location.href = "jsp/admin/plugins/workflow/ModifyTask.jsp?id_task=" + idTask + "&id_form_selected=" + selectedIdForm;
-			});
-		}
-	});
+				<@aButton class='btn btn-primary' buttonIcon='settings' href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=manageTemplates&task_id=${id_task!0}' title='#i18n{module.workflow.formspdf.manage.template.button}' />
+			</@inputGroup>
+		</@formGroup>
+	</@columns>
+</@row>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	var formSelect = document.getElementById('idForms');
+	if (formSelect) {
+		formSelect.addEventListener('change', function () {
+			var selectedIdForm = this.value;
+			var idTask = "${id_task}";
+			window.location.href = "jsp/admin/plugins/workflow/ModifyTask.jsp?id_task=" + idTask + "&id_form_selected=" + selectedIdForm;
+		});
+	}
+});
 </script>

@@ -1,19 +1,21 @@
 <#macro marker_descriptions>
-<h3>#i18n{module.workflow.formspdf.markers.label_table_title}</h3>
-<@table>
-    <tr>
-        <th>#i18n{module.workflow.formspdf.markers.label_description}</th>
-        <th>#i18n{module.workflow.formspdf.markers.label_marker}</th>
-        <th></th>
-    </tr>
-    <#if list_markers?exists>
+<@h level=3>#i18n{module.workflow.formspdf.markers.label_table_title}</@h>
+<#-- #i18n{module.workflow.formspdf.markers.label_description} / #i18n{module.workflow.formspdf.markers.label_marker} -->
+<#if list_markers?exists>
+<@manageFeature>
     <#list list_markers as marker>
-        <tr>
-            <@td class='marker'>
-                <#if marker.description ??>
-                    <#assign description=i18n(marker.description) />
-                    <#if description?has_content>${description}<#else>${marker.description!''}
-                    </#if>
+        <@manageFeatureItem>
+            <@manageFeatureItemColumn class='marker' flex=false>
+            <#if marker.description ??>
+                <#local description=i18n(marker.description) />
+                <#local desc><#if description?has_content>${description}<#else>${marker.description!''}</#if></#local>
+            </#if>
+            <@span class='me-2 fw-bold'>${desc!} : </@span>
+            <#if marker.marker?contains("position_")>
+                <#if rte>
+                    <#assign markerMacro = "[@displayEntry q="+ marker.marker + "/]">
+                <#else>
+                    <#assign markerMacro = "<@displayEntry q="+ marker.marker +"/>">
                 </#if>
             </@td>
        <#if marker.marker?starts_with("position_")>
@@ -36,23 +38,9 @@
            </@td>
         </tr>
     </#list>
-    <#else>
-        <tr>
-            <@td colspan=3></@td>
-        </tr>
-    </#if>
-</@table>
-
-<@copyElementToClipboard selector='.copy-content' class='"copy-icon"' />
-<style>
-		.marker:hover:hover {
-			cursor: pointer;
-			opacity: .8
-		}
-
-		.marker:nth-child(even) td {
-			background: #777;
-			color: #fff
-		}
-</style>
+</@manageFeature>
+<@copyElementToClipboard btnAbsolute=true btnEnd='-0.5rem' />
+<#else>
+<@empty />
+</#if>
 </#macro>

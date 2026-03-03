@@ -1,19 +1,19 @@
 <#include "/admin/plugins/workflow/modules/formspdf/include/formstopdf-commons.html"/>
 <#include "/admin/util/editor/editor.html" />
 <@initEditor />
-<@row>
-    <@columns sm=8>
-        <@box>
-            <@boxHeader title='#i18n{module.workflow.formspdf.modify.template.title}' />
-            <@boxBody>
-                <@tform name='modify_template' action='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp'>
+<@pageContainer>
+    <@pageColumn>
+		<@pageHeader title='#i18n{module.workflow.formspdf.modify.template.title}' />
+        <@row>
+            <@columns xs=12 sm=8>
+                <@tform name='modify_template' action='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp' >
                     <@messages errors=errors />
                     <@input type="hidden" id="template_id" name="template_id" value="${forms_pdf_task_template.id}"/>
                     <@input type="hidden" id="task_id" name="task_id" value="${task_id}"/>
+                    <@input type='hidden' name='rte' value=rte?c />
                     <@formGroup labelFor='template_name' labelKey='#i18n{module.workflow.formspdf.modify.template.name}' mandatory=true>
 	                    <@input type='text' name='template_name' id='template_name' value="${forms_pdf_task_template.name!}" maxlength=50 />
                     </@formGroup>
-                    <br/>
 					<@formGroup>
 						<@checkBox orientation='switch' labelFor='template_associate_form' labelKey='#i18n{module.workflow.formspdf.modify.template.generic}' name='template_associate_form' id='template_associate_form' value='true' checked=(!forms_pdf_task_template.generic)!false params='onchange="javascript:toggleAssociateForm();"' />
 					</@formGroup>
@@ -22,89 +22,84 @@
 							<@select name='template_id_form' id="template_id_form" items=forms_list default_value='${(forms_pdf_task_template.idForm)!0}' />
 						 </@inputGroup>
 					</@formGroup>
-                    <br/>
-                   <@input type='hidden' name='rte' value=rte?c />
-                         <#if rte>
-		                   <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
-                           <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
-                             <@input type='textarea' richtext=true name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
-                           </@formGroup>
-                         <#else>
-			               <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
-                           <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
-                             <@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
-                           </@formGroup>
-                         </#if>
-                         <@formGroup labelFor='template_filename' labelKey='#i18n{module.workflow.formspdf.modify.template.filename}' helpKey='#i18n{module.workflow.formspdf.modify.template.filenameComment}'>
-                           <@input type='text' name='template_filename' id='template_filename' value="${forms_pdf_task_template.fileName!}" maxlength=350 />
-                         </@formGroup>
+                    <#if rte>
+                    <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
+                    <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
+                        <@input type='textarea' richtext=true name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
+                    </@formGroup>
+                    <#else>
+                    <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
+                    <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
+                        <@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
+                    </@formGroup>
+                    </#if>
                     <@formGroup>
 						<@button type='submit' name='action_modifyTemplate' buttonIcon='check' title='#i18n{module.workflow.formspdf.modify.template.buttonSave}' />
 						<@button type='cancel' buttonIcon='times' title='#i18n{module.workflow.formspdf.modify.template.buttonCancel}' cancel=true />
 					</@formGroup>
                 </@tform>
-            </@boxBody>
-        </@box>
-    </@columns>
-    <@columns sm=4 id="marker_descriptions_section">
-    	<@marker_descriptions />
-    </@columns>
-</@row>
-<script type="text/javascript">
-	toggleAssociateForm();
-	function toggleAssociateForm() {
-		if(document.getElementById("template_associate_form").checked)
-		{
-			document.getElementById("list_forms").style.display = 'block';
-		} else {
-			document.getElementById("list_forms").style.display = 'none';
-            const templatesForms = document.getElementById("template_id_form");
-            templatesForms.selectedIndex = 0;
-            templatesForms.dispatchEvent(new Event('change'));
-		}
-  	}
-
-    /**
-     * Toggle the RTE
-     */
-    function toggleRTE() {
-        let url = window.location.href;
-        let rteValue = !document.getElementById("rte").checked;
-        const rteIndex = url.indexOf("rte=");
-        if(rteIndex === -1) {
-            url = url + "&rte=" + rteValue;
-        }
-        if(rteValue){
-            url = url.replace("rte=true", "rte=false");
-            document.location.replace(url);
-        } else {
-            url = url.replace("rte=false", "rte=true");
-            document.location.replace(url);
-        }
+            </@columns>
+            <@columns xs=12 sm=4 id='marker_descriptions_section'>
+                <@marker_descriptions />
+            </@columns>
+        </@row>
+    </@pageColumn>
+</@pageContainer>
+<script>
+function toggleAssociateForm() {
+    if(document.getElementById("template_associate_form").checked)
+    {
+        document.getElementById("list_forms").style.display = 'block';
+    } else {
+        document.getElementById("list_forms").style.display = 'none';
+        const templatesForms = document.getElementById("template_id_form");
+        templatesForms.selectedIndex = 0;
+        templatesForms.dispatchEvent(new Event('change'));
     }
+}
 
-    document.getElementById("template_id_form").addEventListener("change", function() {
-        const formId = this.value;
-        if (!formId) return;
+toggleAssociateForm();
 
-        const isRte = document.getElementById("rte").checked;
-        const params = new URLSearchParams({
-            action: "getMarkerDescriptions",
-            form_id: formId,
-            rte: isRte
-        });
+/**
+ * Toggle the RTE
+ */
+function toggleRTE() {
+    let url = window.location.href;
+    let rteValue = !document.getElementById("rte").checked;
+    const rteIndex = url.indexOf("rte=");
+    if(rteIndex === -1) {
+        url = url + "&rte=" + rteValue;
+    }
+    if(rteValue){
+        url = url.replace("rte=true", "rte=false");
+        document.location.replace(url);
+    } else {
+        url = url.replace("rte=false", "rte=true");
+        document.location.replace(url);
+    }
+}
 
-        fetch("jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?" + params)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('HTTP error! status: ' + response.status);
-                }
-                return response.text();
-            })
-            .then(data => {
-                document.getElementById("marker_descriptions_section").innerHTML = data;
-            })
-            .catch(err => console.error(err));
-    });
+document.getElementById("template_id_form").addEventListener("change", function() {
+const formId = this.value;
+if (!formId) return;
 
+const isRte = document.getElementById("rte").checked;
+const params = new URLSearchParams({
+    action: "getMarkerDescriptions",
+    form_id: formId,
+    rte: isRte
+});
+
+fetch("jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?" + params)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('HTTP error! status: ' + response.status);
+        }
+        return response.text();
+    })
+    .then(data => {
+        document.getElementById("marker_descriptions_section").innerHTML = data;
+    })
+    .catch(err => console.error(err));
+});
 </script>
