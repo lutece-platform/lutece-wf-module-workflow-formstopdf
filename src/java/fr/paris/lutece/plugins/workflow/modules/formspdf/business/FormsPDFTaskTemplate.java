@@ -51,7 +51,9 @@ public class FormsPDFTaskTemplate {
 	private String _strContent;
 
 	private boolean _isRte;
-	
+
+	private String _strFileName;
+
 	public int getId() {
 		return _nId;
 	}
@@ -88,14 +90,29 @@ public class FormsPDFTaskTemplate {
 		return _bGeneric;
 	}
 
-	public void setGeneric(boolean bGeneric) {
-		this._bGeneric = bGeneric;
-	}
-	public boolean isRte() {
-		return _isRte;
-	}
-	public void setRte(boolean isRte) {
-		this._isRte = isRte;
-	}
+    public void setGeneric( boolean bGeneric )
+    {
+        this._bGeneric = bGeneric;
+    }
+
+    public boolean isRte( )
+    {
+        return _isRte;
+    }
+
+    public void setRte( boolean isRte )
+    {
+        this._isRte = isRte;
+    }
+
+    public String getFileName( )
+    {
+        return _strFileName;
+    }
+
+    public void setFileName( String strFileName )
+    {
+        this._strFileName = strFileName;
+    }
 
 }

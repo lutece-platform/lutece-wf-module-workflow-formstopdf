@@ -17,12 +17,26 @@
                 <#else>
                     <#assign markerMacro = "<@displayEntry q="+ marker.marker +"/>">
                 </#if>
-            <#else>
-                <#assign markerMacro = "${"+marker.marker+"}">
-            </#if>
-              <@span class='copy-content' params='data-title="#i18n{portal.util.labelCopy} ${desc}"'>${markerMacro}</@span>
-           </@manageFeatureItemColumn>
-        </@manageFeatureItem>
+            </@td>
+       <#if marker.marker?starts_with("position_")>
+         <#if rte>
+             <#assign markerMacro = "[@displayEntry q="+ marker.marker + "/]">
+         <#else>
+             <#assign markerMacro = "<@displayEntry q="+ marker.marker +"/>">
+         </#if>
+       <#elseif marker.marker?starts_with("code_")>
+         <#if rte>
+             <#assign markerMacro = "[@displayEntry q="+ marker.marker + "/]">
+         <#else>
+             <#assign markerMacro = "<@displayEntry q="+ marker.marker +"/>">
+         </#if>
+       <#else>
+            <#assign markerMacro = "${"+marker.marker+"}">
+       </#if>
+           <@td>
+              <@span class='copy-content'>${markerMacro}</@span>
+           </@td>
+        </tr>
     </#list>
 </@manageFeature>
 <@copyElementToClipboard btnAbsolute=true btnEnd='-0.5rem' />

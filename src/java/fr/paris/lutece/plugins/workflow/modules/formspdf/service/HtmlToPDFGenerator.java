@@ -52,7 +52,6 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.file.FileUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class HtmlToPDFGenerator.
  */
