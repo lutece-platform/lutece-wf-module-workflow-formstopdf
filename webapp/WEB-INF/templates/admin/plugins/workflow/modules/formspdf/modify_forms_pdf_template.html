@@ -33,6 +33,9 @@
                         <@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
                     </@formGroup>
                     </#if>
+                    <@formGroup labelFor='template_filename' labelKey='#i18n{module.workflow.formspdf.modify.template.filename}' helpKey='#i18n{module.workflow.formspdf.modify.template.filenameComment}'>
+                        <@input type='text' name='template_filename' id='template_filename' value="${forms_pdf_task_template.fileName!}" maxlength=350 />
+                    </@formGroup>
                     <@formGroup>
 						<@button type='submit' name='action_modifyTemplate' buttonIcon='check' title='#i18n{module.workflow.formspdf.modify.template.buttonSave}' />
 						<@button type='cancel' buttonIcon='times' title='#i18n{module.workflow.formspdf.modify.template.buttonCancel}' cancel=true />
