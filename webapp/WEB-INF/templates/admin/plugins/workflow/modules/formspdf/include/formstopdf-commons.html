@@ -1,15 +1,16 @@
+<#macro marker_descriptions>
 <@h level=3>#i18n{module.workflow.formspdf.markers.label_table_title}</@h>
 <#-- #i18n{module.workflow.formspdf.markers.label_description} / #i18n{module.workflow.formspdf.markers.label_marker} -->
-<#if list_markers?exists>
+<#if list_markers??>
 <@manageFeature>
 <#list list_markers as marker>
     <@manageFeatureItem>
         <@manageFeatureItemColumn flex=false>
-            <#if marker.description ??>
-                <#local description=i18n(marker.description) />
-                <#local desc><#if description?has_content>${description}<#else>${marker.description!''}</#if></#local>
-            </#if>
-            <@span class='me-2 fw-bold'>${desc!} : </@span>
+           <#if marker.description ??>
+                <#assign description=i18n(marker.description) />
+                <#assign desc><#if description?has_content>${description!''}<#else>${marker.description!''}</#if></#assign>
+           </#if>
+           <@span class='me-2 fw-bold'>${desc!} : </@span>
            <#if marker.marker?starts_with("position_")>
                 <#if rte>
                     <#assign markerMacro = "[@displayEntry q="+ marker.marker + "/]">
