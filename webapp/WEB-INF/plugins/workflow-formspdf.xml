@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><plug-in>
     <name>workflow-formspdf</name>
     <class>fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation</class>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1-beta-02</version>
     <documentation/>
     <installation/>
     <changes/>
@@ -10,7 +10,7 @@
     <provider>module.workflow.formsjasper.module.provider</provider>
     <provider-url>http://lutece.paris.fr</provider-url>
     <icon-url>images/admin/skin/feature_default_icon.png</icon-url>
-    <copyright>Copyright (c) 2018 Mairie de Paris</copyright>
+    <copyright>Copyright (c) 2026 Mairie de Paris</copyright>
     <db-pool-required>1</db-pool-required>
     <freemarker-macro-files>
         <freemarker-macro-file>admin/plugins/workflow/modules/formspdf/display_entries/displayEntry.ftl</freemarker-macro-file>
