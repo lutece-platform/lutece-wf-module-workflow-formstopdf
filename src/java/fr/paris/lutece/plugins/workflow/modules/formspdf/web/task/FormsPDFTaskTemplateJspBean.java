@@ -61,6 +61,7 @@ import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.web.cdi.mvc.Models;
+import fr.paris.lutece.portal.web.constants.Messages;
 
 @RequestScoped
 @Named
@@ -172,6 +173,12 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
     @Action( value = ACTION_MODIFY_TEMPLATE )
     public String doModifyTemplate( HttpServletRequest request )
     {
+    	if ( StringUtils.isBlank( request.getParameter( PARAMETER_TEMPLATE_CONTENT ) ) )
+    	{
+    		addError( Messages.MANDATORY_FIELDS, getLocale( ) );
+    		return getModifyTemplate( request );
+    	}
+
     	int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
     	FormsPDFTaskTemplate formsPDFTaskTemplateToEdit = FormsPDFTaskTemplateHome.findByPrimaryKey( nIdTemplate );
     	
