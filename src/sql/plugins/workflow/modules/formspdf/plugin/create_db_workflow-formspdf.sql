@@ -21,6 +21,7 @@ CREATE TABLE workflow_task_formspdf_template (
 	is_generic SMALLINT DEFAULT 1 NOT NULL,
 	content LONG VARCHAR,
     is_rte SMALLINT DEFAULT 0 NOT NULL,
+    file_name VARCHAR(350),
 	PRIMARY KEY (id_template)
 )
 ;
