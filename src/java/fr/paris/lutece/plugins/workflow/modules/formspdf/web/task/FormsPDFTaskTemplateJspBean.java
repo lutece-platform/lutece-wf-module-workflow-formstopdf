@@ -96,6 +96,7 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
     private static final String PARAMETER_TEMPLATE_CONTENT = "template_content";
 	private static final String PARAMETER_RICH_TEXT_EDITOR = "rte";
 	private static final String PARAMETER_TEMPLATE_FILE_NAME = "template_filename";
+	private static final String PARAMETER_TEMPLATE_REPLACE_EMPTY = "checkbox_replaceEmpty";
 
 	// Markers
 	private static final String MARK_RICH_TEXT_EDITOR = "rte";
@@ -232,6 +233,7 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
 		formsPDFTaskTemplateToEdit.setContent( request.getParameter( PARAMETER_TEMPLATE_CONTENT ) );
 		formsPDFTaskTemplateToEdit.setRte( Boolean.parseBoolean( request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) ) );
 		formsPDFTaskTemplateToEdit.setFileName( request.getParameter( PARAMETER_TEMPLATE_FILE_NAME ) );
+		formsPDFTaskTemplateToEdit.setReplaceEmpty( Boolean.parseBoolean( request.getParameter( PARAMETER_TEMPLATE_REPLACE_EMPTY ) ) );
 
 		return formsPDFTaskTemplateToEdit;
     }

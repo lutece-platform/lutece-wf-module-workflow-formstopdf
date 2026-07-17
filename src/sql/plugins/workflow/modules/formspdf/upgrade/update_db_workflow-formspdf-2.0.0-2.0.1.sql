@@ -7,3 +7,6 @@ INSERT INTO core_admin_right (id_right,name,level_right,admin_url,description,is
 
 -- changeset workflow-formspdf:update_db_workflow-formspdf-2.0.0-2.0.1-rev1.sql    
 ALTER TABLE workflow_task_formspdf_template ADD COLUMN file_name VARCHAR(350);
+
+-- changeset workflow-formspdf:update_db_workflow-formspdf-2.0.0-2.0.1-rev1.sql
+ALTER TABLE workflow_task_formspdf_template ADD COLUMN is_replace_empty_response SMALLINT DEFAULT 0 NOT NULL;

@@ -54,6 +54,8 @@ public class FormsPDFTaskTemplate {
 
 	private String _strFileName;
 
+	private boolean _isReplaceEmpty;
+
 	public int getId() {
 		return _nId;
 	}
@@ -115,4 +117,7 @@ public class FormsPDFTaskTemplate {
         this._strFileName = strFileName;
     }
 
+    public boolean isReplaceEmpty() { return _isReplaceEmpty; }
+
+    public void setReplaceEmpty(boolean _isReplaceEmpty) { this._isReplaceEmpty = _isReplaceEmpty; }
 }

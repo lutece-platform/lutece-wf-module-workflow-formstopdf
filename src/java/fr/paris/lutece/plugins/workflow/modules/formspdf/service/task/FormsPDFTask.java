@@ -33,9 +33,9 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.formspdf.service.task;
 
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
+import org.apache.logging.log4j.util.Strings;
 import org.jsoup.Jsoup;
 
 import fr.paris.lutece.plugins.filegenerator.service.TemporaryFileGeneratorService;
@@ -78,6 +78,7 @@ public class FormsPDFTask extends Task
      */
     private static final String PROPERTY_LABEL_TITLE = "module.workflow.formspdf.title";
     private static final String PROPERTY_LABEL_DESCRIPTION = "module.workflow.formspdf.export.pdf.description";
+    private static final String EMPTY_RESPONSE_VALUE = "module.workflow.formspdf.modify.template.replaceEmpty.defaultValue";
     private static final String FTL_SQUARE_BRACKET_TAG = "[#ftl]";
 
     /**
@@ -116,6 +117,8 @@ public class FormsPDFTask extends Task
         FormsPDFTaskTemplate formsPDFTaskTemplate = null;
         try
         {
+            Locale currentLocale = null != locale ? locale : LocaleService.getContextUserLocale( request );
+
             nIdFormResponse = resourceHistory.getIdResource( );
 
             FormResponse frep = FormResponseHome.findByPrimaryKey( nIdFormResponse );
@@ -129,15 +132,19 @@ public class FormsPDFTask extends Task
             FormResponse formResponse = FormResponseHome.findByPrimaryKey( nIdFormResponse );
             Map<String, Object> model = GenericFormsProvider.getValuesModel( formResponse, request, false );
             removeNullEntries ( model );
-            
+
             formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
+
+            if ( formsPDFTaskTemplate.isReplaceEmpty() ){
+                replaceNullEntries( model , currentLocale );
+            }
+
              
             if ( formsPDFTaskTemplate.isRte( ) )
             {
                 formsPDFTaskTemplate.setContent( addSquareBracketTag( formsPDFTaskTemplate.getContent( ) ) );
             }
 
-            Locale currentLocale = null != locale ? locale : LocaleService.getContextUserLocale( request );
             String pdfFileName = "";
             String templatePdfFileName = formsPDFTaskTemplate.getFileName( );
             if ( null != templatePdfFileName && !"".equals( templatePdfFileName ) )
@@ -176,6 +183,7 @@ public class FormsPDFTask extends Task
             throw new RuntimeException( strError, e );
         }
     }
+
 
     @Override
     public String getTitle( Locale locale )
@@ -231,6 +239,27 @@ public class FormsPDFTask extends Task
 		return false;
 	    }
 	});
+    }
+
+    /**
+     * Replace null or empty entries by a defaultValue
+     *
+     * @param model         the model
+     * @param currentLocale
+     */
+    private void replaceNullEntries(Map<String, Object> model, Locale currentLocale)
+    {
+        model.forEach((key, value) ->
+        {
+            if (key.contains("code_")) {
+                FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get(key);
+                Optional.ofNullable(formQuestionResponse).map(FormQuestionResponse::getEntryResponse).orElse(List.of()).forEach(response -> {
+                    if (Strings.isEmpty(response.getResponseValue())) {
+                        response.setResponseValue(I18nService.getLocalizedString(EMPTY_RESPONSE_VALUE, currentLocale) );
+                    }
+                });
+            }
+        });
     }
 
 
