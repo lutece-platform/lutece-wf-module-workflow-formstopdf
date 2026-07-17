@@ -62,6 +62,7 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.web.cdi.mvc.Models;
 import fr.paris.lutece.portal.web.constants.Messages;
+import org.apache.commons.text.StringEscapeUtils;
 
 @RequestScoped
 @Named
@@ -69,24 +70,24 @@ import fr.paris.lutece.portal.web.constants.Messages;
 public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
 {
 
-	private static final long serialVersionUID = 1L;
-	
-	public static final int DEFAULT_ID_VALUE = NumberUtils.BYTE_MINUS_ONE;
-	
-	// Templates
-	private static final String TEMPLATE_MANAGE_FORMS_PDF_TEMPLATES = "/admin/plugins/workflow/modules/formspdf/manage_forms_pdf_templates.html";
-	private static final String TEMPLATE_MODIFY_FORMS_PDF_TEMPLATE = "/admin/plugins/workflow/modules/formspdf/modify_forms_pdf_template.html";
-	private static final String TEMPLATE_MARKER_DESCRIPTIONS = "/admin/plugins/workflow/modules/formspdf/formspdf_marker_descriptions.html";
-	
-	// Views
+    private static final long serialVersionUID = 1L;
+
+    public static final int DEFAULT_ID_VALUE = NumberUtils.BYTE_MINUS_ONE;
+
+    // Templates
+    private static final String TEMPLATE_MANAGE_FORMS_PDF_TEMPLATES = "/admin/plugins/workflow/modules/formspdf/manage_forms_pdf_templates.html";
+    private static final String TEMPLATE_MODIFY_FORMS_PDF_TEMPLATE = "/admin/plugins/workflow/modules/formspdf/modify_forms_pdf_template.html";
+    private static final String TEMPLATE_MARKER_DESCRIPTIONS = "/admin/plugins/workflow/modules/formspdf/formspdf_marker_descriptions.html";
+
+    // Views
     private static final String VIEW_MANAGE_TEMPLATES = "manageTemplates";
     private static final String VIEW_MODIFY_TEMPLATE = "modifyTemplate";
-    
+
     // Actions
     private static final String ACTION_MODIFY_TEMPLATE = "modifyTemplate";
     private static final String ACTION_REMOVE_TEMPLATE = "removeTemplate";
-	private static final String ACTION_GET_MARKER_DESCRIPTIONS = "getMarkerDescriptions";
-    
+    private static final String ACTION_GET_MARKER_DESCRIPTIONS = "getMarkerDescriptions";
+
     // Parameters
     private static final String PARAMETER_TASK_ID = "task_id";
     private static final String PARAMETER_TEMPLATE_ID = "template_id";
@@ -94,212 +95,212 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
     private static final String PARAMETER_TEMPLATE_ID_FORM = "template_id_form";
     private static final String PARAMETER_TEMPLATE_ASSOCIATE_FORM = "template_associate_form";
     private static final String PARAMETER_TEMPLATE_CONTENT = "template_content";
-	private static final String PARAMETER_RICH_TEXT_EDITOR = "rte";
-	private static final String PARAMETER_TEMPLATE_FILE_NAME = "template_filename";
-	private static final String PARAMETER_TEMPLATE_REPLACE_EMPTY = "checkbox_replaceEmpty";
+    private static final String PARAMETER_RICH_TEXT_EDITOR = "rte";
+    private static final String PARAMETER_TEMPLATE_FILE_NAME = "template_filename";
+    private static final String PARAMETER_TEMPLATE_REPLACE_EMPTY = "checkbox_replaceEmpty";
 
-	// Markers
-	private static final String MARK_RICH_TEXT_EDITOR = "rte";
+    // Markers
+    private static final String MARK_RICH_TEXT_EDITOR = "rte";
     private static final String MARK_TEMPLATE_PDF_LIST = "template_pdf_list";
     private static final String MARK_FORMS_PDF_TASK_TEMPLATE = "forms_pdf_task_template";
     private static final String MARK_TASK_ID = "task_id";
     private static final String MARK_LIST_MARKERS = "list_markers";
     private static final String MARK_FORMS_LIST = "forms_list";
 
-	//Properties
+    // Properties
 
-	private static final String PROPERTY_PAGE_TITLE_MANAGE_FORMS_PDF_TEMPLATES = "module.workflow.formspdf.manage.template.title";
-	private static final String PROPERTY_PAGE_TITLE_MODIFY_FORMS_PDF_TEMPLATES = "module.workflow.formspdf.modify.template.title";
-	
-	@Inject 
-	private Models model;
-	
+    private static final String PROPERTY_PAGE_TITLE_MANAGE_FORMS_PDF_TEMPLATES = "module.workflow.formspdf.manage.template.title";
+    private static final String PROPERTY_PAGE_TITLE_MODIFY_FORMS_PDF_TEMPLATES = "module.workflow.formspdf.modify.template.title";
+
+    @Inject
+    private Models model;
+
     @View( value = VIEW_MANAGE_TEMPLATES, defaultView = true )
     public String getManageTemplates( HttpServletRequest request )
-    {    	
-        model.put( MARK_TASK_ID, NumberUtils.toInt( request.getParameter( PARAMETER_TASK_ID ), DEFAULT_ID_VALUE ) );       
+    {
+        model.put( MARK_TASK_ID, NumberUtils.toInt( request.getParameter( PARAMETER_TASK_ID ), DEFAULT_ID_VALUE ) );
         model.put( MARK_TEMPLATE_PDF_LIST, FormsPDFTaskTemplateHome.findAllWithFormTitles( ) );
 
-		return getPage( PROPERTY_PAGE_TITLE_MANAGE_FORMS_PDF_TEMPLATES, TEMPLATE_MANAGE_FORMS_PDF_TEMPLATES, model );
+        return getPage( PROPERTY_PAGE_TITLE_MANAGE_FORMS_PDF_TEMPLATES, TEMPLATE_MANAGE_FORMS_PDF_TEMPLATES, model );
     }
-    
+
     @View( value = VIEW_MODIFY_TEMPLATE )
     public String getModifyTemplate( HttpServletRequest request )
     {
-		FormsPDFTaskTemplate formsPDFTaskTemplate = null;
-    	int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
-    	if ( nIdTemplate > 0 )
-    	{
-    		formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( nIdTemplate );
-    	} 
-    	else 
-    	{
-    		formsPDFTaskTemplate = new FormsPDFTaskTemplate( );
-    		formsPDFTaskTemplate.setGeneric (true );
-			formsPDFTaskTemplate.setRte( true );
-    	}
-		Boolean isRichTextEditor = Boolean.parseBoolean( request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) );
-		if(request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) == null)
-		{
-			isRichTextEditor = formsPDFTaskTemplate.isRte( );
-		} 
-		model.put( MARK_RICH_TEXT_EDITOR, isRichTextEditor );
-		// format the content
-		if ( isRichTextEditor ) 
-		{
-			if( !formsPDFTaskTemplate.isRte( ) ) 
-			{
-				formsPDFTaskTemplate.setContent( convertMacroToSquareBrackets( formsPDFTaskTemplate.getContent( ) ) );
-			}
-		} 
-		else 
-		{
-			if( formsPDFTaskTemplate.isRte( ) ) 
-			{
-				formsPDFTaskTemplate.setContent( convertMacroToSuppMinor( formsPDFTaskTemplate.getContent( ) ) );
-			}
-		}
-    	model.put( MARK_FORMS_PDF_TASK_TEMPLATE, formsPDFTaskTemplate );
-    	
-    	model.put( MARK_FORMS_LIST, getFormsList( ) );
-    	
-    	// markers
-    	Form form = FormHome.findByPrimaryKey( formsPDFTaskTemplate.getIdForm( ) );
-    	model.put( MARK_LIST_MARKERS, GenericFormsProvider.getProviderMarkerDescriptions( form != null ? form : new Form( ) ) );
-    	model.put( MARK_TASK_ID, NumberUtils.toInt( request.getParameter(PARAMETER_TASK_ID), DEFAULT_ID_VALUE ) );
+        FormsPDFTaskTemplate formsPDFTaskTemplate = null;
+        int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
+        if ( nIdTemplate > 0 )
+        {
+            formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( nIdTemplate );
+        }
+        else
+        {
+            formsPDFTaskTemplate = new FormsPDFTaskTemplate( );
+            formsPDFTaskTemplate.setGeneric( true );
+            formsPDFTaskTemplate.setRte( true );
+        }
+        Boolean isRichTextEditor = Boolean.parseBoolean( request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) );
+        if ( request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) == null )
+        {
+            isRichTextEditor = formsPDFTaskTemplate.isRte( );
+        }
+        model.put( MARK_RICH_TEXT_EDITOR, isRichTextEditor );
+        // format the content
+        if ( isRichTextEditor )
+        {
+            if ( !formsPDFTaskTemplate.isRte( ) )
+            {
+                formsPDFTaskTemplate.setContent( convertMacroToSquareBrackets( formsPDFTaskTemplate.getContent( ) ) );
+            }
+        }
+        else
+        {
+            if ( formsPDFTaskTemplate.isRte( ) )
+            {
+                formsPDFTaskTemplate.setContent( convertMacroToSuppMinor( formsPDFTaskTemplate.getContent( ) ) );
+            }
+        }
+        model.put( MARK_FORMS_PDF_TASK_TEMPLATE, formsPDFTaskTemplate );
 
-		return getPage( PROPERTY_PAGE_TITLE_MODIFY_FORMS_PDF_TEMPLATES, TEMPLATE_MODIFY_FORMS_PDF_TEMPLATE, model );
-	}
-    
+        model.put( MARK_FORMS_LIST, getFormsList( ) );
+
+        // markers
+        Form form = FormHome.findByPrimaryKey( formsPDFTaskTemplate.getIdForm( ) );
+        model.put( MARK_LIST_MARKERS, GenericFormsProvider.getProviderMarkerDescriptions( form != null ? form : new Form( ) ) );
+        model.put( MARK_TASK_ID, NumberUtils.toInt( request.getParameter( PARAMETER_TASK_ID ), DEFAULT_ID_VALUE ) );
+
+        return getPage( PROPERTY_PAGE_TITLE_MODIFY_FORMS_PDF_TEMPLATES, TEMPLATE_MODIFY_FORMS_PDF_TEMPLATE, model );
+    }
+
     @Action( value = ACTION_MODIFY_TEMPLATE )
     public String doModifyTemplate( HttpServletRequest request )
     {
-    	if ( StringUtils.isBlank( request.getParameter( PARAMETER_TEMPLATE_CONTENT ) ) )
-    	{
-    		addError( Messages.MANDATORY_FIELDS, getLocale( ) );
-    		return getModifyTemplate( request );
-    	}
+        if ( StringUtils.isBlank( request.getParameter( PARAMETER_TEMPLATE_CONTENT ) ) )
+        {
+            addError( Messages.MANDATORY_FIELDS, getLocale( ) );
+            return getModifyTemplate( request );
+        }
 
-    	int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
-    	FormsPDFTaskTemplate formsPDFTaskTemplateToEdit = FormsPDFTaskTemplateHome.findByPrimaryKey( nIdTemplate );
-    	
-    	if ( formsPDFTaskTemplateToEdit == null )
-    	{
-    		formsPDFTaskTemplateToEdit = new FormsPDFTaskTemplate( );
-    		populateFormsPDFTaskTemplate( request, formsPDFTaskTemplateToEdit );
-    		FormsPDFTaskTemplateHome.create( formsPDFTaskTemplateToEdit );
-    	} 
-    	else 
-    	{
-    		populateFormsPDFTaskTemplate( request, formsPDFTaskTemplateToEdit );
-    		FormsPDFTaskTemplateHome.update( formsPDFTaskTemplateToEdit );
-    	}
-    	
-    	Map<String, String> mapParameters = new LinkedHashMap<>( );
-        mapParameters.put( PARAMETER_TASK_ID, request.getParameter( PARAMETER_TASK_ID ) );
-    	return redirect( request, VIEW_MANAGE_TEMPLATES, mapParameters );
-    }
-    
-    @Action( value = ACTION_REMOVE_TEMPLATE )
-    public String doRemoveTemplate( HttpServletRequest request )
-    {
-    	int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
-    	
-    	if (nIdTemplate > DEFAULT_ID_VALUE)
-    	{
-    		FormsPDFTaskTemplateHome.remove(nIdTemplate);
-    	}
-    	
-    	Map<String, String> mapParameters = new LinkedHashMap<>( );
+        int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
+        FormsPDFTaskTemplate formsPDFTaskTemplateToEdit = FormsPDFTaskTemplateHome.findByPrimaryKey( nIdTemplate );
+
+        if ( formsPDFTaskTemplateToEdit == null )
+        {
+            formsPDFTaskTemplateToEdit = new FormsPDFTaskTemplate( );
+            populateFormsPDFTaskTemplate( request, formsPDFTaskTemplateToEdit );
+            FormsPDFTaskTemplateHome.create( formsPDFTaskTemplateToEdit );
+        }
+        else
+        {
+            populateFormsPDFTaskTemplate( request, formsPDFTaskTemplateToEdit );
+            FormsPDFTaskTemplateHome.update( formsPDFTaskTemplateToEdit );
+        }
+
+        Map<String, String> mapParameters = new LinkedHashMap<>( );
         mapParameters.put( PARAMETER_TASK_ID, request.getParameter( PARAMETER_TASK_ID ) );
         return redirect( request, VIEW_MANAGE_TEMPLATES, mapParameters );
     }
-    
-    private FormsPDFTaskTemplate populateFormsPDFTaskTemplate( HttpServletRequest request, FormsPDFTaskTemplate formsPDFTaskTemplateToEdit )
-    {
-    	formsPDFTaskTemplateToEdit.setName( request.getParameter( PARAMETER_TEMPLATE_NAME ) );
-    	
-    	boolean isAssociateForm = Boolean.parseBoolean( request.getParameter(PARAMETER_TEMPLATE_ASSOCIATE_FORM ) );
-    	formsPDFTaskTemplateToEdit.setGeneric( !isAssociateForm );
-    	if ( isAssociateForm )
-    	{
-    		formsPDFTaskTemplateToEdit.setIdForm ( NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID_FORM ), DEFAULT_ID_VALUE ) );
-    	}
-    	else
-    	{
-    		formsPDFTaskTemplateToEdit.setIdForm( DEFAULT_ID_VALUE );
-    	}
-    	
-		formsPDFTaskTemplateToEdit.setContent( request.getParameter( PARAMETER_TEMPLATE_CONTENT ) );
-		formsPDFTaskTemplateToEdit.setRte( Boolean.parseBoolean( request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) ) );
-		formsPDFTaskTemplateToEdit.setFileName( request.getParameter( PARAMETER_TEMPLATE_FILE_NAME ) );
-		formsPDFTaskTemplateToEdit.setReplaceEmpty( Boolean.parseBoolean( request.getParameter( PARAMETER_TEMPLATE_REPLACE_EMPTY ) ) );
 
-		return formsPDFTaskTemplateToEdit;
+    @Action( value = ACTION_REMOVE_TEMPLATE )
+    public String doRemoveTemplate( HttpServletRequest request )
+    {
+        int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
+
+        if ( nIdTemplate > DEFAULT_ID_VALUE )
+        {
+            FormsPDFTaskTemplateHome.remove( nIdTemplate );
+        }
+
+        Map<String, String> mapParameters = new LinkedHashMap<>( );
+        mapParameters.put( PARAMETER_TASK_ID, request.getParameter( PARAMETER_TASK_ID ) );
+        return redirect( request, VIEW_MANAGE_TEMPLATES, mapParameters );
     }
 
-	/**
-	 * Convert the macro to display responses to the usual supp and minor
-	 * @param strtemplate
-	 * @return the string with the macro converted
-	 */
-	private String convertMacroToSuppMinor( String strtemplate )
-	{
-		if( strtemplate != null )
-		{
-			strtemplate = strtemplate.replaceAll( "\\[@displayEntry q=position_(\\d+)/]", "<@displayEntry q=position_$1/>" );
-		}
-		return strtemplate;
-	}
+    private FormsPDFTaskTemplate populateFormsPDFTaskTemplate( HttpServletRequest request, FormsPDFTaskTemplate formsPDFTaskTemplateToEdit )
+    {
+        formsPDFTaskTemplateToEdit.setName( request.getParameter( PARAMETER_TEMPLATE_NAME ) );
 
-	/**
-	 * Convert the macro to display responses to the square brackets
-	 * @param strtemplate
-	 * @return the string with the macro converted
-	 */
-	private String convertMacroToSquareBrackets(String strtemplate)
-	{
-		if( strtemplate != null )
-		{
-			strtemplate = strtemplate.replaceAll( "<@displayEntry q=position_(\\d+)/>", "[@displayEntry q=position_$1/]" );
-		}
-		return strtemplate;
-	}
+        boolean isAssociateForm = Boolean.parseBoolean( request.getParameter( PARAMETER_TEMPLATE_ASSOCIATE_FORM ) );
+        formsPDFTaskTemplateToEdit.setGeneric( !isAssociateForm );
+        if ( isAssociateForm )
+        {
+            formsPDFTaskTemplateToEdit.setIdForm( NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID_FORM ), DEFAULT_ID_VALUE ) );
+        }
+        else
+        {
+            formsPDFTaskTemplateToEdit.setIdForm( DEFAULT_ID_VALUE );
+        }
 
-	@Action( value = ACTION_GET_MARKER_DESCRIPTIONS, securityTokenDisabled = true )
-	@ResponseBody
-	public String getMarkerDescriptions( @RequestParam(value = "form_id" ) int formId,
-										 @RequestParam(value = "rte" ) boolean rte,
-										 HttpServletRequest request )
-	{
-		Locale locale = null;
-		if( request != null )
-		{
-			locale = request.getLocale( );
-		}
+        formsPDFTaskTemplateToEdit.setContent( StringEscapeUtils.unescapeHtml4( request.getParameter( PARAMETER_TEMPLATE_CONTENT ) ) );
+        formsPDFTaskTemplateToEdit.setRte( Boolean.parseBoolean( request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) ) );
+        formsPDFTaskTemplateToEdit.setFileName( StringEscapeUtils.unescapeHtml4( request.getParameter( PARAMETER_TEMPLATE_FILE_NAME ) ) );
+        formsPDFTaskTemplateToEdit.setReplaceEmpty( Boolean.parseBoolean( request.getParameter( PARAMETER_TEMPLATE_REPLACE_EMPTY ) ) );
 
-		Form form = FormHome.findByPrimaryKey( formId );
-		model.put( MARK_LIST_MARKERS, GenericFormsProvider.getProviderMarkerDescriptions( form != null ? form : new Form( ) ) );
-		model.put( MARK_RICH_TEXT_EDITOR, rte );
+        return formsPDFTaskTemplateToEdit;
+    }
 
-		HtmlTemplate templateMarker = AppTemplateService.getTemplate( TEMPLATE_MARKER_DESCRIPTIONS, locale, model );
-		return templateMarker.getHtml( );
-	}
+    /**
+     * Convert the macro to display responses to the usual supp and minor
+     * 
+     * @param strtemplate
+     * @return the string with the macro converted
+     */
+    private String convertMacroToSuppMinor( String strtemplate )
+    {
+        if ( strtemplate != null )
+        {
+            strtemplate = strtemplate.replaceAll( "\\[@displayEntry q=position_(\\d+)/]", "<@displayEntry q=position_$1/>" );
+        }
+        return strtemplate;
+    }
 
-	/**
-	 * Get the list of forms
-	 *
-	 * @return a ReferenceList
-	 */
+    /**
+     * Convert the macro to display responses to the square brackets
+     * 
+     * @param strtemplate
+     * @return the string with the macro converted
+     */
+    private String convertMacroToSquareBrackets( String strtemplate )
+    {
+        if ( strtemplate != null )
+        {
+            strtemplate = strtemplate.replaceAll( "<@displayEntry q=position_(\\d+)/>", "[@displayEntry q=position_$1/]" );
+        }
+        return strtemplate;
+    }
+
+    @Action( value = ACTION_GET_MARKER_DESCRIPTIONS, securityTokenDisabled = true )
+    @ResponseBody
+    public String getMarkerDescriptions( @RequestParam( value = "form_id" ) int formId, @RequestParam( value = "rte" ) boolean rte, HttpServletRequest request )
+    {
+        Locale locale = null;
+        if ( request != null )
+        {
+            locale = request.getLocale( );
+        }
+
+        Form form = FormHome.findByPrimaryKey( formId );
+        model.put( MARK_LIST_MARKERS, GenericFormsProvider.getProviderMarkerDescriptions( form != null ? form : new Form( ) ) );
+        model.put( MARK_RICH_TEXT_EDITOR, rte );
+
+        HtmlTemplate templateMarker = AppTemplateService.getTemplate( TEMPLATE_MARKER_DESCRIPTIONS, locale, model );
+        return templateMarker.getHtml( );
+    }
+
+    /**
+     * Get the list of forms
+     *
+     * @return a ReferenceList
+     */
     private ReferenceList getFormsList( )
     {
         ReferenceList formsList = FormHome.getFormsReferenceList( );
         ReferenceList referenceListForms = new ReferenceList( );
-		referenceListForms.addItem( FormsConstants.DEFAULT_ID_VALUE, StringUtils.EMPTY );
+        referenceListForms.addItem( FormsConstants.DEFAULT_ID_VALUE, StringUtils.EMPTY );
 
         if ( formsList != null )
         {
-			referenceListForms.addAll( formsList );
+            referenceListForms.addAll( formsList );
         }
 
         return referenceListForms;
