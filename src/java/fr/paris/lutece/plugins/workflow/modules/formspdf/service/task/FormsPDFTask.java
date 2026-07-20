@@ -80,6 +80,8 @@ public class FormsPDFTask extends Task
     private static final String PROPERTY_LABEL_DESCRIPTION = "module.workflow.formspdf.export.pdf.description";
     private static final String EMPTY_RESPONSE_VALUE = "module.workflow.formspdf.modify.template.replaceEmpty.defaultValue";
     private static final String FTL_SQUARE_BRACKET_TAG = "[#ftl]";
+    private static final String MARK_POSITION = "position_";
+    private static final String MARK_CODE = "code_";
 
     /**
      * the FormJasperConfigService to manage the task configuration
@@ -229,7 +231,7 @@ public class FormsPDFTask extends Task
     private void removeNullEntries( Map<String, Object> model )
     {
         model.entrySet( ).removeIf( e -> {
-            if ( e.getKey( ).contains( "position_" ) )
+            if ( e.getKey( ).contains( MARK_POSITION ) )
             {
                 FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get( e.getKey( ) );
                 return ( formQuestionResponse == null || formQuestionResponse.getQuestion( ).getEntry( ) == null );
@@ -252,7 +254,7 @@ public class FormsPDFTask extends Task
     private void replaceNullEntries( Map<String, Object> model, Locale currentLocale )
     {
         model.forEach( ( key, value ) -> {
-            if ( key.contains( "code_" ) )
+            if ( key.contains( MARK_CODE ) )
             {
                 FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get( key );
                 Optional.ofNullable( formQuestionResponse ).map( FormQuestionResponse::getEntryResponse ).orElse( List.of( ) ).forEach( response -> {
