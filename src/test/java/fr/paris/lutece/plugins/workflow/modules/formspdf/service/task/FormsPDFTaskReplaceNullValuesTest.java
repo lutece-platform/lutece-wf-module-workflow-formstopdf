@@ -47,9 +47,9 @@ import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.test.LuteceTestCase;
 
 /**
- * Unit tests for {@link FormsPDFTask#replaceNullEntries(Map, Locale)}. The method is private, so it is invoked via reflection.
+ * Unit tests for {@link FormsPDFTask#replaceNullValues(Map, Locale)}. The method is private, so it is invoked via reflection.
  */
-public class FormsPDFTaskReplaceNullEntriesTest extends LuteceTestCase
+public class FormsPDFTaskReplaceNullValuesTest extends LuteceTestCase
 {
     private static final Locale FR = Locale.FRENCH;
     private static final String EMPTY_RESPONSE_KEY = "module.workflow.formspdf.modify.template.replaceEmpty.defaultValue";
@@ -58,9 +58,9 @@ public class FormsPDFTaskReplaceNullEntriesTest extends LuteceTestCase
      * Invokes the private replaceNullEntries method via reflection.
      */
     @SuppressWarnings( "unchecked" )
-    private void invokeReplaceNullEntries( Map<String, Object> model, Locale locale ) throws Exception
+    private void invokeReplaceNullValues( Map<String, Object> model, Locale locale ) throws Exception
     {
-        Method method = FormsPDFTask.class.getDeclaredMethod( "replaceNullEntries", Map.class, Locale.class );
+        Method method = FormsPDFTask.class.getDeclaredMethod( "replaceNullValues", Map.class, Locale.class );
         method.setAccessible( true );
         FormsPDFTask task = new FormsPDFTask( );
         method.invoke( task, model, locale );
@@ -87,7 +87,7 @@ public class FormsPDFTaskReplaceNullEntriesTest extends LuteceTestCase
         FormQuestionResponse fqr = buildFormQuestionResponse( "" );
         model.put( "code_question_1", fqr );
 
-        invokeReplaceNullEntries( model, FR );
+        invokeReplaceNullValues( model, FR );
 
         String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
         assertEquals( expected, fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
@@ -100,7 +100,7 @@ public class FormsPDFTaskReplaceNullEntriesTest extends LuteceTestCase
         FormQuestionResponse fqr = buildFormQuestionResponse( (String) null );
         model.put( "code_question_1", fqr );
 
-        invokeReplaceNullEntries( model, FR );
+        invokeReplaceNullValues( model, FR );
 
         String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
         assertEquals( expected, fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
@@ -113,7 +113,7 @@ public class FormsPDFTaskReplaceNullEntriesTest extends LuteceTestCase
         FormQuestionResponse fqr = buildFormQuestionResponse( "réponse existante" );
         model.put( "code_question_1", fqr );
 
-        invokeReplaceNullEntries( model, FR );
+        invokeReplaceNullValues( model, FR );
 
         assertEquals( "réponse existante", fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
     }
@@ -125,7 +125,7 @@ public class FormsPDFTaskReplaceNullEntriesTest extends LuteceTestCase
         FormQuestionResponse fqr = buildFormQuestionResponse( "" );
         model.put( "position_1", fqr );
 
-        invokeReplaceNullEntries( model, FR );
+        invokeReplaceNullValues( model, FR );
 
         assertEquals( "", fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
     }
@@ -137,7 +137,7 @@ public class FormsPDFTaskReplaceNullEntriesTest extends LuteceTestCase
         FormQuestionResponse fqr = buildFormQuestionResponse( "", "valeur", "" );
         model.put( "code_question_multi", fqr );
 
-        invokeReplaceNullEntries( model, FR );
+        invokeReplaceNullValues( model, FR );
 
         String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
         List<Response> responses = fqr.getEntryResponse( );
@@ -152,14 +152,14 @@ public class FormsPDFTaskReplaceNullEntriesTest extends LuteceTestCase
         Map<String, Object> model = new HashMap<>( );
         model.put( "code_question_absent", null );
 
-        invokeReplaceNullEntries( model, FR );
+        invokeReplaceNullValues( model, FR );
     }
 
     @Test
     public void testEmptyModelDoesNotThrow( ) throws Exception
     {
         Map<String, Object> model = new HashMap<>( );
-        invokeReplaceNullEntries( model, FR );
+        invokeReplaceNullValues( model, FR );
         assertTrue( model.isEmpty( ) );
     }
 }
