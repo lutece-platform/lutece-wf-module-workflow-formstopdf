@@ -87,7 +87,7 @@ public class FormsPDFTask extends Task
      * the ResourceHistoryService to get the forms to process
      */
     private static final IResourceHistoryService _resourceHistoryService = SpringContextService.getBean( ResourceHistoryService.BEAN_SERVICE );
-    public static final String POSITION_ = "position_";
+    public static final String POSITION_PREFIX = "position_";
 
     @Override
     public void processTask( int nIdResourceHistory, HttpServletRequest request, Locale locale )
@@ -191,7 +191,7 @@ public class FormsPDFTask extends Task
     {
 	model.entrySet().removeIf( e -> 
 	{
-	    if ( e.getKey( ).contains( POSITION_ ) )
+	    if ( e.getKey( ).contains(POSITION_PREFIX) )
 	    {
 		FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get( e.getKey( ) );
 	        return  ( formQuestionResponse == null || formQuestionResponse.getQuestion().getEntry() == null ) ;
@@ -214,7 +214,7 @@ public class FormsPDFTask extends Task
     private void replaceNullEntries( Map<String, Object> model, Locale currentLocale )
     {
         model.forEach( ( key, value ) -> {
-            if ( key.contains(POSITION_) )
+            if ( key.contains(POSITION_PREFIX) )
             {
                 FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get( key );
                 Optional.ofNullable( formQuestionResponse ).map( FormQuestionResponse::getEntryResponse ).orElse( List.of( ) ).forEach( response -> {
