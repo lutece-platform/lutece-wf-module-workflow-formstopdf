@@ -50,7 +50,7 @@ import fr.paris.lutece.test.LuteceTestCase;
 
 /**
  * Unit tests for the private helper methods of {@link FormsPDFTask} :
- * replaceNullEntries and removeNullEntries.
+ * replaceNullValues and removeNullEntries.
  *
  * These methods are private, so they are invoked via reflection. This test
  * follows the same conventions (JUnit3 style, extends LuteceTestCase) as the
@@ -63,9 +63,9 @@ public class TestFormsPDFTask extends LuteceTestCase
 
     // ---------- Reflection helpers ----------
 
-    private void invokeReplaceNullEntries( Map<String, Object> model, Locale locale ) throws Exception
+    private void invokereplaceNullValues( Map<String, Object> model, Locale locale ) throws Exception
     {
-        Method method = FormsPDFTask.class.getDeclaredMethod( "replaceNullEntries", Map.class, Locale.class );
+        Method method = FormsPDFTask.class.getDeclaredMethod( "replaceNullValues", Map.class, Locale.class );
         method.setAccessible( true );
         FormsPDFTask task = new FormsPDFTask( );
         method.invoke( task, model, locale );
@@ -128,63 +128,63 @@ public class TestFormsPDFTask extends LuteceTestCase
         throw new NoSuchFieldException( fieldName + " not found on " + target.getClass( ) );
     }
 
-    // ---------- replaceNullEntries ----------
+    // ---------- replaceNullValues ----------
 
-    public void testReplaceNullEntriesReplacesEmptyResponseValue( ) throws Exception
+    public void testReplaceNullValuesReplacesEmptyResponseValue( ) throws Exception
     {
         Map<String, Object> model = new HashMap<>( );
         FormQuestionResponse fqr = buildFormQuestionResponse( new Entry( ), "" );
         model.put( "position_1", fqr );
 
-        invokeReplaceNullEntries( model, FR );
+        invokereplaceNullValues( model, FR );
 
         String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
         assertEquals( expected, fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
         assertEquals( expected, fqr.getEntryResponse( ).get( 0 ).getToStringValueResponse( ) );
     }
 
-    public void testReplaceNullEntriesReplacesNullResponseValue( ) throws Exception
+    public void testReplaceNullValuesReplacesNullResponseValue( ) throws Exception
     {
         Map<String, Object> model = new HashMap<>( );
         FormQuestionResponse fqr = buildFormQuestionResponse( new Entry( ), (String) null );
         model.put( "position_1", fqr );
 
-        invokeReplaceNullEntries( model, FR );
+        invokereplaceNullValues( model, FR );
 
         String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
         assertEquals( expected, fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
     }
 
-    public void testReplaceNullEntriesDoesNotTouchNonEmptyValue( ) throws Exception
+    public void testReplaceNullValuesDoesNotTouchNonEmptyValue( ) throws Exception
     {
         Map<String, Object> model = new HashMap<>( );
         FormQuestionResponse fqr = buildFormQuestionResponse( new Entry( ), "réponse saisie" );
         model.put( "position_1", fqr );
 
-        invokeReplaceNullEntries( model, FR );
+        invokereplaceNullValues( model, FR );
 
         assertEquals( "réponse saisie", fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
     }
 
-    public void testReplaceNullEntriesIgnoresKeysWithoutPositionPrefix( ) throws Exception
+    public void testReplaceNullValuesIgnoresKeysWithoutPositionPrefix( ) throws Exception
     {
         Map<String, Object> model = new HashMap<>( );
         FormQuestionResponse fqr = buildFormQuestionResponse( new Entry( ), "" );
         // key does NOT contain "position_" -> must be left untouched
         model.put( "form_title", fqr );
 
-        invokeReplaceNullEntries( model, FR );
+        invokereplaceNullValues( model, FR );
 
         assertEquals( "", fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
     }
 
-    public void testReplaceNullEntriesHandlesMultipleResponsesInSameQuestion( ) throws Exception
+    public void testReplaceNullValuesHandlesMultipleResponsesInSameQuestion( ) throws Exception
     {
         Map<String, Object> model = new HashMap<>( );
         FormQuestionResponse fqr = buildFormQuestionResponse( new Entry( ), "", "valeur", "" );
         model.put( "position_2", fqr );
 
-        invokeReplaceNullEntries( model, FR );
+        invokereplaceNullValues( model, FR );
 
         String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
         List<Response> responses = fqr.getEntryResponse( );
@@ -193,20 +193,20 @@ public class TestFormsPDFTask extends LuteceTestCase
         assertEquals( expected, responses.get( 2 ).getResponseValue( ) );
     }
 
-    public void testReplaceNullEntriesWithNullFormQuestionResponseDoesNotThrow( ) throws Exception
+    public void testReplaceNullValuesWithNullFormQuestionResponseDoesNotThrow( ) throws Exception
     {
         Map<String, Object> model = new HashMap<>( );
         model.put( "position_absent", null );
 
-        // Should not throw, thanks to the Optional.ofNullable guard in replaceNullEntries
-        invokeReplaceNullEntries( model, FR );
+        // Should not throw, thanks to the Optional.ofNullable guard in replaceNullValues
+        invokereplaceNullValues( model, FR );
     }
 
-    public void testReplaceNullEntriesOnEmptyModelDoesNotThrow( ) throws Exception
+    public void testReplaceNullValuesOnEmptyModelDoesNotThrow( ) throws Exception
     {
         Map<String, Object> model = new HashMap<>( );
 
-        invokeReplaceNullEntries( model, FR );
+        invokereplaceNullValues( model, FR );
 
         assertTrue( model.isEmpty( ) );
     }

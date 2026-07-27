@@ -123,7 +123,7 @@ public class FormsPDFTask extends Task
 
             if ( formsPDFTaskTemplate.isReplaceEmpty( ) )
             {
-                replaceNullEntries( model, locale );
+                replaceNullValues( model, locale );
             }
 
             removeNullEntries ( model );
@@ -211,7 +211,7 @@ public class FormsPDFTask extends Task
      * @param currentLocale
      *            the locale used to resolve the default label
      */
-    private void replaceNullEntries( Map<String, Object> model, Locale currentLocale )
+    private void replaceNullValues( Map<String, Object> model, Locale currentLocale )
     {
         model.forEach( ( key, value ) -> {
             if ( key.contains(POSITION_PREFIX) )
