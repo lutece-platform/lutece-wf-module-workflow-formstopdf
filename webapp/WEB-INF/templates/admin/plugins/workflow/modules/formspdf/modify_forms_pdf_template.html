@@ -21,6 +21,9 @@
 							<@select name='template_id_form' id="template_id_form" items=forms_list default_value='${(forms_pdf_task_template.idForm)!0}' />
 						 </@inputGroup>
 					</@formGroup>
+                    <@formGroup>
+                        <@checkBox orientation='switch' labelFor='replaceEmpty' labelKey='#i18n{module.workflow.formspdf.modify.template.replaceEmpty}' name='checkbox_replaceEmpty' id='replaceEmpty' value='true' checked=(forms_pdf_task_template.replaceEmpty)!false />
+                    </@formGroup>
                     <br/>
                    <@input type='hidden' name='rte' value=rte?c />
                          <#if rte>

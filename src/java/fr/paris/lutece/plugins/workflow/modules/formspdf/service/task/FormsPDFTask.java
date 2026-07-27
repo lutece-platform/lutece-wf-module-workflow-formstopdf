@@ -33,9 +33,13 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.formspdf.service.task;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.logging.log4j.util.Strings;
 
 import fr.paris.lutece.plugins.filegenerator.service.TemporaryFileGeneratorService;
 import fr.paris.lutece.plugins.forms.business.Form;
@@ -71,6 +75,7 @@ public class FormsPDFTask extends Task
      */
     private static final String PROPERTY_LABEL_TITLE = "module.workflow.formspdf.title";
     private static final String PROPERTY_LABEL_DESCRIPTION = "module.workflow.formspdf.export.pdf.description";
+    private static final String EMPTY_RESPONSE_VALUE = "module.workflow.formspdf.modify.template.replaceEmpty.defaultValue";
     private static final String FTL_SQUARE_BRACKET_TAG = "[#ftl]";
 
     /**
@@ -82,6 +87,7 @@ public class FormsPDFTask extends Task
      * the ResourceHistoryService to get the forms to process
      */
     private static final IResourceHistoryService _resourceHistoryService = SpringContextService.getBean( ResourceHistoryService.BEAN_SERVICE );
+    public static final String POSITION_ = "position_";
 
     @Override
     public void processTask( int nIdResourceHistory, HttpServletRequest request, Locale locale )
@@ -112,14 +118,22 @@ public class FormsPDFTask extends Task
             }
             FormResponse formResponse = FormResponseHome.findByPrimaryKey( nIdFormResponse );
             Map<String, Object> model = GenericFormsProvider.getValuesModel( formResponse, request, false );
-            removeNullEntries ( model );
-            
             formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
-            
-           if(formsPDFTaskTemplate.isRte())
-           {
-               formsPDFTaskTemplate.setContent( addSquareBracketTag( formsPDFTaskTemplate.getContent( ) ) );
-           }
+
+
+            if ( formsPDFTaskTemplate.isReplaceEmpty( ) )
+            {
+                replaceNullEntries( model, locale );
+            }
+
+            removeNullEntries ( model );
+
+
+
+            if(formsPDFTaskTemplate.isRte())
+            {
+                formsPDFTaskTemplate.setContent( addSquareBracketTag( formsPDFTaskTemplate.getContent( ) ) );
+            }
             formsPDFTaskTemplate.setContent(AppTemplateService.getTemplateFromStringFtl(formsPDFTaskTemplate.getContent(), Locale.getDefault( ), model).getHtml());
             HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ), I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep,
                     formsPDFTaskTemplate );
@@ -172,14 +186,12 @@ public class FormsPDFTask extends Task
      * remove null values from the  model
      * 
      * @param model
-     * @param collectionMarkersValue
-     * @param key
      */
     private void removeNullEntries( Map<String, Object> model )
     {
 	model.entrySet().removeIf( e -> 
 	{
-	    if ( e.getKey( ).contains( "position_" ) )
+	    if ( e.getKey( ).contains( POSITION_ ) )
 	    {
 		FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get( e.getKey( ) );
 	        return  ( formQuestionResponse == null || formQuestionResponse.getQuestion().getEntry() == null ) ;
@@ -191,6 +203,30 @@ public class FormsPDFTask extends Task
 	});
     }
 
+    /**
+     * Replaces empty response values in the model with a localized default label (e.g. "N/A"), for keys identifying a question by its code ("code_*").
+     *
+     * @param model
+     *            the model containing the form question responses, mutated in place
+     * @param currentLocale
+     *            the locale used to resolve the default label
+     */
+    private void replaceNullEntries( Map<String, Object> model, Locale currentLocale )
+    {
+        model.forEach( ( key, value ) -> {
+            if ( key.contains(POSITION_) )
+            {
+                FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get( key );
+                Optional.ofNullable( formQuestionResponse ).map( FormQuestionResponse::getEntryResponse ).orElse( List.of( ) ).forEach( response -> {
+                    if ( Strings.isEmpty( response.getResponseValue( ) ) )
+                    {
+                        response.setResponseValue( I18nService.getLocalizedString( EMPTY_RESPONSE_VALUE, currentLocale ) );
+                        response.setToStringValueResponse( I18nService.getLocalizedString( EMPTY_RESPONSE_VALUE, currentLocale ) );
+                    }
+                } );
+            }
+        } );
+    }
 
     /**
      * Add square bracket tag at the beginning of the template to process the template with the brackets included in the RTE
