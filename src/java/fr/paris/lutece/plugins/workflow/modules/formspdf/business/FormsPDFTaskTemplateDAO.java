@@ -43,171 +43,177 @@ import fr.paris.lutece.util.sql.DAOUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO {
-	
-	 private static final String SQL_QUERY_SELECTALL = "SELECT id_template, name, id_form, is_generic, content, is_rte, file_name FROM workflow_task_formspdf_template";
+public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO
+{
 
-	 private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECTALL + " WHERE id_template = ?";
-	 
-	 private static final String SQL_QUERY_SELECT_WITH_FORM = "SELECT worklow_template.id_template, worklow_template.name, worklow_template.id_form, form.title, worklow_template.is_generic, worklow_template.content, worklow_template.is_rte, worklow_template.file_name FROM workflow_task_formspdf_template worklow_template"
-	 		+ " LEFT JOIN forms_form form ON form.id_form = worklow_template.id_form";
-	 
-	 private static final String SQL_QUERY_SELECT_BY_ID_FORM_OR_GENERIC = SQL_QUERY_SELECTALL + " WHERE id_form = ? OR is_generic = true";
-	 
-	 private static final String SQL_QUERY_INSERT = "INSERT INTO workflow_task_formspdf_template ( name, id_form, is_generic, content, is_rte, file_name ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
-	 
-	 private static final String SQL_QUERY_DELETE = "DELETE FROM workflow_task_formspdf_template WHERE id_template = ? ";
-	 
-	 private static final String SQL_QUERY_UPDATE = "UPDATE workflow_task_formspdf_template SET name = ?, id_form = ?, is_generic = ?, content = ?, is_rte = ?, file_name = ? WHERE id_template = ?";
-	 @Override
-	 public void insert(FormsPDFTaskTemplate formsPDFTaskTemplate)
-	 {
-		try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, FormsPDFPlugin.getPlugin( ) ) )
+    private static final String SQL_QUERY_SELECTALL = "SELECT id_template, name, id_form, is_generic, content, is_rte, file_name, is_replace_empty_response FROM workflow_task_formspdf_template";
+
+    private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECTALL + " WHERE id_template = ?";
+
+    private static final String SQL_QUERY_SELECT_WITH_FORM = "SELECT workflow_template.id_template, workflow_template.name, workflow_template.id_form, form.title, workflow_template.is_generic, workflow_template.content, workflow_template.is_rte, workflow_template.file_name, workflow_template.is_replace_empty_response FROM workflow_task_formspdf_template workflow_template"
+            + " LEFT JOIN forms_form form ON form.id_form = workflow_template.id_form";
+
+    private static final String SQL_QUERY_SELECT_BY_ID_FORM_OR_GENERIC = SQL_QUERY_SELECTALL + " WHERE id_form = ? OR is_generic = true";
+
+    private static final String SQL_QUERY_INSERT = "INSERT INTO workflow_task_formspdf_template ( name, id_form, is_generic, content, is_rte, file_name, is_replace_empty_response ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
+
+    private static final String SQL_QUERY_DELETE = "DELETE FROM workflow_task_formspdf_template WHERE id_template = ? ";
+
+    private static final String SQL_QUERY_UPDATE = "UPDATE workflow_task_formspdf_template SET name = ?, id_form = ?, is_generic = ?, content = ?, is_rte = ?, file_name = ?, is_replace_empty_response = ? WHERE id_template = ?";
+
+    @Override
+    public void insert( FormsPDFTaskTemplate formsPDFTaskTemplate )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, FormsPDFPlugin.getPlugin( ) ) )
         {
-			int nIndex = 0;
-			daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getName() );
-			daoUtil.setInt( ++nIndex, formsPDFTaskTemplate.getIdForm());
-			daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isGeneric());
-			daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getContent() );
-			daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isRte() );
-			daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getFileName( ) );
-			
-			daoUtil.executeUpdate( );
-			
-			if ( daoUtil.nextGeneratedKey( ) )
-			{
-				formsPDFTaskTemplate.setId( daoUtil.getGeneratedKeyInt( 1 ) );
-			}
+            int nIndex = 0;
+            daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getName( ) );
+            daoUtil.setInt( ++nIndex, formsPDFTaskTemplate.getIdForm( ) );
+            daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isGeneric( ) );
+            daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getContent( ) );
+            daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isRte( ) );
+            daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getFileName( ) );
+            daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isReplaceEmpty( ) );
+
+            daoUtil.executeUpdate( );
+
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                formsPDFTaskTemplate.setId( daoUtil.getGeneratedKeyInt( 1 ) );
+            }
         }
-	 }
-	 
-	 @Override
-	 public void store(FormsPDFTaskTemplate formsPDFTaskTemplate)
-	 {
-		 try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, FormsPDFPlugin.getPlugin( ) ))
-		 {
+    }
 
-			 int nIndex = 0;
-			 daoUtil.setString(++nIndex, formsPDFTaskTemplate.getName());
-			 daoUtil.setInt(++nIndex, formsPDFTaskTemplate.getIdForm());
-			 daoUtil.setBoolean(++nIndex, formsPDFTaskTemplate.isGeneric());
-			 daoUtil.setString(++nIndex, formsPDFTaskTemplate.getContent());
-			 daoUtil.setBoolean(++nIndex, formsPDFTaskTemplate.isRte());
-			 daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getFileName( ) );
+    @Override
+    public void store( FormsPDFTaskTemplate formsPDFTaskTemplate )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, FormsPDFPlugin.getPlugin( ) ) )
+        {
 
-			 daoUtil.setInt(++nIndex, formsPDFTaskTemplate.getId());
+            int nIndex = 0;
+            daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getName( ) );
+            daoUtil.setInt( ++nIndex, formsPDFTaskTemplate.getIdForm( ) );
+            daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isGeneric( ) );
+            daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getContent( ) );
+            daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isRte( ) );
+            daoUtil.setString( ++nIndex, formsPDFTaskTemplate.getFileName( ) );
+            daoUtil.setBoolean( ++nIndex, formsPDFTaskTemplate.isReplaceEmpty( ) );
 
-			 daoUtil.executeUpdate();
-		 }
-	 }
-	 
-	 @Override
-	 public FormsPDFTaskTemplate load( int nIdTemplate )
-	 {
-		try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, FormsPDFPlugin.getPlugin( ) ))
-		{
-			daoUtil.setInt(1, nIdTemplate);
-			daoUtil.executeQuery();
+            daoUtil.setInt( ++nIndex, formsPDFTaskTemplate.getId( ) );
 
-			FormsPDFTaskTemplate formsPDFTaskTemplate = null;
+            daoUtil.executeUpdate( );
+        }
+    }
 
-			if (daoUtil.next())
-			{
-				formsPDFTaskTemplate = dataToObject(daoUtil);
-			}
+    @Override
+    public FormsPDFTaskTemplate load( int nIdTemplate )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, FormsPDFPlugin.getPlugin( ) ) )
+        {
+            daoUtil.setInt( 1, nIdTemplate );
+            daoUtil.executeQuery( );
 
-			return formsPDFTaskTemplate;
-		}
-	}
-	
-	@Override
-	public List<FormsPDFTaskTemplate> loadByIdFormPlusGenerics( int nIdForm )
-	{
-		List<FormsPDFTaskTemplate> listFormsPDFTaskTemplate = new ArrayList<>();
-		
-		try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID_FORM_OR_GENERIC, FormsPDFPlugin.getPlugin( ) ))
-		{
-			daoUtil.setInt(1, nIdForm);
+            FormsPDFTaskTemplate formsPDFTaskTemplate = null;
 
-			daoUtil.executeQuery();
-			while (daoUtil.next())
-			{
-				listFormsPDFTaskTemplate.add(dataToObject(daoUtil));
-			}
-		}
-		return listFormsPDFTaskTemplate;
-	}
-	 
-	@Override
-	public void delete( int nIdTemplate )
-	{
-	    try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, FormsPDFPlugin.getPlugin( ) ))
-		{
-			daoUtil.setInt( 1, nIdTemplate );
-			daoUtil.executeUpdate( );
-		}
-	}
-	
-	@Override
-	public List<FormsPDFTaskTemplate> selectAll()
-	{
-		List<FormsPDFTaskTemplate> listFormsPDFTaskTemplate = new ArrayList<>();
+            if ( daoUtil.next( ) )
+            {
+                formsPDFTaskTemplate = dataToObject( daoUtil );
+            }
 
-		try (	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, FormsPDFPlugin.getPlugin( ) ))
-		{
-			daoUtil.executeQuery();
-			while (daoUtil.next())
-			{
-				listFormsPDFTaskTemplate.add(dataToObject(daoUtil));
-			}
-		}
-		return listFormsPDFTaskTemplate;
-	}
-	
-	@Override
-	public List<FormsPDFTaskTemplateDTO> selectAllWithForms()
-	{
-		List<FormsPDFTaskTemplateDTO> listFormsPDFTaskTemplateDto = new ArrayList<>();
-		
-		try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_WITH_FORM, WorkflowUtils.getPlugin( ) ) )
+            return formsPDFTaskTemplate;
+        }
+    }
+
+    @Override
+    public List<FormsPDFTaskTemplate> loadByIdFormPlusGenerics( int nIdForm )
+    {
+        List<FormsPDFTaskTemplate> listFormsPDFTaskTemplate = new ArrayList<>( );
+
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID_FORM_OR_GENERIC, FormsPDFPlugin.getPlugin( ) ) )
+        {
+            daoUtil.setInt( 1, nIdForm );
+
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                listFormsPDFTaskTemplate.add( dataToObject( daoUtil ) );
+            }
+        }
+        return listFormsPDFTaskTemplate;
+    }
+
+    @Override
+    public void delete( int nIdTemplate )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, FormsPDFPlugin.getPlugin( ) ) )
+        {
+            daoUtil.setInt( 1, nIdTemplate );
+            daoUtil.executeUpdate( );
+        }
+    }
+
+    @Override
+    public List<FormsPDFTaskTemplate> selectAll( )
+    {
+        List<FormsPDFTaskTemplate> listFormsPDFTaskTemplate = new ArrayList<>( );
+
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, FormsPDFPlugin.getPlugin( ) ) )
         {
             daoUtil.executeQuery( );
             while ( daoUtil.next( ) )
             {
-            	listFormsPDFTaskTemplateDto.add( dataToObjectDto( daoUtil ) );
+                listFormsPDFTaskTemplate.add( dataToObject( daoUtil ) );
+            }
+        }
+        return listFormsPDFTaskTemplate;
+    }
+
+    @Override
+    public List<FormsPDFTaskTemplateDTO> selectAllWithForms( )
+    {
+        List<FormsPDFTaskTemplateDTO> listFormsPDFTaskTemplateDto = new ArrayList<>( );
+
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_WITH_FORM, WorkflowUtils.getPlugin( ) ) )
+        {
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                listFormsPDFTaskTemplateDto.add( dataToObjectDto( daoUtil ) );
             }
         }
         return listFormsPDFTaskTemplateDto;
-	}
-	
-	private FormsPDFTaskTemplateDTO dataToObjectDto(DAOUtil daoUtil)
-	{
-		FormsPDFTaskTemplate formsPDFTaskTemplate = dataToObject(daoUtil);
-		FormsPDFTaskTemplateDTO formsPDFTaskTemplateDto = new FormsPDFTaskTemplateDTO();
-		formsPDFTaskTemplateDto.setId(formsPDFTaskTemplate.getId());
-		formsPDFTaskTemplateDto.setName(formsPDFTaskTemplate.getName());
-		formsPDFTaskTemplateDto.setGeneric(formsPDFTaskTemplate.isGeneric());
-		formsPDFTaskTemplateDto.setIdForm(formsPDFTaskTemplate.getIdForm());
-		formsPDFTaskTemplateDto.setContent(formsPDFTaskTemplate.getContent());
-		formsPDFTaskTemplateDto.setRte(formsPDFTaskTemplate.isRte());
-		formsPDFTaskTemplateDto.setFormTitle(daoUtil.getString( "title" ));
-		formsPDFTaskTemplateDto.setFileName(formsPDFTaskTemplate.getFileName( ) );
+    }
 
-		return formsPDFTaskTemplateDto;
-	}
-	
-	private FormsPDFTaskTemplate dataToObject(DAOUtil daoUtil)
-	{
-		FormsPDFTaskTemplate formsPDFTaskTemplate = new FormsPDFTaskTemplate( );
+    private FormsPDFTaskTemplateDTO dataToObjectDto( DAOUtil daoUtil )
+    {
+        FormsPDFTaskTemplate formsPDFTaskTemplate = dataToObject( daoUtil );
+        FormsPDFTaskTemplateDTO formsPDFTaskTemplateDto = new FormsPDFTaskTemplateDTO( );
+        formsPDFTaskTemplateDto.setId( formsPDFTaskTemplate.getId( ) );
+        formsPDFTaskTemplateDto.setName( formsPDFTaskTemplate.getName( ) );
+        formsPDFTaskTemplateDto.setGeneric( formsPDFTaskTemplate.isGeneric( ) );
+        formsPDFTaskTemplateDto.setIdForm( formsPDFTaskTemplate.getIdForm( ) );
+        formsPDFTaskTemplateDto.setContent( formsPDFTaskTemplate.getContent( ) );
+        formsPDFTaskTemplateDto.setRte( formsPDFTaskTemplate.isRte( ) );
+        formsPDFTaskTemplateDto.setFormTitle( daoUtil.getString( "title" ) );
+        formsPDFTaskTemplateDto.setFileName( formsPDFTaskTemplate.getFileName( ) );
+        formsPDFTaskTemplateDto.setReplaceEmpty( formsPDFTaskTemplate.isReplaceEmpty( ) );
 
-		formsPDFTaskTemplate.setId( daoUtil.getInt( "id_template" ) );
-		formsPDFTaskTemplate.setName( daoUtil.getString( "name" ) );
-		formsPDFTaskTemplate.setIdForm(daoUtil.getInt( "id_form" ) );
-		formsPDFTaskTemplate.setGeneric(daoUtil.getBoolean( "is_generic" ) );
-		formsPDFTaskTemplate.setContent( daoUtil.getString( "content" ) );
-		formsPDFTaskTemplate.setRte( daoUtil.getBoolean( "is_rte" ) );
-		formsPDFTaskTemplate.setFileName( daoUtil.getString( "file_name" ) );
+        return formsPDFTaskTemplateDto;
+    }
 
-		return formsPDFTaskTemplate;
-	}
+    private FormsPDFTaskTemplate dataToObject( DAOUtil daoUtil )
+    {
+        FormsPDFTaskTemplate formsPDFTaskTemplate = new FormsPDFTaskTemplate( );
+
+        formsPDFTaskTemplate.setId( daoUtil.getInt( "id_template" ) );
+        formsPDFTaskTemplate.setName( daoUtil.getString( "name" ) );
+        formsPDFTaskTemplate.setIdForm( daoUtil.getInt( "id_form" ) );
+        formsPDFTaskTemplate.setGeneric( daoUtil.getBoolean( "is_generic" ) );
+        formsPDFTaskTemplate.setContent( daoUtil.getString( "content" ) );
+        formsPDFTaskTemplate.setRte( daoUtil.getBoolean( "is_rte" ) );
+        formsPDFTaskTemplate.setFileName( daoUtil.getString( "file_name" ) );
+        formsPDFTaskTemplate.setReplaceEmpty( daoUtil.getBoolean( "is_replace_empty_response" ) );
+
+        return formsPDFTaskTemplate;
+    }
 }

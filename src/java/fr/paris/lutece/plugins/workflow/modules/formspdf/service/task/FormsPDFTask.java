@@ -33,9 +33,10 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.formspdf.service.task;
 
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
+import fr.paris.lutece.plugins.forms.util.FormsConstants;
+import org.apache.logging.log4j.util.Strings;
 import org.jsoup.Jsoup;
 
 import fr.paris.lutece.plugins.filegenerator.service.TemporaryFileGeneratorService;
@@ -78,7 +79,9 @@ public class FormsPDFTask extends Task
      */
     private static final String PROPERTY_LABEL_TITLE = "module.workflow.formspdf.title";
     private static final String PROPERTY_LABEL_DESCRIPTION = "module.workflow.formspdf.export.pdf.description";
+    private static final String EMPTY_RESPONSE_VALUE = "module.workflow.formspdf.modify.template.replaceEmpty.defaultValue";
     private static final String FTL_SQUARE_BRACKET_TAG = "[#ftl]";
+
 
     /**
      * the FormJasperConfigService to manage the task configuration
@@ -92,7 +95,7 @@ public class FormsPDFTask extends Task
      */
     @Inject
     private IResourceHistoryService _resourceHistoryService;
-    
+
     /**
      * the TemporaryFileGeneratorService to generate the temporary file
      */
@@ -116,6 +119,8 @@ public class FormsPDFTask extends Task
         FormsPDFTaskTemplate formsPDFTaskTemplate = null;
         try
         {
+            Locale currentLocale = null != locale ? locale : LocaleService.getContextUserLocale( request );
+
             nIdFormResponse = resourceHistory.getIdResource( );
 
             FormResponse frep = FormResponseHome.findByPrimaryKey( nIdFormResponse );
@@ -128,16 +133,20 @@ public class FormsPDFTask extends Task
             }
             FormResponse formResponse = FormResponseHome.findByPrimaryKey( nIdFormResponse );
             Map<String, Object> model = GenericFormsProvider.getValuesModel( formResponse, request, false );
-            removeNullEntries ( model );
-            
+            removeNullEntries( model );
+
             formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
-             
+
+            if ( formsPDFTaskTemplate.isReplaceEmpty( ) )
+            {
+                replaceNullValues( model, currentLocale );
+            }
+
             if ( formsPDFTaskTemplate.isRte( ) )
             {
                 formsPDFTaskTemplate.setContent( addSquareBracketTag( formsPDFTaskTemplate.getContent( ) ) );
             }
 
-            Locale currentLocale = null != locale ? locale : LocaleService.getContextUserLocale( request );
             String pdfFileName = "";
             String templatePdfFileName = formsPDFTaskTemplate.getFileName( );
             if ( null != templatePdfFileName && !"".equals( templatePdfFileName ) )
@@ -154,24 +163,27 @@ public class FormsPDFTask extends Task
                 }
                 catch( Exception e )
                 {
-                    AppLogService.error( "FormsPDFTask, invalid file_name {} for template {}", ( ) -> templatePdfFileName, ( ) -> formsPDFTaskConfig.getIdTemplate( ) );
+                    AppLogService.error( "FormsPDFTask, invalid file_name {} for template {}", ( ) -> templatePdfFileName,
+                            ( ) -> formsPDFTaskConfig.getIdTemplate( ) );
                 }
                 if ( 0 < pdfFileName.length( ) )
                 {
                     pdfFileName = "_" + pdfFileName;
                 }
             }
-            
-            formsPDFTaskTemplate.setContent(AppTemplateService.getTemplateFromStringFtl(formsPDFTaskTemplate.getContent(), currentLocale, model).getHtml());
-            HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ) + pdfFileName, I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep,
-                    formsPDFTaskTemplate );
+
+            formsPDFTaskTemplate
+                    .setContent( AppTemplateService.getTemplateFromStringFtl( formsPDFTaskTemplate.getContent( ), currentLocale, model ).getHtml( ) );
+            HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ) + pdfFileName,
+                    I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep, formsPDFTaskTemplate );
             _temporaryFileGeneratorService.generateFile( htmltopdf, user );
         }
         catch( Exception e )
         {
             // print the error in a pdf
-            formsPDFTaskTemplate.setContent( e.getMessage());
-            HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( "error", I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), new FormResponse(), formsPDFTaskTemplate );
+            formsPDFTaskTemplate.setContent( e.getMessage( ) );
+            HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( "error", I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ),
+                    new FormResponse( ), formsPDFTaskTemplate );
             _temporaryFileGeneratorService.generateFile( htmltopdf, user );
             throw new RuntimeException( strError, e );
         }
@@ -211,38 +223,60 @@ public class FormsPDFTask extends Task
     }
 
     /**
-     * remove null values from the  model
+     * remove null values from the model
      * 
      * @param model
-     * @param collectionMarkersValue
-     * @param key
+     *            the model containing the form question responses, mutated in place
      */
     private void removeNullEntries( Map<String, Object> model )
     {
-	model.entrySet().removeIf( e -> 
-	{
-	    if ( e.getKey( ).contains( "position_" ) )
-	    {
-		FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get( e.getKey( ) );
-	        return  ( formQuestionResponse == null || formQuestionResponse.getQuestion().getEntry() == null ) ;
-	    } 
-	    else 
-	    {
-		return false;
-	    }
-	});
+        model.entrySet( ).removeIf( e -> {
+            if ( e.getKey( ).startsWith( FormsConstants.MARK_POSITION ) )
+            {
+                FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get( e.getKey( ) );
+                return ( formQuestionResponse == null || formQuestionResponse.getQuestion( ).getEntry( ) == null );
+            }
+            else
+            {
+                return false;
+            }
+        } );
     }
 
+    /**
+     * Replaces empty response values in the model with a localized default label (e.g. "N/A"), for keys identifying a question by its code ("code_*").
+     *
+     * @param model
+     *            the model containing the form question responses, mutated in place
+     * @param currentLocale
+     *            the locale used to resolve the default label
+     */
+    private void replaceNullValues( Map<String, Object> model, Locale currentLocale )
+    {
+        model.forEach( ( key, value ) -> {
+            if ( key.startsWith( FormsConstants.MARK_CODE ) )
+            {
+                FormQuestionResponse formQuestionResponse = (FormQuestionResponse) model.get( key );
+                Optional.ofNullable( formQuestionResponse ).map( FormQuestionResponse::getEntryResponse ).orElse( List.of( ) ).forEach( response -> {
+                    if ( Strings.isEmpty( response.getResponseValue( ) ) )
+                    {
+                        response.setResponseValue( I18nService.getLocalizedString( EMPTY_RESPONSE_VALUE, currentLocale ) );
+                    }
+                } );
+            }
+        } );
+    }
 
     /**
      * Add square bracket tag at the beginning of the template to process the template with the brackets included in the RTE
+     * 
      * @param strtemplate
      * @return
      */
 
-    private String addSquareBracketTag(String strtemplate)
+    private String addSquareBracketTag( String strtemplate )
     {
-        strtemplate =  FTL_SQUARE_BRACKET_TAG + strtemplate;
+        strtemplate = FTL_SQUARE_BRACKET_TAG + strtemplate;
 
         return strtemplate;
     }
