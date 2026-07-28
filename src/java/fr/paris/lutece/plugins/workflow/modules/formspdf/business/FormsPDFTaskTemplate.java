@@ -46,7 +46,9 @@ public class FormsPDFTaskTemplate {
 	private String _strContent;
 
 	private boolean _isRte;
-	
+
+	private boolean _isReplaceEmpty;
+
 	public int getId() {
 		return _nId;
 	}
@@ -93,4 +95,11 @@ public class FormsPDFTaskTemplate {
 		this._isRte = isRte;
 	}
 
+    public boolean isReplaceEmpty() {
+        return _isReplaceEmpty;
+    }
+
+    public void setIsReplaceEmpty(boolean _isReplaceEmpty) {
+        this._isReplaceEmpty = _isReplaceEmpty;
+    }
 }
