@@ -6,8 +6,8 @@
     <installation/>
     <changes/>
     <user-guide/>
-    <description>module.workflow.formsjasper.module.description</description>
-    <provider>module.workflow.formsjasper.module.provider</provider>
+    <description>module.workflow.formspdf.module.description</description>
+    <provider>module.workflow.formspdf.module.provider</provider>
     <provider-url>http://lutece.paris.fr</provider-url>
     <icon-url>images/admin/skin/feature_default_icon.png</icon-url>
     <copyright>Copyright (c) 2026 Mairie de Paris</copyright>
