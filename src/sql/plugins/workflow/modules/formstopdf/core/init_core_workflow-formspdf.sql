@@ -1,5 +1,5 @@
 -- liquibase formatted sql
--- changeset workflow-formspdf:init_core_workflow-formspdf.sql
+-- changeset workflow-formspdf:init_core_workflow-formspdf.sql logicalFilePath:sql/plugins/workflow/modules/formspdf/core/init_core_workflow-formspdf.sql
 -- preconditions onFail:MARK_RAN onError:WARN
 DELETE FROM core_admin_right WHERE id_right = 'FORMSPDF_TEMPLATES_MANAGEMENT';
 INSERT INTO core_admin_right (id_right,name,level_right,admin_url,description,is_updatable,plugin_name,id_feature_group,icon_url,documentation_url, id_order ) VALUES
