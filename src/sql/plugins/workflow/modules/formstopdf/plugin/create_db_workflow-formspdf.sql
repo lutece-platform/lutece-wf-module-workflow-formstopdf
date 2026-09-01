@@ -1,5 +1,5 @@
 -- liquibase formatted sql
--- changeset workflow-formspdf:create_db_workflow-formspdf.sql
+-- changeset workflow-formspdf:create_db_workflow-formspdf.sql logicalFilePath:sql/plugins/workflow/modules/formspdf/plugin/create_db_workflow-formspdf.sql
 -- preconditions onFail:MARK_RAN onError:WARN
 DROP TABLE IF EXISTS workflow_task_formspdf_cf ;
 

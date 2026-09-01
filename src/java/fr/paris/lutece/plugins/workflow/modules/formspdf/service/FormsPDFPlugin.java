@@ -47,7 +47,7 @@ public final class FormsPDFPlugin extends PluginDefaultImplementation
     /**
      * Plugin name
      */
-    private static final String PLUGIN_NAME = "workflow-formspdf";
+    private static final String PLUGIN_NAME = "workflow-formstopdf";
 
     /**
      * Private constructor for utility class
