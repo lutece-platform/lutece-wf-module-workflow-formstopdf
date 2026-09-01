@@ -25,3 +25,8 @@ CREATE TABLE workflow_task_formspdf_template (
     PRIMARY KEY (id_template)
 )
 ;
+
+-- changeset workflow-formstopdf:create_db_workflow-formspdf-rev1.sql
+-- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = database() AND table_name = 'workflow_task_formspdf_template' AND column_name = 'file_name'
+ALTER TABLE workflow_task_formspdf_template ADD COLUMN file_name VARCHAR(350);
