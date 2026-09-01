@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>fr.paris.lutece.tools</groupId>
 		<artifactId>lutece-global-pom</artifactId>
-		<version>8.0.0</version>
+		<version>8.0.1</version>
 	</parent>
 	<groupId>fr.paris.lutece.plugins</groupId>
 	<artifactId>module-workflow-formstopdf</artifactId>
