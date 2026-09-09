@@ -8,7 +8,7 @@
         <@manageFeatureItemColumn flex=false>
            <#if marker.description ??>
                 <#assign description=i18n(marker.description) />
-                <#assign desc><#if description?has_content>${description!''}<#else>${marker.description!''}</#if></#assign>
+                <#assign desc = description?has_content?then(description!'', marker.description!'')>
            </#if>
            <@span class='me-2 fw-bold'>${desc!} : </@span>
            <#if marker.marker?starts_with("position_")>

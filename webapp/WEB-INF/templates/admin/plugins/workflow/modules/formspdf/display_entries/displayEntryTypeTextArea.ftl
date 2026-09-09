@@ -11,7 +11,7 @@ Parameters: entry, list_responses
 </#if>
 <#assign iteration = iteration + 1>
     <#list list_responses as response>
-        ${response.toStringValueResponse!?replace("\n", "<br>")}
+        ${response.toStringValueResponse!?html?replace("\n", "<br>")?no_esc}
     </#list>
 </#if>
 </#macro>
