@@ -1,6 +1,7 @@
 -- liquibase formatted sql
--- changeset workflow-formspdf:create_db_workflow-formspdf.sql logicalFilePath:sql/plugins/workflow/modules/formspdf/plugin/create_db_workflow-formspdf.sql
+-- changeset workflow-formspdf:create_db_workflow-formspdf.sql
 -- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = database() AND table_name = 'workflow_task_formspdf_template'
 DROP TABLE IF EXISTS workflow_task_formspdf_cf ;
 
 CREATE TABLE workflow_task_formspdf_cf (
@@ -21,8 +22,7 @@ CREATE TABLE workflow_task_formspdf_template (
 	is_generic SMALLINT DEFAULT 1 NOT NULL,
 	content LONG VARCHAR,
     is_rte SMALLINT DEFAULT 0 NOT NULL,
-    is_replace_empty_response SMALLINT DEFAULT 0 NOT NULL,
-    PRIMARY KEY (id_template)
+	PRIMARY KEY (id_template)
 )
 ;
 
@@ -30,3 +30,8 @@ CREATE TABLE workflow_task_formspdf_template (
 -- preconditions onFail:MARK_RAN onError:WARN
 -- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = database() AND table_name = 'workflow_task_formspdf_template' AND column_name = 'file_name'
 ALTER TABLE workflow_task_formspdf_template ADD COLUMN file_name VARCHAR(350);
+
+-- changeset workflow-formstopdf:create_db_workflow-formspdf-rev2.sql
+-- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = database() AND table_name = 'workflow_task_formspdf_template' AND column_name = 'is_replace_empty_response'
+ALTER TABLE workflow_task_formspdf_template ADD COLUMN is_replace_empty_response SMALLINT DEFAULT 0 NOT NULL;
