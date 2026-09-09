@@ -1,6 +1,8 @@
 -- liquibase formatted sql
--- changeset workflow-formspdf:create_db_workflow-formspdf.sql logicalFilePath:sql/plugins/workflow/modules/formspdf/plugin/create_db_workflow-formspdf.sql
+-- changeset workflow-formspdf:create_db_workflow-formspdf.sql
+-- validCheckSum: 9:869465754a9d2e2f6be31bf328827b5b
 -- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = database() AND table_name = 'workflow_task_formspdf_template'
 DROP TABLE IF EXISTS workflow_task_formspdf_cf ;
 
 CREATE TABLE workflow_task_formspdf_cf (
