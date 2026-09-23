@@ -93,8 +93,8 @@ public class FormsPDFTask extends Task
     private static final String FTL_SQUARE_BRACKET_TAG = "[#ftl]";
     /** Separator between a question marker and its iteration number, same as GenericFormsProvider.MARK_POSITION_ITERATION (private there) */
     private static final String MARK_ITERATION_SEPARATOR = "_";
-    /** Markup wrapping the default label when displayed, so that templates can style it (the raw label stays in the response value) */
-    private static final String FORMAT_EMPTY_RESPONSE_DISPLAY = "<em class=\"formspdf-empty\">%s</em>";
+    /** Markup wrapping the default label when displayed; its class is styled by HtmlToPDFGenerator and can be overridden by the templates */
+    private static final String FORMAT_EMPTY_RESPONSE_DISPLAY = "<span class=\"formspdf-empty\">%s</span>";
 
 
     /**

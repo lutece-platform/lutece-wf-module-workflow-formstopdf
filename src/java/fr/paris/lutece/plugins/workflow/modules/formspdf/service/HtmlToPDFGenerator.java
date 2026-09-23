@@ -77,6 +77,9 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
     private static final boolean ZIP_EXPORT = Boolean.parseBoolean( AppPropertiesService.getProperty( "workflow-formspdf.export.pdf.zip", "false" ) );
     private static final String CONSTANT_MIME_TYPE_PDF = "application/pdf";
     private static final String EXTENSION_PDF = ".pdf";
+    /** Style injected in every generated document, giving its appearance to the label of the empty answers (see FormsPDFTask) */
+    private static final String CSS_EMPTY_RESPONSE = ".formspdf-empty { font-style: italic; }";
+    private static final String TAG_STYLE = "style";
     
 
     /**
@@ -164,6 +167,7 @@ public class HtmlToPDFGenerator extends AbstractFileGenerator
             doc.outputSettings( ).syntax( Document.OutputSettings.Syntax.xml );
             doc.outputSettings( ).escapeMode( EscapeMode.base.xhtml );
             doc.outputSettings( ).charset( "UTF-8" );
+            doc.head( ).appendElement( TAG_STYLE ).text( CSS_EMPTY_RESPONSE );
 
             PdfConverterService.getInstance( ).getPdfBuilder( ).reset( ).withHtmlContent( doc.html( ) ).notEditable( ).render( outputStream );
         }
