@@ -11,7 +11,7 @@ Parameters: entry, list_responses
 			<@span>; </@span>
 		</#if>
 		<#assign iteration = iteration + 1>
-		<@span><#if response.field??>${response.field.title!''}</#if></@span>
+		<@span><#if response.field??>${response.field.title!''}<#else>${response.toStringValueResponse!''}</#if></@span>
 	</#list>
 </#if>
 </#macro>
