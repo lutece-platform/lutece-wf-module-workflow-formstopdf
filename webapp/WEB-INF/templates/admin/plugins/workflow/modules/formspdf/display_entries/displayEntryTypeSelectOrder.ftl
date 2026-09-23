@@ -13,7 +13,7 @@ Entry not found in basic config of forms entrytype, not tested
 		</#if>
 		<#assign iteration = iteration + 1>
 		<@span>
-			<#if response.field??>${response.sortOrder}: ${response.field.title!''}</#if>
+			<#if response.field??>${response.sortOrder}: ${response.field.title!''}<#else>${response.toStringValueResponse!''}</#if>
 		</@span>
 	</#list>
 </#if>

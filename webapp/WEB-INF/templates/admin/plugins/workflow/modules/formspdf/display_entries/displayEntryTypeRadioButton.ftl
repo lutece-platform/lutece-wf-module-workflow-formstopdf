@@ -16,6 +16,7 @@ Parameters: entry, list_responses
 				<#if response.field.fileImage.url??>
 					<@img url=response.field.fileImage.url title=response.field.title alt=response.field.title params='width="100" height="100"' />
 				</#if>
+			<#else>${response.toStringValueResponse!''}
 			</#if>
 		</@span>
 	</#list>

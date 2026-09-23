@@ -147,6 +147,78 @@ public class FormsPDFTaskReplaceNullValuesTest extends LuteceTestCase
     }
 
     @Test
+    public void testEmptyResponseListReceivesOneDefaultResponse( ) throws Exception
+    {
+        Map<String, Object> model = new HashMap<>( );
+        FormQuestionResponse fqr = buildFormQuestionResponse( );
+        model.put( "code_question_select", fqr );
+
+        invokeReplaceNullValues( model, FR );
+
+        String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
+        assertEquals( 1, fqr.getEntryResponse( ).size( ) );
+        assertEquals( expected, fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
+        assertEquals( "<em class=\"formspdf-empty\">" + expected + "</em>", fqr.getEntryResponse( ).get( 0 ).getToStringValueResponse( ) );
+    }
+
+    @Test
+    public void testReplacedValueHasRawResponseValueAndStyledStringValue( ) throws Exception
+    {
+        Map<String, Object> model = new HashMap<>( );
+        FormQuestionResponse fqr = buildFormQuestionResponse( "" );
+        model.put( "code_question_styled", fqr );
+
+        invokeReplaceNullValues( model, FR );
+
+        String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
+        assertEquals( expected, fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
+        assertEquals( "<em class=\"formspdf-empty\">" + expected + "</em>", fqr.getEntryResponse( ).get( 0 ).getToStringValueResponse( ) );
+    }
+
+    @Test
+    public void testNullResponseListReceivesOneDefaultResponse( ) throws Exception
+    {
+        Map<String, Object> model = new HashMap<>( );
+        FormQuestionResponse fqr = new FormQuestionResponse( );
+        fqr.setEntryResponse( null );
+        model.put( "code_question_null_list", fqr );
+
+        invokeReplaceNullValues( model, FR );
+
+        String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
+        assertEquals( 1, fqr.getEntryResponse( ).size( ) );
+        assertEquals( expected, fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
+    }
+
+    @Test
+    public void testIteratedKeysAreProcessed( ) throws Exception
+    {
+        Map<String, Object> model = new HashMap<>( );
+        FormQuestionResponse fqrIteration0 = buildFormQuestionResponse( "" );
+        FormQuestionResponse fqrIteration1 = buildFormQuestionResponse( "" );
+        model.put( "code_question_1_0", fqrIteration0 );
+        model.put( "code_question_1_1", fqrIteration1 );
+        model.put( "code_question_1", fqrIteration1 );
+
+        invokeReplaceNullValues( model, FR );
+
+        String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
+        assertEquals( expected, fqrIteration0.getEntryResponse( ).get( 0 ).getResponseValue( ) );
+        assertEquals( expected, fqrIteration1.getEntryResponse( ).get( 0 ).getResponseValue( ) );
+    }
+
+    @Test
+    public void testNonFormQuestionResponseValueUnderCodePrefixIsIgnored( ) throws Exception
+    {
+        Map<String, Object> model = new HashMap<>( );
+        model.put( "code_question_title", "a title, as put by GenericFormsProvider.getTitlesModel" );
+
+        invokeReplaceNullValues( model, FR );
+
+        assertEquals( "a title, as put by GenericFormsProvider.getTitlesModel", model.get( "code_question_title" ) );
+    }
+
+    @Test
     public void testNullFormQuestionResponseInModelDoesNotThrow( ) throws Exception
     {
         Map<String, Object> model = new HashMap<>( );
