@@ -11,17 +11,20 @@
 -- the module is seen as a fresh install, its update_db_* scripts are discarded for ever and the
 -- recorded version jumps to the current release.
 --
--- Precondition on DATABASECHANGELOG (not on the datastore keys) : it is true for every site that
--- installed the module under its former directory, even one whose datastore keys were already
--- migrated by the init_core script of 1.2.0-beta-01 ; false on a fresh install (MARK_RAN, and the query itself may
--- fail on an empty database : onError:MARK_RAN).
+-- Precondition : the former module left a trace, rows of its former directory in DATABASECHANGELOG or a
+-- version under its former name in the datastore. DATABASECHANGELOG covers a site whose datastore keys
+-- were already migrated by the init_core script of 1.2.0-beta-01 ; the version covers a database where
+-- liquibase never ran the module scripts (plugin-liquibase records the version of every component of
+-- an existing database and runs none of its scripts). Only .version counts, the key liquibase writes.
+-- False on a fresh install (MARK_RAN, and the query itself may fail on an empty database :
+-- onError:MARK_RAN).
 --
 -- LIKE / REPLACE rather than exact keys : DatastoreService prefixes .installed and .pool with the
 -- instance name on multi-instance deployments (NOTIFSTORE-02.core.plugins.status.<plugin>.installed).
 --
 -- changeset workflow-formstopdf:prerun-rename-formspdf
 -- preconditions onFail:MARK_RAN onError:MARK_RAN
--- precondition-sql-check expectedResult:1 SELECT COUNT(DISTINCT 1) FROM DATABASECHANGELOG WHERE FILENAME LIKE 'sql/plugins/workflow/modules/formspdf/%'
+-- precondition-sql-check expectedResult:1 SELECT COUNT(DISTINCT 1) FROM (SELECT 1 AS found FROM DATABASECHANGELOG WHERE FILENAME LIKE 'sql/plugins/workflow/modules/formspdf/%' UNION ALL SELECT 1 FROM core_datastore WHERE entity_key LIKE '%core.plugins.status.workflow-formspdf.version') former_module
 DELETE FROM core_datastore WHERE entity_key LIKE '%core.plugins.status.workflow-formstopdf.%' AND EXISTS (SELECT 1 FROM (SELECT 1 FROM core_datastore WHERE entity_key LIKE '%core.plugins.status.workflow-formspdf.%') AS old_keys);
 UPDATE core_datastore SET entity_key = REPLACE(entity_key,'core.plugins.status.workflow-formspdf.','core.plugins.status.workflow-formstopdf.') WHERE entity_key LIKE '%core.plugins.status.workflow-formspdf.%';
 UPDATE core_admin_right SET plugin_name = 'workflow-formstopdf' WHERE plugin_name = 'workflow-formspdf';
