@@ -38,11 +38,14 @@ import java.util.Locale;
 import java.util.Map;
 
 import fr.paris.lutece.plugins.forms.util.FormsConstants;
+import fr.paris.lutece.portal.service.message.AdminMessage;
+import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.RequestParam;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.ResponseBody;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.util.url.UrlItem;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -82,6 +85,7 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
     // Views
     private static final String VIEW_MANAGE_TEMPLATES = "manageTemplates";
     private static final String VIEW_MODIFY_TEMPLATE = "modifyTemplate";
+    private static final String VIEW_CONFIRM_REMOVE_TEMPLATE = "confirmRemoveTemplate";
 
     // Actions
     private static final String ACTION_MODIFY_TEMPLATE = "modifyTemplate";
@@ -111,6 +115,9 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
 
     private static final String PROPERTY_PAGE_TITLE_MANAGE_FORMS_PDF_TEMPLATES = "module.workflow.formspdf.manage.template.title";
     private static final String PROPERTY_PAGE_TITLE_MODIFY_FORMS_PDF_TEMPLATES = "module.workflow.formspdf.modify.template.title";
+
+    // Messages
+    private static final String MESSAGE_CONFIRM_REMOVE_TEMPLATE = "module.workflow.formspdf.message.confirmRemoveTemplate";
 
     @Inject
     private Models model;
@@ -199,6 +206,35 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
         Map<String, String> mapParameters = new LinkedHashMap<>( );
         mapParameters.put( PARAMETER_TASK_ID, request.getParameter( PARAMETER_TASK_ID ) );
         return redirect( request, VIEW_MANAGE_TEMPLATES, mapParameters );
+    }
+
+    /**
+     * Asks the confirmation of the removal of a template. The confirmation is posted with the security token of the removal action.
+     *
+     * @param request
+     *            the HTTP request
+     * @return the redirection to the confirmation message
+     */
+    @View( value = VIEW_CONFIRM_REMOVE_TEMPLATE, securityTokenAction = ACTION_REMOVE_TEMPLATE )
+    public String getConfirmRemoveTemplate( HttpServletRequest request )
+    {
+        int nIdTemplate = NumberUtils.toInt( request.getParameter( PARAMETER_TEMPLATE_ID ), DEFAULT_ID_VALUE );
+        FormsPDFTaskTemplate formsPDFTaskTemplate = ( nIdTemplate > DEFAULT_ID_VALUE ) ? FormsPDFTaskTemplateHome.findByPrimaryKey( nIdTemplate ) : null;
+
+        if ( formsPDFTaskTemplate == null )
+        {
+            Map<String, String> mapParameters = new LinkedHashMap<>( );
+            mapParameters.put( PARAMETER_TASK_ID, request.getParameter( PARAMETER_TASK_ID ) );
+            return redirect( request, VIEW_MANAGE_TEMPLATES, mapParameters );
+        }
+
+        UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_TEMPLATE ) );
+        url.addParameter( PARAMETER_TEMPLATE_ID, nIdTemplate );
+        url.addParameter( PARAMETER_TASK_ID, NumberUtils.toInt( request.getParameter( PARAMETER_TASK_ID ), DEFAULT_ID_VALUE ) );
+
+        return redirect( request, AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_TEMPLATE, new Object [ ] {
+                formsPDFTaskTemplate.getName( )
+        }, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION ) );
     }
 
     @Action( value = ACTION_REMOVE_TEMPLATE )

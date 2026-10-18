@@ -36,6 +36,9 @@ package fr.paris.lutece.plugins.workflow.modules.formspdf.web.task;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +48,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskTemplate;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.test.LuteceTestCase;
 
 /**
@@ -119,6 +124,30 @@ public class FormsPDFTaskTemplateJspBeanTest extends LuteceTestCase
         method.setAccessible( true );
         FormsPDFTaskTemplateJspBean jspBean = new FormsPDFTaskTemplateJspBean( );
         return (String) method.invoke( jspBean, strTemplate );
+    }
+
+    // ---------- removal of a template ----------
+
+    @Test
+    public void testRemoveTemplateGoesThroughATokenConfirmation( ) throws Exception
+    {
+        // the confirmation view hands out the token of the removal action
+        Method confirm = FormsPDFTaskTemplateJspBean.class.getMethod( "getConfirmRemoveTemplate", HttpServletRequest.class );
+        View view = confirm.getAnnotation( View.class );
+        assertNotNull( view );
+        assertEquals( "removeTemplate", view.securityTokenAction( ) );
+
+        // the removal checks the token
+        Method remove = FormsPDFTaskTemplateJspBean.class.getMethod( "doRemoveTemplate", HttpServletRequest.class );
+        Action action = remove.getAnnotation( Action.class );
+        assertNotNull( action );
+        assertFalse( action.securityTokenDisabled( ) );
+
+        // the list of templates links the confirmation, not the removal itself
+        String strTemplate = Files.readString( Path.of( "webapp/WEB-INF/templates/admin/plugins/workflow/modules/formspdf/manage_forms_pdf_templates.html" ),
+                StandardCharsets.UTF_8 );
+        assertFalse( strTemplate.contains( "action=removeTemplate" ) );
+        assertTrue( strTemplate.contains( "view=confirmRemoveTemplate" ) );
     }
 
     // ---------- populateFormsPDFTaskTemplate ----------
