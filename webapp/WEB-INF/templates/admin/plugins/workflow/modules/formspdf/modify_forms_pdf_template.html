@@ -15,7 +15,7 @@
 	                    <@input type='text' name='template_name' id='template_name' value="${forms_pdf_task_template.name!}" maxlength=50 />
                     </@formGroup>
 					<@formGroup>
-						<@checkBox orientation='switch' labelFor='template_associate_form' labelKey='#i18n{module.workflow.formspdf.modify.template.generic}' name='template_associate_form' id='template_associate_form' value='true' checked=(!forms_pdf_task_template.generic)!false />
+						<@checkBox orientation='switch' labelKey='#i18n{module.workflow.formspdf.modify.template.generic}' name='template_associate_form' id='template_associate_form' value='true' checked=(!forms_pdf_task_template.generic)!false />
 					</@formGroup>
 					<@formGroup id="list_forms" labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.forms}' >
 						<@inputGroup>
@@ -23,15 +23,15 @@
 						 </@inputGroup>
 					</@formGroup>
                     <@formGroup>
-                        <@checkBox orientation='switch' labelFor='replaceEmpty' labelKey='#i18n{module.workflow.formspdf.modify.template.replaceEmpty}' name='checkbox_replaceEmpty' id='replaceEmpty' value='true' checked=(forms_pdf_task_template.replaceEmpty)!false />
+                        <@checkBox orientation='switch' labelKey='#i18n{module.workflow.formspdf.modify.template.replaceEmpty}' name='checkbox_replaceEmpty' id='replaceEmpty' value='true' checked=(forms_pdf_task_template.replaceEmpty)!false />
                     </@formGroup>
                     <#if rte>
-                    <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' id='rte' name='macro_checkbox_rte' checked=rte />
+                    <@checkBox orientation='switch' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' id='rte' name='macro_checkbox_rte' checked=rte />
                     <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
                         <@input type='textarea' richtext=true name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
                     </@formGroup>
                     <#else>
-                    <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte />
+                    <@checkBox orientation='switch' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte />
                     <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
                         <@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
                     </@formGroup>
