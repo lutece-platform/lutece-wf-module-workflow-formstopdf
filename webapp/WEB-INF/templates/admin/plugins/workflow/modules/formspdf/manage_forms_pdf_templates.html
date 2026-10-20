@@ -9,8 +9,8 @@
 				<@manageFeatureItem>
 					<@manageFeatureItemColumn>#i18n{module.workflow.formspdf.manage.template.name} : ${template_pdf.name} - #i18n{module.workflow.formspdf.manage.template.form} : ${template_pdf.formTitle!}</@manageFeatureItemColumn>
 					<@manageFeatureItemColumn align='end'>
-						<@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{module.workflow.formspdf.manage.template.modify}' hideTitle=['all'] buttonIcon='pencil' showTitle=false />
-						<@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=confirmRemoveTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{module.workflow.formspdf.manage.template.delete}' hideTitle=['all'] buttonIcon='trash' color='danger' showTitle=false />
+						<@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{module.workflow.formspdf.manage.template.modify}' hideTitle=['all'] buttonIcon='pencil' />
+						<@aButton href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=confirmRemoveTemplate&template_id=${template_pdf.id}&task_id=${task_id}' title='#i18n{module.workflow.formspdf.manage.template.delete}' hideTitle=['all'] buttonIcon='trash' color='danger' />
 					</@manageFeatureItemColumn>
 				</@manageFeatureItem>
 			</#list>
