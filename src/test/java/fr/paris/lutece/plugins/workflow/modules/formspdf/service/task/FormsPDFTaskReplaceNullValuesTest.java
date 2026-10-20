@@ -158,7 +158,7 @@ public class FormsPDFTaskReplaceNullValuesTest extends LuteceTestCase
         String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
         assertEquals( 1, fqr.getEntryResponse( ).size( ) );
         assertEquals( expected, fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
-        assertEquals( "<span class=\"formspdf-empty\">" + expected + "</span>", fqr.getEntryResponse( ).get( 0 ).getToStringValueResponse( ) );
+        assertEquals( FormsPDFTask.EMPTY_RESPONSE_START + expected + FormsPDFTask.EMPTY_RESPONSE_END, fqr.getEntryResponse( ).get( 0 ).getToStringValueResponse( ) );
     }
 
     @Test
@@ -172,7 +172,7 @@ public class FormsPDFTaskReplaceNullValuesTest extends LuteceTestCase
 
         String expected = I18nService.getLocalizedString( EMPTY_RESPONSE_KEY, FR );
         assertEquals( expected, fqr.getEntryResponse( ).get( 0 ).getResponseValue( ) );
-        assertEquals( "<span class=\"formspdf-empty\">" + expected + "</span>", fqr.getEntryResponse( ).get( 0 ).getToStringValueResponse( ) );
+        assertEquals( FormsPDFTask.EMPTY_RESPONSE_START + expected + FormsPDFTask.EMPTY_RESPONSE_END, fqr.getEntryResponse( ).get( 0 ).getToStringValueResponse( ) );
     }
 
     @Test
