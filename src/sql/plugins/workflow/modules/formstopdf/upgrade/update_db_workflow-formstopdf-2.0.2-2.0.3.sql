@@ -1,4 +1,11 @@
 -- liquibase formatted sql
+-- changeset workflow-formstopdf:update_db_workflow-formstopdf-2.0.2-2.0.3.sql-decode-entities
+-- preconditions onFail:MARK_RAN onError:WARN
+-- comment LUT-34128 : decodes, once, the HTML entities the removed input filter of lutece-core 8 (sanitizeFilterMode, LUT-34109) wrote into the PDF models saved before the 2.0.2 betas (from 2.0.2 the module decoded its input with unescapeHtml4, which is removed): the name, the file name and the content of a model typed in the plain textarea, a FreeMarker source in which the filter wrote &lt;#if ...&gt; and &#34;. The content of a model typed with the rich text editor (is_rte = 1) is HTML and is left as it is. This changeset runs before the removal of the hand escaping below: an escape directive must be decoded before it can be removed. A model element the filter dropped (html, head, title...) cannot be restored.
+UPDATE workflow_task_formspdf_template SET name = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '&#39;', ''''), '&#x27;', ''''), '&#34;', '"'), '&quot;', '"'), '&#96;', '`'), '&#61;', '='), '&#64;', '@'), '&#43;', '+'), '&lt;', '<'), '&gt;', '>'), '&amp;', '&') WHERE name LIKE '%&%;%';
+UPDATE workflow_task_formspdf_template SET file_name = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(file_name, '&#39;', ''''), '&#x27;', ''''), '&#34;', '"'), '&quot;', '"'), '&#96;', '`'), '&#61;', '='), '&#64;', '@'), '&#43;', '+'), '&lt;', '<'), '&gt;', '>'), '&amp;', '&') WHERE file_name LIKE '%&%;%';
+UPDATE workflow_task_formspdf_template SET content = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(content, '&#39;', ''''), '&#x27;', ''''), '&#34;', '"'), '&quot;', '"'), '&#96;', '`'), '&#61;', '='), '&#64;', '@'), '&#43;', '+'), '&lt;', '<'), '&gt;', '>'), '&amp;', '&') WHERE is_rte = 0 AND content LIKE '%&%;%';
+
 -- changeset workflow-formstopdf:update_db_workflow-formstopdf-2.0.2-2.0.3.sql
 -- preconditions onFail:MARK_RAN onError:WARN
 -- LUT-33153 (FreeMarker HTML auto-escaping): the content and the file name of the PDF models of
