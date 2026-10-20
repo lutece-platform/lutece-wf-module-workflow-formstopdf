@@ -13,7 +13,7 @@ Parameters: entry, list_responses
 			</#if>
 			<#if displayImageWithBase64>
 				<#if response.file?exists && entry?exists >
-					<@img url='data:image/jpeg;base64,${response.toStringValueResponse!}' params='width="100px" height="100px"' />
+					<@img url='data:image/jpeg;base64,${response.toStringValueResponse!}' params={"width": "100px", "height": "100px"} />
 				</#if>
 			<#else>
 				<#if response.file?exists && entry?exists >
