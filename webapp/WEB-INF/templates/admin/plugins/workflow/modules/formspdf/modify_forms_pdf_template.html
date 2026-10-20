@@ -17,7 +17,7 @@
 					<@formGroup>
 						<@checkBox orientation='switch' labelKey='#i18n{module.workflow.formspdf.modify.template.generic}' name='template_associate_form' id='template_associate_form' value='true' checked=(!forms_pdf_task_template.generic)!false />
 					</@formGroup>
-					<@formGroup id="list_forms" labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.forms}' >
+					<@formGroup id="list_forms" labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.forms}' labelFor='template_id_form' >
 						<@inputGroup>
 							<@select name='template_id_form' id="template_id_form" items=forms_list default_value='${(forms_pdf_task_template.idForm)!0}' />
 						 </@inputGroup>
@@ -37,9 +37,10 @@
                     </@formGroup>
                     <@formGroup>
 						<@button type='submit' name='action_modifyTemplate' buttonIcon='check' title='#i18n{module.workflow.formspdf.modify.template.buttonSave}' />
-						<@button type='cancel' buttonIcon='times' title='#i18n{module.workflow.formspdf.modify.template.buttonCancel}' cancel=true />
+						<@aButton color='secondary' buttonIcon='x' href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=manageTemplates&task_id=${task_id?c}' title='#i18n{module.workflow.formspdf.modify.template.buttonCancel}' />
 					</@formGroup>
                 </@tform>
+                <p id="marker_descriptions_status" class="visually-hidden" role="status" data-message="${i18n( 'module.workflow.formspdf.modify.template.markersUpdated' )}"></p>
             </@columns>
             <@columns xs=12 sm=4 id='marker_descriptions_section'>
                 <@marker_descriptions />
@@ -103,6 +104,8 @@ const formId = this.value;
 if (!formId) return;
 
 const isRte = document.getElementById("rte").checked;
+const markerStatus = document.getElementById("marker_descriptions_status");
+markerStatus.textContent = "";
 const params = new URLSearchParams({
     view: "getMarkerDescriptions",
     form_id: formId,
@@ -118,6 +121,7 @@ fetch("jsp/admin/plugins/workflow/modules/formspdf/GetMarkerDescriptions.jsp?" +
     })
     .then(data => {
         document.getElementById("marker_descriptions_section").innerHTML = data;
+        markerStatus.textContent = markerStatus.dataset.message;
     })
     .catch(err => console.error(err));
 });
