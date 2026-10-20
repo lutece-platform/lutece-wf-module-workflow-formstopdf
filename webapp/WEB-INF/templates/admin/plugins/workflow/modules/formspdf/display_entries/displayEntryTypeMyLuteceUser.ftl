@@ -16,7 +16,7 @@ Parameters: entry, list_responses
 		<#list list_responses as response>
 		<@p>
 			<#if form_response?? && response.entry??>
-				<@link href='${base_url!""}jsp/admin/plugins/forms/DoVisualisationMyLuteceUser.jsp?id_form_response=${form_response.id}&amp;id_entry=${response.entry.idEntry}'>
+				<@link href='${base_url!""}jsp/admin/plugins/forms/DoVisualisationMyLuteceUser.jsp?id_form_response=${form_response.id}&id_entry=${response.entry.idEntry}'>
 					${response.toStringValueResponse!''}
 				</@link>
 			<#else>

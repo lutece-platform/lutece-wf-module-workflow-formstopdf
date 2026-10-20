@@ -11,7 +11,7 @@ Parameters: entry, list_responses
 </#if>
 <#assign iteration = iteration + 1>
     <#list list_responses as response>
-        ${response.toStringValueResponse!?replace("\n", "<br>")}
+        <#if ( getFieldValueByCode( entry, 'richtext' )!'' ) == 'true'>${richText( response.toStringValueResponse! )}<#else><#list (response.toStringValueResponse!)?split( '\n' ) as line>${line}<#sep><br></#sep></#list></#if>
     </#list>
 </#if>
 </#macro>

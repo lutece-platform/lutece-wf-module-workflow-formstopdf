@@ -4,5 +4,5 @@ Description: Display the comment of an entry
 Parameters: entry, list_responses
 -->
 <#macro displayEntryTypeComment entry, list_responses >
-<@span>${entry.comment}</@span>
+<@span>${richText( entry.comment! )}</@span>
 </#macro>

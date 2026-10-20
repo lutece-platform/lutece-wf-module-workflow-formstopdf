@@ -15,7 +15,7 @@
 	                    <@input type='text' name='template_name' id='template_name' value="${forms_pdf_task_template.name!}" maxlength=50 />
                     </@formGroup>
 					<@formGroup>
-						<@checkBox orientation='switch' labelFor='template_associate_form' labelKey='#i18n{module.workflow.formspdf.modify.template.generic}' name='template_associate_form' id='template_associate_form' value='true' checked=(!forms_pdf_task_template.generic)!false params='onchange="javascript:toggleAssociateForm();"' />
+						<@checkBox orientation='switch' labelFor='template_associate_form' labelKey='#i18n{module.workflow.formspdf.modify.template.generic}' name='template_associate_form' id='template_associate_form' value='true' checked=(!forms_pdf_task_template.generic)!false />
 					</@formGroup>
 					<@formGroup id="list_forms" labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.forms}' >
 						<@inputGroup>
@@ -60,6 +60,7 @@ function toggleAssociateForm() {
     }
 }
 
+document.getElementById("template_associate_form").addEventListener("change", toggleAssociateForm);
 toggleAssociateForm();
 
 <#noparse>
