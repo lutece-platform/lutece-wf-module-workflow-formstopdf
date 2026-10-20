@@ -213,6 +213,28 @@ public class FormsPDFTaskTemplateJspBeanTest extends LuteceTestCase
         assertFalse( template.isReplaceEmpty( ) );
     }
 
+    /**
+     * The core no longer encodes the request parameters (LUT-34109): the model is stored as typed, an entity written in the source
+     * included (it was decoded by unescapeHtml4, which turned a &amp;lt; of the source into a raw &lt;).
+     */
+    @Test
+    public void testPopulateKeepsTheModelAsTyped( ) throws Exception
+    {
+        Map<String, String> params = new HashMap<>( );
+        params.put( PARAMETER_TEMPLATE_NAME, "L'été \"A\" & B" );
+        params.put( PARAMETER_TEMPLATE_ASSOCIATE_FORM, "false" );
+        params.put( PARAMETER_TEMPLATE_CONTENT, "<#if city??><p>${city?string(\"x\")} &lt; 10 &amp; co</p></#if>" );
+        params.put( PARAMETER_RICH_TEXT_EDITOR, "false" );
+        params.put( PARAMETER_TEMPLATE_FILE_NAME, "export_${form_title}_&amp;" );
+
+        FormsPDFTaskTemplate template = new FormsPDFTaskTemplate( );
+        invokePopulate( fakeRequest( params ), template );
+
+        assertEquals( "L'été \"A\" & B", template.getName( ) );
+        assertEquals( "<#if city??><p>${city?string(\"x\")} &lt; 10 &amp; co</p></#if>", template.getContent( ) );
+        assertEquals( "export_${form_title}_&amp;", template.getFileName( ) );
+    }
+
     // ---------- convertMacroToSuppMinor ----------
 
     @Test

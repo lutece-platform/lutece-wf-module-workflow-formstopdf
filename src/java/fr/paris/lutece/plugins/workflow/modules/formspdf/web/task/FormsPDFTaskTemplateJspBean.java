@@ -65,7 +65,6 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.web.cdi.mvc.Models;
 import fr.paris.lutece.portal.web.constants.Messages;
-import org.apache.commons.text.StringEscapeUtils;
 
 @RequestScoped
 @Named
@@ -267,9 +266,9 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
             formsPDFTaskTemplateToEdit.setIdForm( DEFAULT_ID_VALUE );
         }
 
-        formsPDFTaskTemplateToEdit.setContent( StringEscapeUtils.unescapeHtml4( request.getParameter( PARAMETER_TEMPLATE_CONTENT ) ) );
+        formsPDFTaskTemplateToEdit.setContent( request.getParameter( PARAMETER_TEMPLATE_CONTENT ) );
         formsPDFTaskTemplateToEdit.setRte( Boolean.parseBoolean( request.getParameter( PARAMETER_RICH_TEXT_EDITOR ) ) );
-        formsPDFTaskTemplateToEdit.setFileName( StringEscapeUtils.unescapeHtml4( request.getParameter( PARAMETER_TEMPLATE_FILE_NAME ) ) );
+        formsPDFTaskTemplateToEdit.setFileName( request.getParameter( PARAMETER_TEMPLATE_FILE_NAME ) );
         formsPDFTaskTemplateToEdit.setReplaceEmpty( Boolean.parseBoolean( request.getParameter( PARAMETER_TEMPLATE_REPLACE_EMPTY ) ) );
 
         return formsPDFTaskTemplateToEdit;

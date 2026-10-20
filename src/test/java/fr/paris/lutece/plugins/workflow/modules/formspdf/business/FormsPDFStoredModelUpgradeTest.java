@@ -70,6 +70,8 @@ public class FormsPDFStoredModelUpgradeTest
 {
     private static final String UPGRADE_SCRIPT = "src/sql/plugins/workflow/modules/formstopdf/upgrade/update_db_workflow-formstopdf-2.0.2-2.0.3.sql";
 
+    private static final String CHANGESET = "-- changeset workflow-formstopdf:update_db_workflow-formstopdf-2.0.2-2.0.3.sql\n";
+
     private static final Pattern UPDATE = Pattern.compile( "UPDATE workflow_task_formspdf_template SET (\\w+) =(.*?)\\s+WHERE", Pattern.DOTALL );
     private static final Pattern REPLACED = Pattern.compile( "'([^']*)',\\s*'([^']*)'" );
 
@@ -115,7 +117,9 @@ public class FormsPDFStoredModelUpgradeTest
      */
     private static Map<String, List<String [ ]>> upgrade( ) throws IOException
     {
-        String strScript = Files.readString( Path.of( UPGRADE_SCRIPT ), StandardCharsets.UTF_8 );
+        String strFile = Files.readString( Path.of( UPGRADE_SCRIPT ), StandardCharsets.UTF_8 );
+        // the changeset that removes the hand escaping; the file also holds the decoding of the entities (FormsPDFDecodeEntitiesUpgradeTest)
+        String strScript = strFile.substring( strFile.indexOf( CHANGESET ) );
         Map<String, List<String [ ]>> mapReplaced = new LinkedHashMap<>( );
         Matcher update = UPDATE.matcher( strScript );
         while ( update.find( ) )
