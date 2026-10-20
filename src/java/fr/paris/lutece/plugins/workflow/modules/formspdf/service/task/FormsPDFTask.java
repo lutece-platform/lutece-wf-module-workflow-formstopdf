@@ -93,8 +93,16 @@ public class FormsPDFTask extends Task
     private static final String FTL_SQUARE_BRACKET_TAG = "[#ftl]";
     /** Separator between a question marker and its iteration number, same as GenericFormsProvider.MARK_POSITION_ITERATION (private there) */
     private static final String MARK_ITERATION_SEPARATOR = "_";
+    /**
+     * Marks wrapping the default label in the response value read by the templates. The templates are rendered with HTML auto-escaping, so a value
+     * cannot carry markup: these two private use characters, left untouched by the escaping, are replaced by the markup of the empty answer once the
+     * template is rendered (see {@link #renderContent(String, Locale, Map)}).
+     */
+    static final String EMPTY_RESPONSE_START = "\uE000";
+    static final String EMPTY_RESPONSE_END = "\uE001";
     /** Markup wrapping the default label when displayed; its class is styled by HtmlToPDFGenerator and can be overridden by the templates */
-    private static final String FORMAT_EMPTY_RESPONSE_DISPLAY = "<span class=\"formspdf-empty\">%s</span>";
+    private static final String HTML_EMPTY_RESPONSE_START = "<span class=\"formspdf-empty\">";
+    private static final String HTML_EMPTY_RESPONSE_END = "</span>";
 
 
     /**
@@ -172,8 +180,7 @@ public class FormsPDFTask extends Task
 
                 try
                 {
-                    String templatedName = AppTemplateService.getTemplateFromStringFtl( formsPDFTaskTemplate.getFileName( ), currentLocale, model ).getHtml( );
-                    pdfFileName = Jsoup.parse( templatedName ).text( );
+                    pdfFileName = renderFileName( formsPDFTaskTemplate.getFileName( ), currentLocale, model );
                 }
                 catch( Exception e )
                 {
@@ -186,8 +193,7 @@ public class FormsPDFTask extends Task
                 }
             }
 
-            formsPDFTaskTemplate
-                    .setContent( AppTemplateService.getTemplateFromStringFtl( formsPDFTaskTemplate.getContent( ), currentLocale, model ).getHtml( ) );
+            formsPDFTaskTemplate.setContent( renderContent( formsPDFTaskTemplate.getContent( ), currentLocale, model ) );
             HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( form.getTitle( ) + pdfFileName,
                     I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ), frep, formsPDFTaskTemplate );
             _temporaryFileGeneratorService.generateFile( htmltopdf, user );
@@ -439,8 +445,8 @@ public class FormsPDFTask extends Task
     }
 
     /**
-     * Wraps the default label in the markup used to display it, so that it stands out from the values entered by the user and can be styled by the
-     * templates through its CSS class.
+     * Wraps the default label in the marks of the empty answer, replaced by its markup once the template is rendered, so that it stands out from the
+     * values entered by the user and can be styled by the templates through its CSS class.
      *
      * @param strDefaultValue
      *            the localized default label
@@ -448,7 +454,45 @@ public class FormsPDFTask extends Task
      */
     private String formatDefaultValue( String strDefaultValue )
     {
-        return String.format( FORMAT_EMPTY_RESPONSE_DISPLAY, strDefaultValue );
+        return EMPTY_RESPONSE_START + strDefaultValue + EMPTY_RESPONSE_END;
+    }
+
+    /**
+     * Renders the content of a PDF model. The model is a FreeMarker template rendered with HTML auto-escaping: the HTML written in the model is kept,
+     * the values of the answers are escaped. The marks of the empty answers are then replaced by their markup.
+     *
+     * @param strTemplate
+     *            the content of the PDF model
+     * @param locale
+     *            the locale
+     * @param model
+     *            the model holding the answers
+     * @return the HTML of the document
+     */
+    static String renderContent( String strTemplate, Locale locale, Map<String, Object> model )
+    {
+        String strHtml = AppTemplateService.getTemplateFromStringFtl( strTemplate, locale, model ).getHtml( );
+
+        return strHtml.replace( EMPTY_RESPONSE_START, HTML_EMPTY_RESPONSE_START ).replace( EMPTY_RESPONSE_END, HTML_EMPTY_RESPONSE_END );
+    }
+
+    /**
+     * Renders the file name of a PDF model: the template is rendered as HTML, then reduced to its text (entities decoded, tags and marks of the empty
+     * answers removed).
+     *
+     * @param strTemplate
+     *            the file name template of the PDF model
+     * @param locale
+     *            the locale
+     * @param model
+     *            the model holding the answers
+     * @return the file name, as text
+     */
+    static String renderFileName( String strTemplate, Locale locale, Map<String, Object> model )
+    {
+        String strHtml = AppTemplateService.getTemplateFromStringFtl( strTemplate, locale, model ).getHtml( );
+
+        return Jsoup.parse( strHtml ).text( ).replace( EMPTY_RESPONSE_START, "" ).replace( EMPTY_RESPONSE_END, "" );
     }
 
     /**
