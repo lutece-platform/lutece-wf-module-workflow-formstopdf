@@ -11,7 +11,7 @@ Parameters: entry, list_responses
 	<#assign responseAgreement = getResponseContainingTheFieldWithCode( list_responses, "agreement" ) >
 </#if>
 <#if responseAgreement?? && responseAgreement.toStringValueResponse == "true">
-	<@link href='${base_url!""}jsp/site/RunStandaloneApp.jsp?page=formsTermsOfService&view=acceptedTermsOfService&id_response=${(responseTos.idResponse)!}' params='onclick="javascript:openFormsTermsOfService(this.href); return false;" target="_blank"'>#i18n{forms.entryType.termsOfService.readOnly.link}</@link>
+	<@link href='${base_url!""}jsp/site/RunStandaloneApp.jsp?page=formsTermsOfService&view=acceptedTermsOfService&id_response=${(responseTos.idResponse)!}' target='_blank'>#i18n{forms.entryType.termsOfService.readOnly.link}</@link>
 <#else>
 	<@span class='text-danger'>#i18n{forms.entryType.termsOfService.readOnly.unknown}</@span>
 </#if>
