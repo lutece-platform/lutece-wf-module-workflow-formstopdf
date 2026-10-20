@@ -10,14 +10,14 @@
                     <@messages errors=errors />
                     <@input type="hidden" id="template_id" name="template_id" value="${forms_pdf_task_template.id}"/>
                     <@input type="hidden" id="task_id" name="task_id" value="${task_id}"/>
-                    <@input type='hidden' id='rte_value' name='rte' value=rte?c />
+                    <@input type='hidden' id='rte' name='rte' value=rte?c />
                     <@formGroup labelFor='template_name' labelKey='#i18n{module.workflow.formspdf.modify.template.name}' mandatory=true>
 	                    <@input type='text' name='template_name' id='template_name' value="${forms_pdf_task_template.name!}" maxlength=50 />
                     </@formGroup>
 					<@formGroup>
 						<@checkBox orientation='switch' labelKey='#i18n{module.workflow.formspdf.modify.template.generic}' name='template_associate_form' id='template_associate_form' value='true' checked=(!forms_pdf_task_template.generic)!false />
 					</@formGroup>
-					<@formGroup id="list_forms" labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.forms}' >
+					<@formGroup id="list_forms" labelKey='#i18n{module.workflow.formspdf.task_formspdf_config.label.forms}' labelFor='template_id_form' >
 						<@inputGroup>
 							<@select name='template_id_form' id="template_id_form" items=forms_list default_value='${(forms_pdf_task_template.idForm)!0}' />
 						 </@inputGroup>
@@ -25,14 +25,16 @@
                     <@formGroup>
                         <@checkBox orientation='switch' labelKey='#i18n{module.workflow.formspdf.modify.template.replaceEmpty}' name='checkbox_replaceEmpty' id='replaceEmpty' value='true' checked=(forms_pdf_task_template.replaceEmpty)!false />
                     </@formGroup>
+                    <#-- the editor changes on an explicit link, not on a switch that reloaded the page at once (WCAG 3.2.2) -->
+                    <@formGroup>
+                        <@aButton color='secondary' size='sm' buttonIcon='switch-horizontal' href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=modifyTemplate&template_id=${forms_pdf_task_template.id?c}&task_id=${task_id?c}&rte=${(!rte)?c}' title=rte?then( '#i18n{module.workflow.formspdf.modify.template.switchToPlain}', '#i18n{module.workflow.formspdf.modify.template.switchToRTE}' ) />
+                    </@formGroup>
                     <#if rte>
-                    <@checkBox orientation='switch' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' id='rte' name='macro_checkbox_rte' checked=rte />
-                    <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
+                    <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' helpKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' mandatory=true rows=2>
                         <@input type='textarea' richtext=true name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
                     </@formGroup>
                     <#else>
-                    <@checkBox orientation='switch' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte />
-                    <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
+                    <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' helpKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' mandatory=true rows=2>
                         <@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
                     </@formGroup>
                     </#if>
@@ -41,9 +43,10 @@
                     </@formGroup>
                     <@formGroup>
 						<@button type='submit' name='action_modifyTemplate' buttonIcon='check' title='#i18n{module.workflow.formspdf.modify.template.buttonSave}' />
-						<@button type='cancel' buttonIcon='times' title='#i18n{module.workflow.formspdf.modify.template.buttonCancel}' cancel=true />
+						<@aButton color='secondary' buttonIcon='x' href='jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?view=manageTemplates&task_id=${task_id?c}' title='#i18n{module.workflow.formspdf.modify.template.buttonCancel}' />
 					</@formGroup>
                 </@tform>
+                <p id="marker_descriptions_status" class="visually-hidden" role="status" data-message="${i18n( 'module.workflow.formspdf.modify.template.markersUpdated' )}"></p>
             </@columns>
             <@columns xs=12 sm=4 id='marker_descriptions_section'>
                 <@marker_descriptions />
@@ -67,32 +70,13 @@ function toggleAssociateForm() {
 document.getElementById("template_associate_form").addEventListener("change", toggleAssociateForm);
 toggleAssociateForm();
 
-/**
- * Toggle the RTE
- */
-function toggleRTE() {
-    let url = window.location.href;
-    let rteValue = !document.getElementById("rte").checked;
-    const rteIndex = url.indexOf("rte=");
-    if(rteIndex === -1) {
-        url = url + "&rte=" + rteValue;
-    }
-    if(rteValue){
-        url = url.replace("rte=true", "rte=false");
-        document.location.replace(url);
-    } else {
-        url = url.replace("rte=false", "rte=true");
-        document.location.replace(url);
-    }
-}
-
-document.querySelector('input[name="macro_checkbox_rte"]').addEventListener("change", toggleRTE);
-
 document.getElementById("template_id_form").addEventListener("change", function() {
 const formId = this.value;
 if (!formId) return;
 
-const isRte = document.getElementById("rte").checked;
+const isRte = document.getElementById("rte").value === "true";
+const markerStatus = document.getElementById("marker_descriptions_status");
+markerStatus.textContent = "";
 const params = new URLSearchParams({
     view: "getMarkerDescriptions",
     form_id: formId,
@@ -108,6 +92,7 @@ fetch("jsp/admin/plugins/workflow/modules/formspdf/GetMarkerDescriptions.jsp?" +
     })
     .then(data => {
         document.getElementById("marker_descriptions_section").innerHTML = data;
+        markerStatus.textContent = markerStatus.dataset.message;
     })
     .catch(err => console.error(err));
 });
