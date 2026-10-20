@@ -25,17 +25,13 @@
                     <@formGroup>
                         <@checkBox orientation='switch' labelFor='replaceEmpty' labelKey='#i18n{module.workflow.formspdf.modify.template.replaceEmpty}' name='checkbox_replaceEmpty' id='replaceEmpty' value='true' checked=(forms_pdf_task_template.replaceEmpty)!false />
                     </@formGroup>
-                    <#if rte>
-                    <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.withRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
+                    <@checkBox orientation='switch' id='rte' name='macro_checkbox_rte' checked=rte>
+                        <@span id='rte_label_on' class=rte?then('','d-none')>#i18n{module.workflow.formspdf.modify.template.withRTE}</@span>
+                        <@span id='rte_label_off' class=rte?then('d-none','')>#i18n{module.workflow.formspdf.modify.template.noRTE}</@span>
+                    </@checkBox>
                     <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
-                        <@input type='textarea' richtext=true name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
+                        <@input type='textarea' richtext=rte name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
                     </@formGroup>
-                    <#else>
-                    <@checkBox orientation='switch' labelFor='rte' labelKey='#i18n{module.workflow.formspdf.modify.template.noRTE}' id='rte' name='macro_checkbox_rte' checked=rte params='onchange="javascript:toggleRTE();"' />
-                    <@formGroup labelFor='template_content' labelKey='#i18n{module.workflow.formspdf.modify.template.content}' mandatory=true rows=2>
-                        <@input type='textarea' name='template_content' id='template_content' rows=15 cols=70>${forms_pdf_task_template.content!}</@input>
-                    </@formGroup>
-                    </#if>
                     <@formGroup labelFor='template_filename' labelKey='#i18n{module.workflow.formspdf.modify.template.filename}' helpKey='#i18n{module.workflow.formspdf.modify.template.filenameComment}'>
                         <@input type='text' name='template_filename' id='template_filename' value="${forms_pdf_task_template.fileName!}" maxlength=350 />
                     </@formGroup>
@@ -66,25 +62,40 @@ function toggleAssociateForm() {
 
 toggleAssociateForm();
 
+<#noparse>
 /**
  * Toggle the RTE
  */
 function toggleRTE() {
-    let url = window.location.href;
-    let rteValue = !document.getElementById("rte").checked;
-    const rteIndex = url.indexOf("rte=");
-    if(rteIndex === -1) {
-        url = url + "&rte=" + rteValue;
+    const isRte = document.getElementById("rte").checked;
+    const content = document.getElementById("template_content");
+    const editorAvailable = typeof tinymce !== 'undefined';
+    const editor = editorAvailable ? tinymce.get("template_content") : null;
+    if (editor) {
+        editor.save();
+        editor.remove();
     }
-    if(rteValue){
-        url = url.replace("rte=true", "rte=false");
-        document.location.replace(url);
+    if (isRte) {
+        content.value = content.value.replace(/<@displayEntry q=position_(\d+)\/>/g, "[@displayEntry q=position_$1/]");
+        content.classList.add("richtext");
+        if (editorAvailable && typeof editorConfig !== 'undefined') {
+            tinymce.init({ ...editorConfig, selector: "#template_content" });
+        }
     } else {
-        url = url.replace("rte=false", "rte=true");
-        document.location.replace(url);
+        content.value = content.value.replace(/\[@displayEntry q=position_(\d+)\/]/g, "<@displayEntry q=position_$1/>");
+        content.classList.remove("richtext");
+    }
+    document.getElementById("rte_value").value = isRte;
+    document.getElementById("rte_label_on").classList.toggle("d-none", !isRte);
+    document.getElementById("rte_label_off").classList.toggle("d-none", isRte);
+    const templatesForms = document.getElementById("template_id_form");
+    if (templatesForms.value) {
+        templatesForms.dispatchEvent(new Event('change'));
     }
 }
 
+document.getElementById("rte").addEventListener("change", toggleRTE);
+</#noparse>
 
 document.getElementById("template_id_form").addEventListener("change", function() {
 const formId = this.value;
