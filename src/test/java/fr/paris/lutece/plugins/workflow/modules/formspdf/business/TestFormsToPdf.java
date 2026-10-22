@@ -30,6 +30,8 @@ public class TestFormsToPdf extends LuteceTestCase
 	    formsPDFTaskConfig.setIdForms( 1 );
 		formsPDFTaskConfig.setFormat( "format1" );
 		formsPDFTaskConfig.setIdTemplate( 2 );
+		formsPDFTaskConfig.setName( "name1" );
+		formsPDFTaskConfig.setDescription( "description1" );
 
 		//Test insert/load
 		_formsPDFTaskConfigDAO.insert( formsPDFTaskConfig );		
@@ -38,13 +40,19 @@ public class TestFormsToPdf extends LuteceTestCase
 		assertEquals( formsPDFTaskConfig.getIdForms( ), formsPDFTaskConfigLoaded.getIdForms( ) );
 		assertEquals( formsPDFTaskConfig.getFormat( ), formsPDFTaskConfigLoaded.getFormat( ) );
 		assertEquals( formsPDFTaskConfig.getIdTemplate( ), formsPDFTaskConfigLoaded.getIdTemplate( ) );
+		assertEquals( formsPDFTaskConfig.getName( ), formsPDFTaskConfigLoaded.getName( ) );
+		assertEquals( formsPDFTaskConfig.getDescription( ), formsPDFTaskConfigLoaded.getDescription( ) );
 
 	    //Test update
 		formsPDFTaskConfig.setFormat("format2");
+		formsPDFTaskConfig.setName( "name2" );
+		formsPDFTaskConfig.setDescription( "description2" );
 		_formsPDFTaskConfigDAO.store( formsPDFTaskConfig );
 		formsPDFTaskConfigLoaded = _formsPDFTaskConfigDAO.load( formsPDFTaskConfig.getIdTask( ) );
 
 		assertEquals( formsPDFTaskConfig.getFormat( ), formsPDFTaskConfigLoaded.getFormat( ) );
+		assertEquals( "name2", formsPDFTaskConfigLoaded.getName( ) );
+		assertEquals( "description2", formsPDFTaskConfigLoaded.getDescription( ) );
 
 		//Test delete
 		_formsPDFTaskConfigDAO.delete( formsPDFTaskConfig.getIdTask( ) );

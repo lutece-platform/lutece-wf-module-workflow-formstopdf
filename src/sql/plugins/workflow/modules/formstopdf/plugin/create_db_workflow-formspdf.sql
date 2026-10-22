@@ -35,3 +35,9 @@ ALTER TABLE workflow_task_formspdf_template ADD COLUMN file_name VARCHAR(350);
 -- preconditions onFail:MARK_RAN onError:WARN
 -- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = database() AND table_name = 'workflow_task_formspdf_template' AND column_name = 'is_replace_empty_response'
 ALTER TABLE workflow_task_formspdf_template ADD COLUMN is_replace_empty_response SMALLINT DEFAULT 0 NOT NULL;
+
+-- changeset workflow-formstopdf:create_db_workflow-formspdf-rev3.sql
+-- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = database() AND table_name = 'workflow_task_formspdf_cf' AND column_name = 'name'
+ALTER TABLE workflow_task_formspdf_cf ADD COLUMN name VARCHAR(255) DEFAULT NULL;
+ALTER TABLE workflow_task_formspdf_cf ADD COLUMN description LONG VARCHAR;

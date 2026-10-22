@@ -6,3 +6,9 @@ ALTER TABLE workflow_task_formspdf_template ADD COLUMN is_replace_empty_response
 -- changeset workflow-formstopdf:update_db_workflow-formspdf-2.0.1-2.0.2-rev1.sql
 -- preconditions onFail:MARK_RAN onError:WARN
 UPDATE core_admin_right SET plugin_name = 'workflow-formstopdf' WHERE id_right = 'FORMSPDF_TEMPLATES_MANAGEMENT';
+
+-- changeset workflow-formstopdf:update_db_workflow-formspdf-2.0.1-2.0.2-rev2.sql
+-- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = database() AND table_name = 'workflow_task_formspdf_cf' AND column_name = 'name'
+ALTER TABLE workflow_task_formspdf_cf ADD COLUMN name VARCHAR(255) DEFAULT NULL;
+ALTER TABLE workflow_task_formspdf_cf ADD COLUMN description LONG VARCHAR;

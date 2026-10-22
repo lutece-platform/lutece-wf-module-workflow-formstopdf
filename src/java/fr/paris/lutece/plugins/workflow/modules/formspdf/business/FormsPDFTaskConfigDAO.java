@@ -54,12 +54,12 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
     /**
      * configuration select query
      */
-    private static final String SQL_QUERY_SELECT = "SELECT id_task, id_forms, format, id_template FROM workflow_task_formspdf_cf WHERE id_task = ?";
+    private static final String SQL_QUERY_SELECT = "SELECT id_task, id_forms, format, id_template, name, description FROM workflow_task_formspdf_cf WHERE id_task = ?";
 
     /**
      * configuration insert query
      */
-    private static final String SQL_QUERY_INSERT = "INSERT INTO workflow_task_formspdf_cf ( id_task, id_forms, format, id_template ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO workflow_task_formspdf_cf ( id_task, id_forms, format, id_template, name, description ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
 
     /**
      * configuration delete query
@@ -69,7 +69,7 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
     /**
      * configuration update query
      */
-    private static final String SQL_QUERY_UPDATE = "UPDATE workflow_task_formspdf_cf SET id_task = ?, id_forms = ?, format = ?, id_template = ? WHERE id_task = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE workflow_task_formspdf_cf SET id_task = ?, id_forms = ?, format = ?, id_template = ?, name = ?, description = ? WHERE id_task = ?";
 
     @Override
     public void insert( FormsPDFTaskConfig formsJasperTaskConfig )
@@ -82,6 +82,8 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdForms( ) );
         daoUtil.setString( ++nIndex, formsJasperTaskConfig.getFormat( ) );
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTemplate() );
+        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getName( ) );
+        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getDescription( ) );
 
         daoUtil.executeUpdate( );
         if ( daoUtil.nextGeneratedKey( ) )
@@ -102,6 +104,8 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdForms( ) );
         daoUtil.setString( ++nIndex, formsJasperTaskConfig.getFormat( ) );
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTemplate() );
+        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getName( ) );
+        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getDescription( ) );
         daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTask( ) );
 
         daoUtil.executeUpdate( );
@@ -126,6 +130,8 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
             formsPDFTaskConfig.setIdForms( daoUtil.getInt( "id_forms" ) );
             formsPDFTaskConfig.setFormat( daoUtil.getString( "format" ) );
             formsPDFTaskConfig.setIdTemplate( daoUtil.getInt( "id_template" ) );
+            formsPDFTaskConfig.setName( daoUtil.getString( "name" ) );
+            formsPDFTaskConfig.setDescription( daoUtil.getString( "description" ) );
         }
 
         daoUtil.free( );

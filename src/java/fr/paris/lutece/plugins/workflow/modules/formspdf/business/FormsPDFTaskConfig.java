@@ -58,6 +58,10 @@ public class FormsPDFTaskConfig extends TaskConfig
 
     private int _nIdTemplate;
 
+    private String _strName;
+
+    private String _strDescription;
+
     /**
      * @return _nIdForms : The id of the forms to be considered as the report datasource
      */
@@ -111,5 +115,47 @@ public class FormsPDFTaskConfig extends TaskConfig
     public void setIdTemplate( int nIdTemplate )
     {
         this._nIdTemplate = nIdTemplate;
+    }
+
+    /**
+     * Gets the name of the task, entered in its configuration
+     *
+     * @return the name
+     */
+    public String getName( )
+    {
+        return _strName;
+    }
+
+    /**
+     * Sets the name of the task
+     *
+     * @param strName
+     *            the name
+     */
+    public void setName( String strName )
+    {
+        this._strName = strName;
+    }
+
+    /**
+     * Gets the description of the task, entered in its configuration
+     *
+     * @return the description
+     */
+    public String getDescription( )
+    {
+        return _strDescription;
+    }
+
+    /**
+     * Sets the description of the task
+     *
+     * @param strDescription
+     *            the description
+     */
+    public void setDescription( String strDescription )
+    {
+        this._strDescription = strDescription;
     }
 }
