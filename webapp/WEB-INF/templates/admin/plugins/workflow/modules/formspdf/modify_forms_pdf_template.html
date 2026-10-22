@@ -97,7 +97,7 @@ const params = new URLSearchParams({
     rte: isRte
 });
 
-fetch("jsp/admin/plugins/workflow/modules/formspdf/ManageTemplates.jsp?" + params)
+fetch("jsp/admin/plugins/workflow/modules/formspdf/GetMarkerDescriptions.jsp?" + params)
     .then(response => {
         if (!response.ok) {
             throw new Error('HTTP error! status: ' + response.status);
