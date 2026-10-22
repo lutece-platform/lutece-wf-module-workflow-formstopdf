@@ -8,3 +8,9 @@ INSERT INTO core_admin_right (id_right,name,level_right,admin_url,description,is
 -- changeset workflow-formstopdf:init_core_workflow-formstopdf-rev1.sql
 -- preconditions onFail:MARK_RAN onError:WARN
 UPDATE core_admin_right SET plugin_name = 'workflow-formstopdf' WHERE id_right = 'FORMSPDF_TEMPLATES_MANAGEMENT';
+
+-- changeset workflow-formstopdf:init_core_workflow-formstopdf-rev2.sql
+-- preconditions onFail:MARK_RAN onError:WARN
+-- The admin user of the core (id 1) gets the management of the PDF templates, as for the other features of the site
+DELETE FROM core_user_right WHERE id_right = 'FORMSPDF_TEMPLATES_MANAGEMENT' AND id_user = 1;
+INSERT INTO core_user_right (id_right,id_user) VALUES ('FORMSPDF_TEMPLATES_MANAGEMENT',1);
