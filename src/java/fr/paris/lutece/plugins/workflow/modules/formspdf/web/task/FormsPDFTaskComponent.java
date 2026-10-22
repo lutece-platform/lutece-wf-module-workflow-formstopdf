@@ -42,6 +42,7 @@ import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import fr.paris.lutece.plugins.forms.business.FormHome;
 import fr.paris.lutece.plugins.workflow.modules.formspdf.business.FormsPDFTaskConfig;
@@ -51,6 +52,7 @@ import fr.paris.lutece.plugins.workflow.web.task.AbstractTaskComponent;
 import fr.paris.lutece.plugins.workflowcore.business.task.ITaskType;
 import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
+import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.cdi.mvc.Models;
@@ -101,6 +103,10 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
     private static final String PARAMETER_ID_TASK = "id_task";
     
     private static final String PARAMETER_ID_FORM_SELECTED = "id_form_selected";
+
+    private static final String MESSAGE_HISTORY_GENERATED = "module.workflow.formspdf.task_formspdf_info.history.generated";
+
+    private static final String MESSAGE_HISTORY_GENERATED_WITH_TEMPLATE = "module.workflow.formspdf.task_formspdf_info.history.generatedWithTemplate";
 
     @Inject
     public FormsPDFTaskComponent( @Named( "workflow-formspdf.taskTypeFormsPDFTask" ) ITaskType taskType, 
@@ -160,10 +166,21 @@ public class FormsPDFTaskComponent extends AbstractTaskComponent
         return page.getHtml( );
     }
 
+    /**
+     * {@inheritDoc} The history of the resource shows that a PDF document was generated, with the template of the task when it has one
+     */
     @Override
     public String getDisplayTaskInformation( int nIdHistory, HttpServletRequest request, Locale locale, ITask task )
     {
-        return null;
+        FormsPDFTaskConfig config = getTaskConfigService( ).findByPrimaryKey( task.getId( ) );
+        FormsPDFTaskTemplate template = ( config != null ) ? FormsPDFTaskTemplateHome.findByPrimaryKey( config.getIdTemplate( ) ) : null;
+        if ( template == null )
+        {
+            return I18nService.getLocalizedString( MESSAGE_HISTORY_GENERATED, locale );
+        }
+        return I18nService.getLocalizedString( MESSAGE_HISTORY_GENERATED_WITH_TEMPLATE, new Object [ ] {
+                StringEscapeUtils.escapeHtml4( template.getName( ) )
+        }, locale );
     }
 
     @Override
