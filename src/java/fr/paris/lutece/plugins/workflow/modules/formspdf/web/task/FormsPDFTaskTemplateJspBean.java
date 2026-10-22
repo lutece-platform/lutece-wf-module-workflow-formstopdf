@@ -90,7 +90,7 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
     // Actions
     private static final String ACTION_MODIFY_TEMPLATE = "modifyTemplate";
     private static final String ACTION_REMOVE_TEMPLATE = "removeTemplate";
-    private static final String ACTION_GET_MARKER_DESCRIPTIONS = "getMarkerDescriptions";
+    private static final String VIEW_GET_MARKER_DESCRIPTIONS = "getMarkerDescriptions";
 
     // Parameters
     private static final String PARAMETER_TASK_ID = "task_id";
@@ -305,7 +305,18 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
         return strtemplate;
     }
 
-    @Action( value = ACTION_GET_MARKER_DESCRIPTIONS, securityTokenDisabled = true )
+    /**
+     * Gets the descriptions of the markers of a form, read by the template edition page when a form is chosen
+     *
+     * @param formId
+     *            the form id
+     * @param rte
+     *            true if the template is edited with the rich text editor
+     * @param request
+     *            the HTTP request
+     * @return the HTML of the marker descriptions
+     */
+    @View( value = VIEW_GET_MARKER_DESCRIPTIONS )
     @ResponseBody
     public String getMarkerDescriptions( @RequestParam( value = "form_id" ) int formId, @RequestParam( value = "rte" ) boolean rte, HttpServletRequest request )
     {

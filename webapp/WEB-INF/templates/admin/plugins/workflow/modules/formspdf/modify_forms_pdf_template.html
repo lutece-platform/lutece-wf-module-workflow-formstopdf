@@ -92,7 +92,7 @@ if (!formId) return;
 
 const isRte = document.getElementById("rte").checked;
 const params = new URLSearchParams({
-    action: "getMarkerDescriptions",
+    view: "getMarkerDescriptions",
     form_id: formId,
     rte: isRte
 });
