@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.formspdf.business;
 
-import java.sql.Statement;
 
 import fr.paris.lutece.plugins.workflow.modules.formspdf.service.FormsPDFPlugin;
 import fr.paris.lutece.plugins.workflowcore.business.config.ITaskConfigDAO;
@@ -71,26 +70,24 @@ public class FormsPDFTaskConfigDAO implements ITaskConfigDAO<FormsPDFTaskConfig>
      */
     private static final String SQL_QUERY_UPDATE = "UPDATE workflow_task_formspdf_cf SET id_task = ?, id_forms = ?, format = ?, id_template = ?, name = ?, description = ? WHERE id_task = ?";
 
+    /**
+     * {@inheritDoc} The configuration is stored under the id of its task, given by the workflow: the table has no generated key
+     */
     @Override
     public void insert( FormsPDFTaskConfig formsJasperTaskConfig )
     {
-        @SuppressWarnings( "resource" )
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, FormsPDFPlugin.getPlugin( ) );
-
-        int nIndex = 0;
-        daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTask( ) );
-        daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdForms( ) );
-        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getFormat( ) );
-        daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTemplate() );
-        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getName( ) );
-        daoUtil.setString( ++nIndex, formsJasperTaskConfig.getDescription( ) );
-
-        daoUtil.executeUpdate( );
-        if ( daoUtil.nextGeneratedKey( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, FormsPDFPlugin.getPlugin( ) ) )
         {
-            formsJasperTaskConfig.setIdTask( daoUtil.getGeneratedKeyInt( 1 ) );
+            int nIndex = 0;
+            daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTask( ) );
+            daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdForms( ) );
+            daoUtil.setString( ++nIndex, formsJasperTaskConfig.getFormat( ) );
+            daoUtil.setInt( ++nIndex, formsJasperTaskConfig.getIdTemplate( ) );
+            daoUtil.setString( ++nIndex, formsJasperTaskConfig.getName( ) );
+            daoUtil.setString( ++nIndex, formsJasperTaskConfig.getDescription( ) );
+
+            daoUtil.executeUpdate( );
         }
-        daoUtil.free( );
     }
 
     @Override

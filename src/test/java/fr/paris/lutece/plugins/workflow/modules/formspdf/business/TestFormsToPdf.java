@@ -60,6 +60,26 @@ public class TestFormsToPdf extends LuteceTestCase
 		assertNull( _formsPDFTaskConfigDAO.load( formsPDFTaskConfig.getIdTask( ) ) );
 	}
 
+	/**
+	 * The configuration of a task is stored under the id of its task, given by the workflow: the insert keeps this id instead of reading a generated
+	 * key that the table does not have
+	 */
+	@Test
+	public void testFormsPDFConfigKeepsTheIdOfItsTask( )
+	{
+		FormsPDFTaskConfig formsPDFTaskConfig = new FormsPDFTaskConfig( );
+		formsPDFTaskConfig.setIdTask( 4242 );
+		formsPDFTaskConfig.setIdForms( 1 );
+		formsPDFTaskConfig.setFormat( "format1" );
+		formsPDFTaskConfig.setIdTemplate( 2 );
+
+		_formsPDFTaskConfigDAO.insert( formsPDFTaskConfig );
+
+		assertEquals( 4242, formsPDFTaskConfig.getIdTask( ) );
+		assertNotNull( _formsPDFTaskConfigDAO.load( 4242 ) );
+		_formsPDFTaskConfigDAO.delete( 4242 );
+	}
+
 	//Test CRUD operations on workflow_task_formspdf_template table
 	@Test
 	public void testFormsPDFTemplateTableCRUD( )
