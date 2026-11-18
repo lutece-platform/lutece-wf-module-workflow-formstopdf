@@ -129,6 +129,16 @@ public class FormsPDFTask extends Task
     public void processTask( int nIdResourceHistory, HttpServletRequest request, Locale locale )
     {
 
+        // The generated file belongs to the user who runs the action ("Mes fichiers"): an automatic action has no user
+        AdminUser user = ( request != null ) ? AdminUserService.getAdminUser( request ) : null;
+
+        if ( user == null )
+        {
+            AppLogService.error( "FormsPDFTask {}: no back office user runs the action (automatic action), no PDF generated for the history {}",
+                    getId( ), nIdResourceHistory );
+            return;
+        }
+
         // Get the resourceHistory to find the resource to work with
         ResourceHistory resourceHistory = _resourceHistoryService.findByPrimaryKey( nIdResourceHistory );
 
@@ -138,7 +148,6 @@ public class FormsPDFTask extends Task
         // Id of the Form to modify
         int nIdFormResponse = 0;
         String strError = "";
-        AdminUser user = null;
         FormsPDFTaskTemplate formsPDFTaskTemplate = null;
         try
         {
@@ -149,11 +158,6 @@ public class FormsPDFTask extends Task
             FormResponse frep = FormResponseHome.findByPrimaryKey( nIdFormResponse );
             Form form = FormHome.findByPrimaryKey( frep.getFormId( ) );
 
-            // TODO Gerer le cas null quand il s'agit d'une action automatique
-            if ( request != null )
-            {
-                user = AdminUserService.getAdminUser( request );
-            }
             FormResponse formResponse = FormResponseHome.findByPrimaryKey( nIdFormResponse );
             Map<String, Object> model = GenericFormsProvider.getValuesModel( formResponse, request, false );
             removeNullEntries( model );
