@@ -59,6 +59,8 @@ public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO
 
     private static final String SQL_QUERY_DELETE = "DELETE FROM workflow_task_formspdf_template WHERE id_template = ? ";
 
+    private static final String SQL_QUERY_COUNT_TASKS = "SELECT count(*) FROM workflow_task_formspdf_cf WHERE id_template = ? ";
+
     private static final String SQL_QUERY_UPDATE = "UPDATE workflow_task_formspdf_template SET name = ?, id_form = ?, is_generic = ?, content = ?, is_rte = ?, file_name = ?, is_replace_empty_response = ? WHERE id_template = ?";
 
     @Override
@@ -140,6 +142,18 @@ public class FormsPDFTaskTemplateDAO implements IFormsPDFTaskTemplateDAO
             }
         }
         return listFormsPDFTaskTemplate;
+    }
+
+    @Override
+    public boolean isUsedByTask( int nIdTemplate )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_TASKS, FormsPDFPlugin.getPlugin( ) ) )
+        {
+            daoUtil.setInt( 1, nIdTemplate );
+            daoUtil.executeQuery( );
+
+            return daoUtil.next( ) && daoUtil.getInt( 1 ) > 0;
+        }
     }
 
     @Override

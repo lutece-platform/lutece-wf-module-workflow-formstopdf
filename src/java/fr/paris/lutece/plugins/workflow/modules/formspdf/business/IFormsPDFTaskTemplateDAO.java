@@ -51,4 +51,13 @@ public interface IFormsPDFTaskTemplateDAO {
 
 	List<FormsPDFTaskTemplateDTO> selectAllWithForms();
 
+	/**
+	 * Tells if a template is used by the configuration of a task
+	 * 
+	 * @param nIdTemplate
+	 *            the template id
+	 * @return true if a task uses the template
+	 */
+	boolean isUsedByTask( int nIdTemplate );
+
 }

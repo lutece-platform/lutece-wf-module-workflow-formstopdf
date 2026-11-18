@@ -68,6 +68,7 @@ import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.plugins.forms.service.provider.GenericFormsProvider;
 import fr.paris.lutece.plugins.forms.business.FormQuestionResponse;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.web.l10n.LocaleService;
 import jakarta.enterprise.context.Dependent;
@@ -159,6 +160,11 @@ public class FormsPDFTask extends Task
 
             formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( formsPDFTaskConfig.getIdTemplate( ) );
 
+            if ( formsPDFTaskTemplate == null )
+            {
+                throw new AppException( "FormsPDFTask " + getId( ) + ": the template " + formsPDFTaskConfig.getIdTemplate( ) + " does not exist" );
+            }
+
             if ( formsPDFTaskTemplate.isReplaceEmpty( ) )
             {
                 replaceEmptyResponses( model, form, currentLocale );
@@ -201,9 +207,10 @@ public class FormsPDFTask extends Task
         catch( Exception e )
         {
             // print the error in a pdf
-            formsPDFTaskTemplate.setContent( e.getMessage( ) );
+            FormsPDFTaskTemplate errorTemplate = ( formsPDFTaskTemplate != null ) ? formsPDFTaskTemplate : new FormsPDFTaskTemplate( );
+            errorTemplate.setContent( e.getMessage( ) );
             HtmlToPDFGenerator htmltopdf = new HtmlToPDFGenerator( "error", I18nService.getLocalizedString( PROPERTY_LABEL_DESCRIPTION, locale ),
-                    new FormResponse( ), formsPDFTaskTemplate );
+                    new FormResponse( ), errorTemplate );
             _temporaryFileGeneratorService.generateFile( htmltopdf, user );
             throw new RuntimeException( strError, e );
         }

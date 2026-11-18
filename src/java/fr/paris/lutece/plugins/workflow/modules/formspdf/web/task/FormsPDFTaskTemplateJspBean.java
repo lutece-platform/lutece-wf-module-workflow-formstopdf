@@ -117,6 +117,7 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
 
     // Messages
     private static final String MESSAGE_CONFIRM_REMOVE_TEMPLATE = "module.workflow.formspdf.message.confirmRemoveTemplate";
+    private static final String MESSAGE_TEMPLATE_USED_BY_TASK = "module.workflow.formspdf.message.templateUsedByTask";
 
     @Inject
     private Models model;
@@ -227,6 +228,13 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
             return redirect( request, VIEW_MANAGE_TEMPLATES, mapParameters );
         }
 
+        if ( FormsPDFTaskTemplateHome.isUsedByTask( nIdTemplate ) )
+        {
+            return redirect( request, AdminMessageService.getMessageUrl( request, MESSAGE_TEMPLATE_USED_BY_TASK, new Object [ ] {
+                    formsPDFTaskTemplate.getName( )
+            }, AdminMessage.TYPE_STOP ) );
+        }
+
         UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_TEMPLATE ) );
         url.addParameter( PARAMETER_TEMPLATE_ID, nIdTemplate );
         url.addParameter( PARAMETER_TASK_ID, NumberUtils.toInt( request.getParameter( PARAMETER_TASK_ID ), DEFAULT_ID_VALUE ) );
@@ -243,6 +251,15 @@ public class FormsPDFTaskTemplateJspBean extends MVCAdminJspBean
 
         if ( nIdTemplate > DEFAULT_ID_VALUE )
         {
+            if ( FormsPDFTaskTemplateHome.isUsedByTask( nIdTemplate ) )
+            {
+                FormsPDFTaskTemplate formsPDFTaskTemplate = FormsPDFTaskTemplateHome.findByPrimaryKey( nIdTemplate );
+
+                return redirect( request, AdminMessageService.getMessageUrl( request, MESSAGE_TEMPLATE_USED_BY_TASK, new Object [ ] {
+                        ( formsPDFTaskTemplate != null ) ? formsPDFTaskTemplate.getName( ) : nIdTemplate
+                }, AdminMessage.TYPE_STOP ) );
+            }
+
             FormsPDFTaskTemplateHome.remove( nIdTemplate );
         }
 

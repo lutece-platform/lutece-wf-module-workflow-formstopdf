@@ -112,5 +112,31 @@ public class TestFormsToPdf extends LuteceTestCase
 		_formsPDFTaskTemplateDAO.delete( formsPDFTaskTemplate.getId( ) );
 
 		assertNull( _formsPDFTaskTemplateDAO.load( formsPDFTaskTemplate.getId( ) ) );
-	} 
+	}
+
+	/**
+	 * A template used by the configuration of a task is reported as used, so that its deletion is refused
+	 */
+	@Test
+	public void testTemplateUsedByTask( )
+	{
+		FormsPDFTaskTemplate formsPDFTaskTemplate = new FormsPDFTaskTemplate( );
+		formsPDFTaskTemplate.setName( "template used" );
+		formsPDFTaskTemplate.setContent( "content" );
+		formsPDFTaskTemplate.setGeneric( true );
+		_formsPDFTaskTemplateDAO.insert( formsPDFTaskTemplate );
+		assertFalse( _formsPDFTaskTemplateDAO.isUsedByTask( formsPDFTaskTemplate.getId( ) ) );
+
+		FormsPDFTaskConfig formsPDFTaskConfig = new FormsPDFTaskConfig( );
+		formsPDFTaskConfig.setIdTask( 4343 );
+		formsPDFTaskConfig.setIdForms( 1 );
+		formsPDFTaskConfig.setFormat( "pdf" );
+		formsPDFTaskConfig.setIdTemplate( formsPDFTaskTemplate.getId( ) );
+		_formsPDFTaskConfigDAO.insert( formsPDFTaskConfig );
+
+		assertTrue( _formsPDFTaskTemplateDAO.isUsedByTask( formsPDFTaskTemplate.getId( ) ) );
+
+		_formsPDFTaskConfigDAO.delete( 4343 );
+		_formsPDFTaskTemplateDAO.delete( formsPDFTaskTemplate.getId( ) );
+	}
 }
